@@ -5,9 +5,9 @@ class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return android;
-    }/* else if (defaultTargetPlatform == TargetPlatform.android) {
-      return android;
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+    } else if (defaultTargetPlatform == TargetPlatform.ios) {
+      return ios;
+    } /*else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return ios;
     } else if (defaultTargetPlatform == TargetPlatform.macOS) {
       return macos;
@@ -31,15 +31,15 @@ class DefaultFirebaseOptions {
     storageBucket: 'cookify-33c8c.firebasestorage.app',
   );
 
-  /*static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'your-ios-apiKey',
-    appId: 'your-ios-appId',
-    messagingSenderId: 'your-ios-messagingSenderId',
-    projectId: 'your-ios-projectId',
-    storageBucket: 'your-ios-storageBucket',
-    iosBundleId: 'your-ios-bundle-id',  // Make sure to include the iOS bundle ID
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAAg24pZs2RzP8kK-RkDFfZKw2am6o03u4',
+    appId: '1:822552724386:ios:9635a2bb9621850339e8fb',
+    messagingSenderId: '822552724386',
+    projectId: 'cookify-33c8c',
+    storageBucket: 'cookify-33c8c.firebasestorage.app',
+    iosBundleId: 'com.example.mobileApp',  // Make sure to include the iOS bundle ID
   );
-
+/*
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'your-macos-apiKey',
     appId: 'your-macos-appId',
