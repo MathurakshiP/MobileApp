@@ -1,7 +1,8 @@
 // lib/main.dart
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/src/dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart'; // Correct import path
+
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 // import 'package:mobile_app/Screens/get_started.dart';
 // import 'package:mobile_app/Screens/home_screen.dart';
@@ -16,12 +17,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // await dotenv.load(fileName: ".env");
-  // print(dotenv.env);
+
   runApp( MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   
   @override
   Widget build(BuildContext context) {

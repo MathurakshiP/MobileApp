@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
 
     try {
-      final randomRecipes = await ApiService().fetchRandomRecipes(number: 1);
+      final randomRecipes = await ApiService().fetchRandomRecipes(number: 3);
       setState(() {
         _randomRecipes = randomRecipes;
         _isLoading = false; // Stop loading once data is fetched
