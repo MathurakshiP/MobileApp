@@ -9,13 +9,13 @@ buildscript {
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21'  // Update if using Kotlin
     }
 }
-
 plugins {
   // ...
 
   // Add the dependency for the Google services Gradle plugin
   id 'com.google.gms.google-services' //version '4.4.2' apply false
 }
+
 allprojects {
     repositories {
         google()
@@ -35,3 +35,4 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+

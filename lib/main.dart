@@ -1,6 +1,7 @@
 // lib/main.dart
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/Screens/get_started.dart';
 //import 'package:mobile_app/Screens/get_started.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart'; // Correct import path
 
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Recipe App',
             theme: themeProvider.currentTheme, // Apply the current theme
-            home: const WidgetTree(),
+            home:  GetStartedScreen(),
             //initialRoute: '/home',
             //routes: {
             //   '/': (context) => LoginPage(),

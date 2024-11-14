@@ -1,83 +1,135 @@
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-import 'package:mobile_app/Services/api_services.dart'; // Import your ApiService
 
-// ignore: must_be_immutable
-class MealPlannerScreen extends StatelessWidget {
-  Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
-  
+class MealPlanScreen extends StatefulWidget {
+  @override
+  _MealPlannerScreenState createState() => _MealPlannerScreenState();
+}
 
-  MealPlannerScreen({super.key});
-  
+class _MealPlannerScreenState extends State<MealPlanScreen> {
+  // Sample meal plan data structure
+  Map<String, Map<String, String>> weeklyMealPlan = {
+    'Monday': {'Breakfast': '', 'Lunch': '', 'Dinner': '', 'Snacks': ''},
+    'Tuesday': {'Breakfast': '', 'Lunch': '', 'Dinner': '', 'Snacks': ''},
+    'Wednesday': {'Breakfast': '', 'Lunch': '', 'Dinner': '', 'Snacks': ''},
+    'Thursday': {'Breakfast': '', 'Lunch': '', 'Dinner': '', 'Snacks': ''},
+    'Friday': {'Breakfast': '', 'Lunch': '', 'Dinner': '', 'Snacks': ''},
+    'Saturday': {'Breakfast': '', 'Lunch': '', 'Dinner': '', 'Snacks': ''},
+    'Sunday': {'Breakfast': '', 'Lunch': '', 'Dinner': '', 'Snacks': ''},
+  };
+
+  String selectedDay = 'Monday';
+
+  // Controller to handle meal input
+  TextEditingController mealController = TextEditingController();
+
+  void _openMealInputDialog(String mealType) {
+    mealController.clear();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Add $mealType'),
+        content: TextField(
+          controller: mealController,
+          decoration: InputDecoration(hintText: 'Enter meal details'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                weeklyMealPlan[selectedDay]?[mealType] = mealController.text;
+              });
+              Navigator.pop(context);
+            },
+            child: Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMealEntry(String mealType) {
+    return ListTile(
+      title: Text(mealType),
+      subtitle: Text(weeklyMealPlan[selectedDay]?[mealType] ?? ''),
+      trailing: IconButton(
+        icon: Icon(Icons.edit),
+        onPressed: () => _openMealInputDialog(mealType),
+      ),
+    );
+  }
+
+  Widget _buildDaySelector() {
+    return SizedBox(
+      height: 50,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: weeklyMealPlan.keys.map((day) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedDay = day;
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              margin: EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: selectedDay == day ? Colors.blueAccent : Colors.grey[300],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Text(
+                  day,
+                  style: TextStyle(
+                    color: selectedDay == day ? Colors.white : Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Meal Planner'),
+        title: Text('Weekly Meal Planner'),
       ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: ApiService().fetchMealPlan(diet: 'any'), // Call the API function
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data == null) {
-            return const Center(child: Text('No meal plan available.'));
-          } else {
-            final mealPlan = snapshot.data!;
-
-            // Assuming the API returns a list of meals or meal details
-            final meals = mealPlan['meals'] ?? []; // Adjust this based on your API response
-
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Weekly Meal Plan',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: meals.length,
-                      itemBuilder: (context, index) {
-                        final meal = meals[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          child: ListTile(
-                            title: Text(meal['title'] ?? 'No title'),
-                            subtitle: Text(meal['description'] ?? 'No description'),
-                            trailing: const Icon(Icons.add),
-                            onTap: () {
-                              // Action to add the meal to the planner or details
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Added ${meal['title']} to your plan'),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Action to add a new meal plan (could be a new screen or a dialog)
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Add a new meal plan')),
-          );
-        },
-        child: const Icon(Icons.add),
+      body: Column(
+        children: [
+          SizedBox(height: 10),
+          _buildDaySelector(),
+          SizedBox(height: 10),
+          Expanded(
+            child: ListView(
+              children: [
+                _buildMealEntry('Breakfast'),
+                _buildMealEntry('Lunch'),
+                _buildMealEntry('Dinner'),
+                _buildMealEntry('Snacks'),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Optional: Save weekly meal plan data here
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Meal Plan Saved')),
+                );
+              },
+              child: Text('Save Meal Plan'),
+            ),
+          ),
+        ],
       ),
     );
   }

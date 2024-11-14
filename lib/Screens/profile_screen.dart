@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 // import 'package:provider/provider.dart';
 // import '../providers/theme_provider.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  
 
   @override
   // ignore: library_private_types_in_public_api
@@ -36,7 +38,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile',),
+        title: const Text('Profile',style: TextStyle(
+                fontWeight: FontWeight.bold, // Make the text bold
+                color: Colors.white,),),
         backgroundColor: customGreen,
         automaticallyImplyLeading: false,
         actions: [
@@ -153,23 +157,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const Divider(),
 
             // Dark Mode Setting
-            // Padding(
-            //   padding: const EdgeInsets.all(16.0),
-            //   child: Consumer<ThemeProvider>(
-            //     builder: (context, themeProvider, child) {
-            //       return Row(
-            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //         children: [
-            //           const Text('Dark Mode', style: TextStyle(fontSize: 18)),
-            //           Switch(
-            //             value: themeProvider.isDarkMode,
-            //             onChanged: themeProvider.toggleTheme, // Toggle theme
-            //           ),
-            //         ],
-            //       );
-            //     },
-            //   ),
-            // ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Consumer<ThemeProvider>(
+                builder: (context, themeProvider, child) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Dark Mode', style: TextStyle(fontSize: 18)),
+                      Switch(
+                        value: themeProvider.isDarkMode,
+                        onChanged: themeProvider.toggleTheme, // Toggle theme
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
 
             // Log Out Button
             Padding(

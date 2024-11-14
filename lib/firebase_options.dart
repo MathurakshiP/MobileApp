@@ -5,7 +5,7 @@ class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return android;
-    } else if (defaultTargetPlatform == TargetPlatform.ios) {
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return ios;
     } /*else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return ios;

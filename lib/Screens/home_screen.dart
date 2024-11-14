@@ -190,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               // Navigate to meal plan screen or action
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MealPlannerScreen()),
+                MaterialPageRoute(builder: (context) => MealPlanScreen()),
               ).then((_) {
                 // Reset icon color after returning from MealPlannerScreen
                 setState(() {
@@ -474,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             // ShoppingListScreen with passed shoppingList
             const ShoppingListScreen(),
             // ProfileScreen
-            const ProfileScreen(),
+             ProfileScreen(),
         ],
       ),
       
