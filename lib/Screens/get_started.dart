@@ -4,9 +4,8 @@ import 'package:mobile_app/Screens/home_screen.dart';
 import 'package:mobile_app/auth.dart';
 
 class GetStartedScreen extends StatelessWidget {
-   const GetStartedScreen({super.key});
+  const GetStartedScreen({super.key});
 
-   
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +26,11 @@ class LoginPage extends StatefulWidget {
   
   LoginPage({super.key});
 
-   final User? user =Auth().currentUser;
+  final User? user =Auth().currentUser;
 
-   Future<void>signOut() async{
+  Future<void>signOut() async{
     await Auth().signOut();
-   }
+  }
 
   
 
@@ -54,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> signInWithEmailAndPassword() async{
     try{
       await Auth().signInWithEmailAndPassword(
-        email: emailController.text, 
+        email: emailController.text,
         password: passwordController.text,);
 
     } on FirebaseAuthException catch (e) {
@@ -67,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> createUserWithEmailAndPassword() async{
       try{
         await Auth().createUserWithEmailAndPassword(
-          email: emailController.text, 
+          email: emailController.text,
           password: passwordController.text,);
 
       } on FirebaseAuthException catch (e) {
@@ -81,7 +80,6 @@ class _LoginPageState extends State<LoginPage> {
   //   return Text(errorMessage== '' ? '' : 'Humm ? $errorMessage');
   // }
 
- 
 
   // Widget _loginOrRegisterButton(){
   //   return TextButton(

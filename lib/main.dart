@@ -1,6 +1,7 @@
 // lib/main.dart
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+//import 'package:mobile_app/Screens/get_started.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart'; // Correct import path
 
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,14 +13,16 @@ import 'package:mobile_app/providers/shopping_list_provider.dart';
 import 'package:provider/provider.dart';
 import 'providers/saved_food_provider.dart';
 import 'providers/theme_provider.dart';
+import 'firebase_options.dart';
 // import 'package:mobile_app/services/api_services.dart';
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
-
-  runApp( MyApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -39,11 +42,11 @@ class MyApp extends StatelessWidget {
             title: 'Recipe App',
             theme: themeProvider.currentTheme, // Apply the current theme
             home: const WidgetTree(),
-            // initialRoute: '/home',
-            // routes: {
+            //initialRoute: '/home',
+            //routes: {
             //   '/': (context) => LoginPage(),
-            //   '/home': (context) => ProfileScreen(),
-            // },
+            //'/home': (context) => const GetStartedScreen(),
+            //},
           );
         },
       ),

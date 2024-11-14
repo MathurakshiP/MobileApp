@@ -30,8 +30,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   List<dynamic> _randomRecipes = [];
   List<dynamic> _recentlyViewed = [];
 
-  bool _isLoading = false; 
-  int _selectedIndex = 0; 
+  bool _isLoading = false;
+  int _selectedIndex = 0;
   String? _selectedCategory;
   Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
 
@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               'Cookify', // Top left title
               style: TextStyle(
                 fontWeight: FontWeight.bold, // Make the text bold
-                color: Colors.white,  
+                color: Colors.white,
                 
               ),
             ),
@@ -231,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ],
                   labelColor: Colors.black, // Selected tab color
                   unselectedLabelColor: Colors.black, // Unselected tab color
-                  indicatorColor: Colors.black, 
+                  indicatorColor: Colors.black,
                 ),
                 
 
