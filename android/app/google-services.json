@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "822552724386",
+    "project_id": "cookify-33c8c",
+    "storage_bucket": "cookify-33c8c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822552724386:android:b3f248b346322a4439e8fb",
+        "android_client_info": {
+          "package_name": "com.exampl"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9qvGCFoWm5gEZOggzvVfJ-yW2NrHYbnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822552724386:android:6107141d07c9305839e8fb",
+        "android_client_info": {
+          "package_name": "com.example.mobile_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9qvGCFoWm5gEZOggzvVfJ-yW2NrHYbnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822552724386:android:fba232b5b3e370d539e8fb",
+        "android_client_info": {
+          "package_name": "com.example.team_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9qvGCFoWm5gEZOggzvVfJ-yW2NrHYbnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
