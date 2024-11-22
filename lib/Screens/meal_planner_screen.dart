@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MealPlanScreen extends StatefulWidget {
+  const MealPlanScreen({super.key});
+
   @override
   _MealPlannerScreenState createState() => _MealPlannerScreenState();
 }
