@@ -2,14 +2,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/get_started.dart';
-//import 'package:mobile_app/Screens/get_started.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart'; // Correct import path
-
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
-// import 'package:mobile_app/Screens/get_started.dart';
 // import 'package:mobile_app/Screens/home_screen.dart';
 // import 'package:mobile_app/Screens/profile_screen.dart';
-// import 'package:mobile_app/Screens/widget_tree.dart';
+import 'package:mobile_app/Screens/animation_screen.dart';
 import 'package:mobile_app/providers/shopping_list_provider.dart';
 import 'package:provider/provider.dart';
 import 'providers/saved_food_provider.dart';
@@ -42,7 +38,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Recipe App',
             theme: themeProvider.currentTheme, // Apply the current theme
-            home:  GetStartedScreen(),
+            home:  AnimationScreen(),
             //initialRoute: '/home',
             //routes: {
             //   '/': (context) => LoginPage(),

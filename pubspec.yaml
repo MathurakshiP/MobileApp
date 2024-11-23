@@ -69,6 +69,17 @@ flutter:
   uses-material-design: true
 
   assets:
+
+  - images/cookify.png
+  - images/burger.png
+  - images/cupcake.png
+  - images/ice_cream.png
+  - images/pizza.png
+  - images/soup.png
+  - images/sushi.png
+  - images/fruits.png
+  - images/pancake.png
+  - images/pic.jpg
   - .env
 
   # To add assets to your application, add an assets section, like this:

@@ -9,21 +9,143 @@ class GetStartedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => LoginPage()),
-            );
-          },
-          child: const Text('Get Started'),
-        ),
+      body: Stack(
+        children: [
+          // Background design
+          Positioned(
+            top: -180,
+            left: 230,
+            child: Transform(
+              transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
+              child: Container(
+                width: 500,
+                height: 440,
+                decoration: ShapeDecoration(
+                  color: const Color(0xFFD9D9D9),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(123),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: -130,
+            left: 370,
+            child: Transform(
+              transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(1.38),
+              child: ClipPath(
+                clipper: CustomClipperPath(),
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 1.3,
+                  height: 430,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('images/pic.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            left: 108.78,
+            top: -230.90,
+            child: Transform(
+              transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
+              child: Container(
+                width: 596.38,
+                height: 398.84,
+                decoration: ShapeDecoration(
+                  color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.20000000298023224),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(110),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Logo and content
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 400), // Adjust the logo's position
+                    child: Image.asset(
+                      'images/cookify.png', // Replace with your logo
+                      height: 300,
+                      width: 300,
+                    ),
+                  ),
+                ),
+              ),
+              // Bottom button
+              Padding(
+                padding: const EdgeInsets.only(bottom: 30),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 20),
+                    // Get Started button
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => LoginPage()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 50),
+                        backgroundColor: const Color(0xCC147615),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      child: const Text(
+                        'Get Started',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontFamily: 'Inika',
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
+class CustomClipperPath extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.addRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        const Radius.circular(100), // Apply the same border radius as in the original shape
+      ),
+    );
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return false;
+  }
+}
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
