@@ -52,7 +52,13 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
               controller: _ingredientController,
               decoration: InputDecoration(
                 labelText: 'Enter ingredients (comma-separated)',
-                border: const OutlineInputBorder(),
+                // labelStyle: const TextStyle(color: Colors.black),
+                border: const OutlineInputBorder(
+                  // borderSide: BorderSide(color: Colors.black),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                                          // borderSide: BorderSide(color: Colors.black),
+                                        ),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: _searchByIngredients,

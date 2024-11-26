@@ -16,7 +16,10 @@ class SavedFoodScreen extends StatelessWidget {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Saved Recipes'),
+        title: const Text('Saved Recipes',style: TextStyle(
+                fontWeight: FontWeight.bold, // Make the text bold
+                color: Colors.white,
+                fontSize: 20,),),
         backgroundColor: customGreen,
         automaticallyImplyLeading: false,
       ),

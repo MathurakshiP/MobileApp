@@ -9,7 +9,6 @@ class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key, required this.category});
 
   @override
-  // ignore: library_private_types_in_public_api
   _CategoryScreenState createState() => _CategoryScreenState();
 }
 
@@ -21,16 +20,17 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchCategoryRecipes();
+    fetchRelatedRecipes();
   }
 
-  void _fetchCategoryRecipes() async {
+  // Fetch related recipes for the category
+  void fetchRelatedRecipes() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final recipes = await ApiService().fetchRecipesByCategory(widget.category);
+      final recipes = await ApiService().fetchRelatedRecipes(715538); // Update this ID if needed
       setState(() {
         _categoryRecipes = recipes;
         _isLoading = false;
@@ -42,7 +42,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
       if (kDebugMode) {
         print('Error fetching recipes for category ${widget.category}: $error');
       }
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to load recipes. Please try again later.')),
       );
@@ -53,7 +52,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.category),
+        title: Text(widget.category, style: TextStyle(
+          fontWeight: FontWeight.bold, 
+          color: Colors.white, 
+          fontSize: 20,
+        )),
         backgroundColor: customGreen,
       ),
       body: _isLoading
@@ -64,7 +67,39 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   itemCount: _categoryRecipes.length,
                   itemBuilder: (context, index) {
                     final recipe = _categoryRecipes[index];
-                    return GestureDetector(
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      leading: recipe['image'] != null
+                          ? Image.network(
+                              recipe['image'],
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit.cover,
+                              // errorBuilder: (context, error, stackTrace) {
+                              //   return Container(
+                              //     height: 50,
+                              //     width: 50,
+                              //     color: Colors.grey,
+                              //     child: const Icon(Icons.broken_image, size: 30, color: Colors.white),
+                              //   );
+                              // },
+                            )
+                          : Container(
+                              height: 50,
+                              width: 50,
+                              color: Colors.grey,
+                              child: const Icon(Icons.fastfood, size: 30, color: Colors.white),
+                            ),
+                      title: Text(
+                        recipe['title'] ?? 'No Title',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        recipe['description'] ?? 'No description available',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -73,50 +108,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           ),
                         );
                       },
-                      child: Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            recipe['image'] != null
-                                ? Image.network(
-                                    recipe['image'],
-                                    height: 150,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        height: 150,
-                                        color: Colors.grey,
-                                        child: const Icon(Icons.broken_image, size: 100, color: Colors.white),
-                                      );
-                                    },
-                                  )
-                                : Container(
-                                    height: 150,
-                                    width: double.infinity,
-                                    color: Colors.grey,
-                                    child: const Icon(Icons.fastfood, size: 100, color: Colors.white),
-                                  ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                recipe['title'] ?? 'No Title',
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
-                              child: Text(
-                                recipe['description'] ?? 'No description available',
-                                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     );
                   },
                 ),

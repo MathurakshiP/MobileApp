@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/providers/shopping_list_provider.dart';
+import 'package:mobile_app/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 // import 'package:mobile_app/providers/shopping_list_provider.dart';
 
@@ -13,14 +14,18 @@ class ShoppingListScreen extends StatelessWidget {
     final shoppingList = shoppingListProvider.shoppingList;
     Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
 
+final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping List',style: TextStyle(
                 fontWeight: FontWeight.bold, // Make the text bold
-                color: Colors.white,),
+                color: Colors.white,
+                fontSize: 20,),
         ),
         backgroundColor: customGreen,
         automaticallyImplyLeading: false, // Prevents the back arrow from appearing
+        
       ),
       body: shoppingList.isNotEmpty
           ? ListView.builder(

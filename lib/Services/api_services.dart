@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class ApiService {
   // Set base URL and API key directly here
   final String _baseUrl = 'https://api.spoonacular.com';
-  final String _apiKey = '9ecee3af427949d4b5e9831e0b458576'; // Replace with your actual API key
+  final String _apiKey = 'a2e8aeca685d4b33975aa0fec27c5fb3'; // Replace with your actual API key
 
   // 1. General Recipe Search
   Future<List<dynamic>> fetchRecipes(String query) async {
@@ -84,6 +84,21 @@ class ApiService {
     }
   }
 
+
+  // Modify the fetch method to accept the type parameter
+  Future<List<dynamic>> fetchRecipesByType({required String type}) async {
+    final response = await http.get(Uri.parse('$_baseUrl/recipes?type=$type'));
+
+    if (response.statusCode == 200) {
+      // Parse the response and return the list of recipes
+      List<dynamic> recipes = jsonDecode(response.body);
+      return recipes;
+    } else {
+      throw Exception('Failed to load recipes');
+    }
+  }
+
+
   // 5. Fetch Related Recipes
   Future<List<dynamic>> fetchRelatedRecipes(int id) async {
     final response = await http.get(
@@ -110,19 +125,7 @@ class ApiService {
     }
   }
 
-  // Fetch recipes based on the selected category
-  Future<List<dynamic>> fetchRecipesByCategory(String category) async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/recipes?category=$category&apiKey=$_apiKey'));
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return data['recipes'];
-    } else {
-      throw Exception('Failed to load recipes');
-    }
-  }
-
+  
   // 7. Shopping List from Ingredients
   Future<Map<String, dynamic>> createShoppingList(List<String> ingredients) async {
     return {'shoppingList': ingredients};
@@ -144,6 +147,42 @@ class ApiService {
       throw Exception('Failed to fetch autocomplete suggestions');
     }
   }
+
+
+// Add this method to fetch analyzed instructions with images
+Future<List<Map<String, dynamic>>> fetchRecipeInstructions(int id) async {
+  // Fetch recipe details first to get the image URL
+  final recipeDetails = await fetchRecipeDetails(id);
+
+  // Extract the image URL
+  final imageUrl = recipeDetails['image'] ?? '';
+
+  // Fetch analyzed instructions
+  final response = await http.get(
+    Uri.parse('$_baseUrl/recipes/$id/analyzedInstructions?apiKey=$_apiKey'),
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+
+    if (data is List && data.isNotEmpty) {
+      // Append image to each instruction step
+      List<Map<String, dynamic>> stepsWithImages = [];
+      for (var instruction in data[0]['steps']) {
+        stepsWithImages.add({
+          'step': instruction['step'],
+          'number': instruction['number'],
+          'image': imageUrl, // Add the image URL
+        });
+      }
+      return stepsWithImages;
+    } else {
+      return [];
+    }
+  } else {
+    throw Exception('Failed to fetch recipe instructions');
+  }
+}
 
   // 9. Favorites (Storing locally)
   List<int> favorites = [];

@@ -16,7 +16,10 @@ class RecipeDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recipe Details')),
+      appBar: AppBar(title: const Text('Recipe Details',style: TextStyle(
+                fontWeight: FontWeight.bold, // Make the text bold
+                color: Colors.white,
+                fontSize: 20,),)),
       body: FutureBuilder<Map<String, dynamic>>(
         future: ApiService().fetchRecipeDetails(recipeId),
         builder: (context, snapshot) {
@@ -32,6 +35,9 @@ class RecipeDetailScreen extends StatelessWidget {
             // Check if the recipe is already saved
             bool isSaved = savedFoodProvider.savedRecipes
                 .any((savedRecipe) => savedRecipe['id'] == recipeId);
+
+            // Extract instructions from the recipe data
+            final instructions = recipe['analyzedInstructions'] ?? [];
 
             return ListView(
               padding: const EdgeInsets.all(16),
@@ -85,8 +91,6 @@ class RecipeDetailScreen extends StatelessWidget {
                       },
                       child: const Text('Add to Shopping List'),
                     ),
-
-
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -96,12 +100,46 @@ class RecipeDetailScreen extends StatelessWidget {
                 }),
                 const SizedBox(height: 16),
                 const Text('Instructions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text(recipe['instructions'] ?? 'No instructions available.'),
+                // Directly use _buildInstructionSections with the fetched instructions data
+                ..._buildInstructionSections(instructions),
               ],
             );
           }
         },
       ),
     );
+  }
+
+  // Function to handle displaying instructions
+  List<Widget> _buildInstructionSections(List<dynamic> instructionData) {
+    if (instructionData == null || instructionData.isEmpty) {
+      return [const Text('No instructions available.', style: TextStyle(fontStyle: FontStyle.italic))];
+    }
+
+    return instructionData.map<Widget>((instruction) {
+      final steps = (instruction['steps'] as List<dynamic>?) ?? [];
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (instruction['name'] != null && instruction['name'].isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                instruction['name'],
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          if (steps.isEmpty)
+            const Text('No steps available.', style: TextStyle(fontStyle: FontStyle.italic)),
+          ...steps.map<Widget>((step) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text('${step['number']}. ${step['step']}'),
+            );
+          }).toList(),
+        ],
+      );
+    }).toList();
   }
 }

@@ -42,7 +42,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text('Profile',style: TextStyle(
                 fontWeight: FontWeight.bold, // Make the text bold
-                color: Colors.white,),),
+                color: Colors.white,
+                fontSize: 20,),
+                ),
         backgroundColor: customGreen,
         automaticallyImplyLeading: false,
         actions: [
@@ -169,7 +171,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const Text('Dark Mode', style: TextStyle(fontSize: 18)),
                       Switch(
                         value: themeProvider.isDarkMode,
-                        onChanged: themeProvider.toggleTheme, // Toggle theme
+                       onChanged: (bool value) {
+              themeProvider.toggleTheme(); // Toggle the theme when the Switch is changed
+            }, // Toggle theme
                       ),
                     ],
                   );

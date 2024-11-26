@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/category_screen.dart';
 import 'package:mobile_app/Screens/ingredient_based_screen.dart';
 import 'package:mobile_app/Screens/meal_planner_screen.dart';
+import 'package:mobile_app/providers/theme_provider.dart';
 // import 'package:team_project/screens/category_screen.dart';
 import 'package:mobile_app/screens/saved_food_screen.dart';
 import 'package:mobile_app/screens/shopping_list_screen.dart';
@@ -12,6 +13,7 @@ import 'package:mobile_app/screens/profile_screen.dart';  // Placeholder for Pro
 import 'package:mobile_app/services/api_services.dart';
 import 'package:mobile_app/screens/recipe_details_screen.dart';
 import 'package:mobile_app/screens/search_results_screen.dart';
+import 'package:provider/provider.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   List<dynamic> _recipes = [];
   List<dynamic> _randomRecipes = [];
   List<dynamic> _recentlyViewed = [];
-
+  
   bool _isLoading = false;
   int _selectedIndex = 0;
   String? _selectedCategory;
@@ -76,6 +78,44 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       );
     }
   }
+
+  void _loadRandomBreakfastRecipes() async {
+  setState(() {
+    _isLoading = true; // Show loading indicator
+  });
+
+  try {
+    // Fetch random recipes from the API (without specifying category)
+    final allRecipes = await ApiService().fetchRandomRecipes(number: 10); // Fetch more recipes initially
+    setState(() {
+      _isLoading = false; // Stop loading once data is fetched
+    });
+
+    // Filter the recipes to find breakfast-related ones
+    final breakfastRecipes = allRecipes.where((recipe) {
+      // Check if the title or ingredients contain typical breakfast keywords
+      final title = recipe['type'].toLowerCase();
+      final ingredients = recipe['ingredients']?.join(' ').toLowerCase() ?? '';
+
+      return title.contains('breakfast') || ingredients.contains('egg') || ingredients.contains('pancake') || ingredients.contains('oats');
+    }).toList();
+
+    // setState(() {
+    //   _randomRecipes = breakfastRecipes; // Set filtered breakfast recipes
+    // });
+  } catch (error) {
+    setState(() {
+      _isLoading = false; // Stop loading in case of error
+    });
+    if (kDebugMode) {
+      print('Error fetching breakfast recipes: $error');
+    }
+    // Show error message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to load breakfast recipes. Please try again later.')),
+    );
+  }
+}
 
 
   // Search function that fetches recipes based on user input
@@ -134,10 +174,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   void _onSuggestionTap(Map<String, dynamic> suggestion) {
   // Navigate to recipe details based on the selected suggestion
-
+    _recentlyViewed.insert(0, suggestion);
   Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => RecipeDetailScreen(recipeId: suggestion['id'])),
+    
   );
   _searchController.clear();
   setState(() {
@@ -169,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               style: TextStyle(
                 fontWeight: FontWeight.bold, // Make the text bold
                 color: Colors.white,
-                
+                fontSize: 30,
               ),
             ),
           ],
@@ -212,6 +253,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: _buildAppBar(),  // Use custom app bar method
       body: IndexedStack(
@@ -229,9 +271,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     Tab(text: 'Explore Recipe'),
                     Tab(text: "What's in Your Kitchen"),
                   ],
-                  labelColor: Colors.black, // Selected tab color
-                  unselectedLabelColor: Colors.black, // Unselected tab color
-                  indicatorColor: Colors.black,
+                  // labelColor: Colors.black, // Selected tab color
+                  // unselectedLabelColor: Colors.black, // Unselected tab color
+                  // indicatorColor: Colors.black,
                 ),
                 
 
@@ -254,12 +296,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                         },
                                         decoration: InputDecoration(
                                           labelText: 'Search Recipe...',
-                                          labelStyle: const TextStyle(color: Colors.black),
+                                          // labelStyle: const TextStyle(color: Colors.black),
                                           border: const OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black),
+                                          // borderSide: BorderSide(color: Colors.black),
                                         ),
                                         focusedBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black),
+                                          // borderSide: BorderSide(color: Colors.black),
                                         ),
                                           suffixIcon: IconButton(
                                             icon: const Icon(Icons.search),
@@ -337,7 +379,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                                   final recipe = _randomRecipes[index];
                                                   return GestureDetector(
                                                     onTap: () {
+                                                      // Add the clicked recipe to recentlyViewed, making sure there are no duplicates
+                                                      setState(() {
+                                                        if (!_recentlyViewed.any((item) => item['id'] == recipe['id'])) {
+                                                          _recentlyViewed.insert(0, recipe);  // Add to the front of the list to keep the most recent ones first
+                                                        }
+                                                      });
                                                       // Navigate to the recipe details screen
+                                                      
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -402,7 +451,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                                     _recentlyViewed.isEmpty
                                         ? const Center(child: Text('No recently viewed foods'))
-                                        : SizedBox(
+                                        : Padding(padding: const EdgeInsets.only(left: 16.0),
+                                           child: SizedBox(
                                             height: 250, // Adjust height as needed
                                             child: ListView.builder(
                                               scrollDirection: Axis.horizontal,
@@ -419,6 +469,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                                       ),
                                                     );
                                                   },
+                                                  
                                                   child: SizedBox(
                                                     width: 250, // Fixed width for the card
                                                     child: Card(
@@ -458,7 +509,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                             ),
                                           ),
 
-                          ],
+                         
+                                        
+                                        ),
+                                        
+                                        
+                                         ],
                         ),
 
                         const IngredientSearchScreen(),
@@ -491,7 +547,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedItemColor: customGreen,  // Color for selected item
-        unselectedItemColor: Colors.black, // Color for unselected items
+        // unselectedItemColor: Colors.black, // Color for unselected items
         selectedFontSize: 14,  // Size of selected item's text
         unselectedFontSize: 12, // Size of unselected items' text
         iconSize: 28,           // Uniform icon size
@@ -506,7 +562,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   
   Widget _buildMealCategoryTab(String category) {
     bool isSelected = _selectedCategory == category;  // Check if the category is selected
-    
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -524,20 +581,26 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         width: 100,  // Fixed width for the tab
         padding: const EdgeInsets.symmetric(vertical: 8),
         margin: const EdgeInsets.only(right: 16),
+        
         decoration: BoxDecoration(
-          color: isSelected ? customGreen : Colors.white,  // Selected tab in green, unselected in white
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected ? Colors.white : customGreen,  // White border for selected, green for unselected
-            width: 2,
-          ),
-          // Shadow for selected tab
+        color: isSelected
+            ? (isDarkMode ? customGreen : customGreen) // Dark theme: dark grey; Light theme: green
+            : (isDarkMode ? Colors.grey[700] : Colors.white), // Dark theme: lighter grey; Light theme: white
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isSelected
+              ? (isDarkMode ? customGreen : customGreen) // Consistent white for selected
+              : (isDarkMode ? Colors.grey[400]! : customGreen), // Border adapts to theme
+          width: 2,
         ),
+      ),
         child: Center(
           child: Text(
             category,
             style: TextStyle(
-              color: isSelected ? Colors.white : customGreen,  // White text for selected, green text for unselected
+              color: isSelected
+                ? (isDarkMode ? Colors.white : Colors.white) // Dark theme: dark grey; Light theme: green
+                : (isDarkMode ? Colors.white : customGreen), // Dark theme: lighter grey; Light theme: white
               fontWeight: FontWeight.bold,  // Bold text
             ),
           ),
