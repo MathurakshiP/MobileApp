@@ -6,6 +6,7 @@ class ApiService {
   // Set base URL and API key directly here
   final String _baseUrl = 'https://api.spoonacular.com';
   final String _apiKey = 'a2e8aeca685d4b33975aa0fec27c5fb3'; // Replace with your actual API key
+//         9ecee3af427949d4b5e9831e0b458576
 
   // 1. General Recipe Search
   Future<List<dynamic>> fetchRecipes(String query) async {
