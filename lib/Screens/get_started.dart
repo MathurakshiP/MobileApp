@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
 import 'package:mobile_app/auth.dart';
+import 'package:mobile_app/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
       body: Stack(
         children: [
@@ -101,7 +105,7 @@ class GetStartedScreen extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 50),
+                            vertical: 10, horizontal: 40),
                         backgroundColor: const Color(0xCC147615),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
@@ -219,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: isLogin ? Colors.green : Colors.grey,
+                        color: isLogin ? const Color(0xCC147615) : Colors.grey,
                       ),
                     ),
                   ),
@@ -231,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: isLogin ? Colors.grey : Colors.green,
+                        color: isLogin ? Colors.grey : const Color(0xCC147615),
                       ),
                     ),
                   ),
@@ -272,19 +276,26 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                width: isLogin ? 100 : 200,
+                width: isLogin ? 150 : 150,
                 child: ElevatedButton(
                   onPressed: isLogin
                       ? signInWithEmailAndPassword
                       : createUserWithEmailAndPassword,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: const Color(0xCC147615),
                   ),
-                  child: Text(isLogin ? 'Login' : 'Sign Up'),
+                  child: Text(
+                    isLogin ? 'Login' : 'Sign Up',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(204, 255, 255, 255),
+                    ),
+                  ),
                 ),
               ),
               // Bottom button to navigate to HomeScreen or "Do it later"
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   // Navigate directly to Home Screen
@@ -294,9 +305,16 @@ class _LoginPageState extends State<LoginPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: const Color.fromARGB(255, 90, 165, 103),
                 ),
-                child: const Text('Do it Later'),
+                child: const Text(
+                  'Do it Later',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(204, 255, 255, 255),
+                  ),
+                ),
               ),
             ],
           ),

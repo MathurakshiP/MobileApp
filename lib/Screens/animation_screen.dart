@@ -93,7 +93,7 @@ class _AnimationScreenState extends State<AnimationScreen>
                       _buildFoodItem(
                         screenSize,
                         'images/fruits.png',
-                        Offset(0.8, 0.6),
+                        Offset(0.5, 0.6),
                         flowDirection: Axis.vertical,
                         rotate: true,
                       ),
@@ -136,32 +136,48 @@ class _AnimationScreenState extends State<AnimationScreen>
     Axis flowDirection = Axis.vertical,
     bool scaleEffect = false,
   }) {
-    return Positioned(
-      top: position.dy * screenSize.height,
-      left: position.dx * screenSize.width,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          Widget animatedChild = child!;
-          if (rotate) {
-            animatedChild = Transform.rotate(
-              angle: _controller.value * 2 * 3.14,
-              child: child,
-            );
-          }
-          if (scaleEffect) {
-            animatedChild = Transform.scale(
-              scale: 1 + 0.2 * (1 - _controller.value),
-              child: child,
-            );
-          }
-          return animatedChild;
-        },
-        child: Image.asset(
-          imagePath,
-          height: 100,
-          width: 100,
-        ),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        Widget animatedChild = child!;
+
+        // Add rotation effect
+        if (rotate) {
+          animatedChild = Transform.rotate(
+            angle: _controller.value * 2 * 3.14,
+            child: animatedChild,
+          );
+        }
+
+        // Add scale effect
+        if (scaleEffect) {
+          animatedChild = Transform.scale(
+            scale: 1 + 0.2 * (1 - _controller.value),
+            child: animatedChild,
+          );
+        }
+
+        // Add flow/movement effect
+        double offsetValue = (_controller.value * 0.1) * screenSize.height;
+        double newTop = position.dy * screenSize.height;
+        double newLeft = position.dx * screenSize.width;
+
+        if (flowDirection == Axis.vertical) {
+          newTop += offsetValue * ((position.dy < 0.5) ? 1 : -1);
+        } else if (flowDirection == Axis.horizontal) {
+          newLeft += offsetValue * ((position.dx < 0.5) ? 1 : -1);
+        }
+
+        return Positioned(
+          top: newTop,
+          left: newLeft,
+          child: animatedChild,
+        );
+      },
+      child: Image.asset(
+        imagePath,
+        height: 100,
+        width: 100,
       ),
     );
   }
