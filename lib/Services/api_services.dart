@@ -85,20 +85,7 @@ class ApiService {
   }
 
 
-  // Modify the fetch method to accept the type parameter
-  Future<List<dynamic>> fetchRecipesByType({required String type}) async {
-    final response = await http.get(Uri.parse('$_baseUrl/recipes?type=$type'));
-
-    if (response.statusCode == 200) {
-      // Parse the response and return the list of recipes
-      List<dynamic> recipes = jsonDecode(response.body);
-      return recipes;
-    } else {
-      throw Exception('Failed to load recipes');
-    }
-  }
-
-
+  
   // 5. Fetch Related Recipes
   Future<List<dynamic>> fetchRelatedRecipes(int id) async {
     final response = await http.get(
@@ -113,23 +100,20 @@ class ApiService {
   }
 
   // 6. Meal Planner (Example: Get a meal plan for a day)
-  Future<Map<String, dynamic>> fetchMealPlan({String diet = "any"}) async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/mealplanner/generate?timeFrame=day&diet=$diet&apiKey=$_apiKey'),
-    );
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to generate meal plan');
-    }
+  Future<Map<String, dynamic>> fetchMealPlan() async {
+  final response = await http.get(
+    Uri.parse('$_baseUrl/mealplanner/generate?apiKey=$_apiKey'),
+  );
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    throw Exception('Failed to load meal plan');
   }
+}
+
 
   
-  // 7. Shopping List from Ingredients
-  Future<Map<String, dynamic>> createShoppingList(List<String> ingredients) async {
-    return {'shoppingList': ingredients};
-  }
+  
 
   // 8. Autocomplete Suggestions
   Future<List<dynamic>> fetchAutocompleteSuggestions(String query) async {
