@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
 import 'package:mobile_app/auth.dart';
-import 'package:mobile_app/providers/theme_provider.dart';
-import 'package:provider/provider.dart';
+//import 'package:mobile_app/providers/theme_provider.dart';
+//import 'package:provider/provider.dart';
 
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
+    //final themeProvider = Provider.of<ThemeProvider>(context);
+    //final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
       body: Stack(
         children: [

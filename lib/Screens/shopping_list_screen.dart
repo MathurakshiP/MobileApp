@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/providers/shopping_list_provider.dart';
-import 'package:mobile_app/providers/theme_provider.dart';
+//import 'package:mobile_app/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 // import 'package:mobile_app/providers/shopping_list_provider.dart';
 
@@ -14,7 +14,7 @@ class ShoppingListScreen extends StatelessWidget {
     final shoppingList = shoppingListProvider.shoppingList;
     Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
 
-final themeProvider = Provider.of<ThemeProvider>(context);
+//final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       appBar: AppBar(

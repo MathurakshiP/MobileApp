@@ -28,14 +28,14 @@ class _AnimationScreenState extends State<AnimationScreen>
     _fadeOutAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.8, 1.0, curve: Curves.easeOut),
+        curve: const Interval(0.9, 1.0, curve: Curves.easeOut),
       ),
     );
 
     _controller.forward();
 
     // Navigate to GetStartedScreen after animation and fading
-    Timer(const Duration(seconds: 6), () {
+    Timer(const Duration(seconds: 4), () {
       setState(() {
         _showGetStartedScreen = true;
       });
@@ -68,39 +68,39 @@ class _AnimationScreenState extends State<AnimationScreen>
                       _buildFoodItem(
                         screenSize,
                         'images/pizza.png',
-                        Offset(0.2, 0.8),
+                        Offset(0.1, 0.7),
                         rotate: true,
                       ),
                       _buildFoodItem(
                         screenSize,
                         'images/burger.png',
-                        Offset(0.7, 0.5),
+                        Offset(0.4, 0.4),
                         flowDirection: Axis.horizontal,
                       ),
                       _buildFoodItem(
                         screenSize,
                         'images/cupcake.png',
-                        Offset(0.5, 0.2),
+                        Offset(0.7, 0.7),
                         rotate: true,
                         flowDirection: Axis.vertical,
                       ),
                       _buildFoodItem(
                         screenSize,
                         'images/sushi.png',
-                        Offset(0.3, 0.4),
+                        Offset(0.2, 0.2),
                         scaleEffect: true,
                       ),
                       _buildFoodItem(
                         screenSize,
                         'images/fruits.png',
-                        Offset(0.5, 0.6),
+                        Offset(0, 0.3),
                         flowDirection: Axis.vertical,
                         rotate: true,
                       ),
                       Center(
                         child: SlideTransition(
                           position: Tween<Offset>(
-                            begin: const Offset(0, 1),
+                            begin: const Offset(0, 2),
                             end: Offset.zero,
                           ).animate(
                             CurvedAnimation(
@@ -152,7 +152,7 @@ class _AnimationScreenState extends State<AnimationScreen>
         // Add scale effect
         if (scaleEffect) {
           animatedChild = Transform.scale(
-            scale: 1 + 0.2 * (1 - _controller.value),
+            scale: 1 + 0.4 * (1 - _controller.value),
             child: animatedChild,
           );
         }
