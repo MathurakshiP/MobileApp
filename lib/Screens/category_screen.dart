@@ -15,7 +15,7 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   List<dynamic> _categoryRecipes = [];
   bool _isLoading = false;
-  Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
+  Color customGreen = const Color.fromARGB(255, 96, 26, 182);
 
   @override
   void initState() {

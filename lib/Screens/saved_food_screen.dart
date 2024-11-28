@@ -12,7 +12,7 @@ class SavedFoodScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final savedFoodProvider = Provider.of<SavedFoodProvider>(context);
     final savedRecipes = savedFoodProvider.savedRecipes;
-    Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
+    Color customGreen = const Color.fromARGB(255, 96, 26, 182);
     
     return Scaffold(
       appBar: AppBar(

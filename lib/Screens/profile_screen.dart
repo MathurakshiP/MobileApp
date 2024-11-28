@@ -19,7 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String userEmail = 'username@example.com';
   String userImage = 'https://via.placeholder.com/150'; // Placeholder image
   bool isDarkMode = false;
-  Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
+  Color customGreen = const Color.fromARGB(255, 96, 26, 182);
 
   // Simulate updating the profile
   void _updateProfile(String name, String email, String imageUrl) {
@@ -188,9 +188,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _logOut,
                   icon: const Icon(Icons.logout),
-                  label: const Text('Log Out'),
+                  label: const Text(
+                    'Log Out',
+                    style: TextStyle(
+                fontWeight: FontWeight.bold, // Make the text bold
+                color: Colors.white,
+                    ),
+                    ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: const Color.fromARGB(255, 255, 191, 0),
                   ),
                 ),
               ),

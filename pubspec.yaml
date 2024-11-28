@@ -73,7 +73,7 @@ flutter:
 
   assets:
 
-  - images/cookify.png
+  - images/cookify2.png
   - images/burger.png
   - images/cupcake.png
   - images/ice_cream.png
@@ -83,13 +83,14 @@ flutter:
   - images/fruits.png
   - images/pancake.png
   - images/pic.jpg
+  - images/egg4.png
   - .env
 
 
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "images/logo.png"
+  image_path: "images/logo2.png"
   remove_alpha_ios: true  # This will remove any transparency in the iOS icon
 
 

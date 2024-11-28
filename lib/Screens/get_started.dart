@@ -16,36 +16,36 @@ class GetStartedScreen extends StatelessWidget {
       body: Stack(
         children: [
           // Background design
+          // Positioned(
+          //   top: -180,
+          //   left: 230,
+          //   child: Transform(
+          //     transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
+          //     child: Container(
+          //       width: 500,
+          //       height: 440,
+          //       decoration: ShapeDecoration(
+          //         color: const Color(0xFFD9D9D9),
+          //         shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(123),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Positioned(
-            top: -180,
-            left: 230,
+            top: 0,
+            left: -250,
             child: Transform(
-              transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-              child: Container(
-                width: 500,
-                height: 440,
-                decoration: ShapeDecoration(
-                  color: const Color(0xFFD9D9D9),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(123),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: -130,
-            left: 370,
-            child: Transform(
-              transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(1.38),
+              transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0),
               child: ClipPath(
                 clipper: CustomClipperPath(),
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 1.3,
-                  height: 430,
+                  width: MediaQuery.of(context).size.width * 2.2,
+                  height: 1000,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('images/pic.jpg'),
+                      image: AssetImage('images/egg4.png'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -54,36 +54,36 @@ class GetStartedScreen extends StatelessWidget {
             ),
           ),
 
-          Positioned(
-            left: 108.78,
-            top: -230.90,
-            child: Transform(
-              transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-              child: Container(
-                width: 596.38,
-                height: 398.84,
-                decoration: ShapeDecoration(
-                  color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.20000000298023224),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(110),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // Positioned(
+          //   left: 108.78,
+          //   top: -230.90,
+          //   child: Transform(
+          //     transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
+          //     child: Container(
+          //       width: 596.38,
+          //       height: 398.84,
+          //       decoration: ShapeDecoration(
+          //         color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.20000000298023224),
+          //         shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(110),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           // Logo and content
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Align(
-                  alignment: Alignment.center,
+                  alignment: Alignment.topCenter,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 400), // Adjust the logo's position
+                    padding: const EdgeInsets.only(top: 30), // Adjust the logo's position
                     child: Image.asset(
-                      'images/cookify.png', // Replace with your logo
-                      height: 300,
-                      width: 300,
+                      'images/cookify2.png', // Replace with your logo
+                      height: 350,
+                      width: 350,
                     ),
                   ),
                 ),
@@ -106,7 +106,7 @@ class GetStartedScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 40),
-                        backgroundColor: const Color(0xCC147615),
+                        backgroundColor:const Color.fromARGB(255, 96, 26, 182),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
@@ -223,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: isLogin ? const Color(0xCC147615) : Colors.grey,
+                        color: isLogin ?  const Color.fromARGB(255, 96, 26, 182) : Colors.grey,
                       ),
                     ),
                   ),
@@ -235,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: isLogin ? Colors.grey : const Color(0xCC147615),
+                        color: isLogin ? Colors.grey :  const Color.fromARGB(255, 96, 26, 182),
                       ),
                     ),
                   ),
@@ -282,7 +282,7 @@ class _LoginPageState extends State<LoginPage> {
                       ? signInWithEmailAndPassword
                       : createUserWithEmailAndPassword,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xCC147615),
+                    backgroundColor: const Color.fromARGB(255, 96, 26, 182),
                   ),
                   child: Text(
                     isLogin ? 'Login' : 'Sign Up',
@@ -305,14 +305,14 @@ class _LoginPageState extends State<LoginPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 90, 165, 103),
+                  backgroundColor: const Color.fromARGB(255, 96, 26, 182),
                 ),
                 child: const Text(
                   'Do it Later',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(204, 255, 255, 255),
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
               ),

@@ -109,7 +109,7 @@ class _AnimationScreenState extends State<AnimationScreen>
                             ),
                           ),
                           child: Image.asset(
-                            'images/cookify.png',
+                            'images/cookify2.png',
                             height: 200,
                             width: 200,
                           ),

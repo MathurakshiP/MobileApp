@@ -12,8 +12,7 @@ class ShoppingListScreen extends StatelessWidget {
     // Access shopping list from the provider
     final shoppingListProvider = Provider.of<ShoppingListProvider>(context);
     final shoppingList = shoppingListProvider.shoppingList;
-    Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
-
+    Color customGreen = const Color.fromARGB(255, 96, 26, 182);
 //final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(

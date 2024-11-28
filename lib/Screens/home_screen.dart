@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   bool _isLoading = false;
   int _selectedIndex = 0;
   String? _selectedCategory;
-  Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
+  Color customGreen = const Color.fromARGB(255, 96, 26, 182);
 
  
   @override
@@ -218,29 +218,29 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
         backgroundColor: customGreen,
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.calendar_today,
-                color: _isIconPressed ? customGreen : Colors.white), // Change color based on state
-            onPressed: () {
-              // Toggle the icon color
-              setState(() {
-                _isIconPressed = !_isIconPressed;
-              });
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.calendar_today,
+        //         color: _isIconPressed ? customGreen : Colors.white), // Change color based on state
+        //     onPressed: () {
+        //       // Toggle the icon color
+        //       setState(() {
+        //         _isIconPressed = !_isIconPressed;
+        //       });
               
-              // Navigate to meal plan screen or action
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MealPlanScreen()),
-              ).then((_) {
-                // Reset icon color after returning from MealPlannerScreen
-                setState(() {
-                  _isIconPressed = false;
-                });
-              });
-            },
-          ),
-        ],
+        //       // Navigate to meal plan screen or action
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(builder: (context) => MealPlanScreen()),
+        //       ).then((_) {
+        //         // Reset icon color after returning from MealPlannerScreen
+        //         setState(() {
+        //           _isIconPressed = false;
+        //         });
+        //       });
+        //     },
+        //   ),
+        // ],
       );
     } else {
       // Other Screens (do not show app bar)
