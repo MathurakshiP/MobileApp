@@ -16,7 +16,7 @@ class IngredientSearchScreen extends StatefulWidget {
 class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
   final TextEditingController _ingredientController = TextEditingController();
   List<dynamic> _recipes = [];
-  Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
+  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   void _searchByIngredients() async {
     final ingredients = _ingredientController.text

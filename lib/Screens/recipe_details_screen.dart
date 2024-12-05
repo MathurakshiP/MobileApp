@@ -11,7 +11,7 @@ class RecipeDetailScreen extends StatelessWidget {
   final int recipeId;
 
   RecipeDetailScreen({super.key, required this.recipeId});
-  Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
+  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   @override
   Widget build(BuildContext context) {

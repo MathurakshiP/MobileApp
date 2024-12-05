@@ -19,7 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String userEmail = 'username@example.com';
   String userImage = 'https://via.placeholder.com/150'; // Placeholder image
   bool isDarkMode = false;
-  Color customGreen = const Color.fromARGB(255, 96, 26, 182);
+  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   // Simulate updating the profile
   void _updateProfile(String name, String email, String imageUrl) {
@@ -45,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Colors.white,
                 fontSize: 20,),
                 ),
-        backgroundColor: customGreen,
+        backgroundColor: customPurple,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(

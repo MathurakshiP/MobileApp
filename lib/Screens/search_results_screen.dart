@@ -6,14 +6,14 @@ class SearchResultsScreen extends StatelessWidget {
   final List<dynamic> recipes;
 
   SearchResultsScreen({super.key, required this.searchQuery, required this.recipes});
-  Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
+  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Search Results for "$searchQuery"'),
-        backgroundColor: customGreen,
+        backgroundColor: customPurple,
       ),
       body: recipes.isEmpty
           ? Center(child: Text('No results found for "$searchQuery"'))

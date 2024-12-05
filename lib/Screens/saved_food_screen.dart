@@ -12,7 +12,7 @@ class SavedFoodScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final savedFoodProvider = Provider.of<SavedFoodProvider>(context);
     final savedRecipes = savedFoodProvider.savedRecipes;
-    Color customGreen = const Color.fromARGB(255, 96, 26, 182);
+    Color customPurple = const Color.fromARGB(255, 96, 26, 182);
     
     return Scaffold(
       appBar: AppBar(
@@ -20,7 +20,7 @@ class SavedFoodScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold, // Make the text bold
                 color: Colors.white,
                 fontSize: 20,),),
-        backgroundColor: customGreen,
+        backgroundColor: customPurple,
         automaticallyImplyLeading: false,
       ),
       body: savedRecipes.isNotEmpty
