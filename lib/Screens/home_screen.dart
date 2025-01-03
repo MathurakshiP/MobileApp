@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   bool _isLoading = false;
   int _selectedIndex = 0;
   String? _selectedCategory;
-  Color customGreen = const Color.fromARGB(255, 96, 26, 182);
+  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
  
   @override
@@ -216,12 +216,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ],
 
         ),
-        backgroundColor: customGreen,
+        backgroundColor: customPurple,
         automaticallyImplyLeading: false,
         // actions: [
         //   IconButton(
         //     icon: Icon(Icons.calendar_today,
-        //         color: _isIconPressed ? customGreen : Colors.white), // Change color based on state
+        //         color: _isIconPressed ? customPurple : Colors.white), // Change color based on state
         //     onPressed: () {
         //       // Toggle the icon color
         //       setState(() {
@@ -565,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: customGreen,  // Color for selected item
+        selectedItemColor: customPurple,  // Color for selected item
         // unselectedItemColor: Colors.black, // Color for unselected items
         selectedFontSize: 14,  // Size of selected item's text
         unselectedFontSize: 12, // Size of unselected items' text
@@ -603,13 +603,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         
         decoration: BoxDecoration(
         color: isSelected
-            ? (isDarkMode ? customGreen : customGreen) // Dark theme: dark grey; Light theme: green
+            ? (isDarkMode ? customPurple : customPurple) // Dark theme: dark grey; Light theme: green
             : (isDarkMode ? Colors.grey[700] : Colors.white), // Dark theme: lighter grey; Light theme: white
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isSelected
-              ? (isDarkMode ? customGreen : customGreen) // Consistent white for selected
-              : (isDarkMode ? Colors.grey[400]! : customGreen), // Border adapts to theme
+              ? (isDarkMode ? customPurple : customPurple) // Consistent white for selected
+              : (isDarkMode ? Colors.grey[400]! : customPurple), // Border adapts to theme
           width: 2,
         ),
       ),
@@ -619,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             style: TextStyle(
               color: isSelected
                 ? (isDarkMode ? Colors.white : Colors.white) // Dark theme: dark grey; Light theme: green
-                : (isDarkMode ? Colors.white : customGreen), // Dark theme: lighter grey; Light theme: white
+                : (isDarkMode ? Colors.white : customPurple), // Dark theme: lighter grey; Light theme: white
               fontWeight: FontWeight.bold,  // Bold text
             ),
           ),

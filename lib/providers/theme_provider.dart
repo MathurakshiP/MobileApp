@@ -4,13 +4,13 @@ class ThemeProvider extends ChangeNotifier {
   bool _isDarkMode = false;
 
   bool get isDarkMode => _isDarkMode;
-Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
+Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   ThemeData get lightTheme {
     return ThemeData.light().copyWith(
-      primaryColor: customGreen,
+      primaryColor: customPurple,
       appBarTheme: AppBarTheme(
-        backgroundColor: customGreen,
+        backgroundColor: customPurple,
         titleTextStyle: TextStyle(color: Colors.black),
         iconTheme: IconThemeData(color: const Color.fromARGB(255, 0, 0, 0)),
         
@@ -21,9 +21,9 @@ Color customGreen = const Color.fromRGBO(20, 118, 21, 1.0);
 
   ThemeData get darkTheme {
     return ThemeData.dark().copyWith(
-      primaryColor: customGreen,
+      primaryColor: customPurple,
       appBarTheme: AppBarTheme(
-        backgroundColor: customGreen,
+        backgroundColor: customPurple,
         titleTextStyle: TextStyle(color: Colors.white),
         iconTheme: IconThemeData(color:  Colors.white),
       ),

@@ -12,7 +12,7 @@ class ShoppingListScreen extends StatelessWidget {
     // Access shopping list from the provider
     final shoppingListProvider = Provider.of<ShoppingListProvider>(context);
     final shoppingList = shoppingListProvider.shoppingList;
-    Color customGreen = const Color.fromARGB(255, 96, 26, 182);
+    Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 //final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
@@ -22,7 +22,7 @@ class ShoppingListScreen extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 20,),
         ),
-        backgroundColor: customGreen,
+        backgroundColor: customPurple,
         automaticallyImplyLeading: false, // Prevents the back arrow from appearing
         
       ),

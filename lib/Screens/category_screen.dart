@@ -15,7 +15,7 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   List<dynamic> _categoryRecipes = [];
   bool _isLoading = false;
-  Color customGreen = const Color.fromARGB(255, 96, 26, 182);
+  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   @override
   void initState() {
@@ -57,7 +57,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           color: Colors.white, 
           fontSize: 20,
         )),
-        backgroundColor: customGreen,
+        backgroundColor: customPurple,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
