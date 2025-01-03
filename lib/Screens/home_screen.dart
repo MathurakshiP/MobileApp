@@ -373,20 +373,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                             child: SizedBox(
                                               height: 250, // Adjust height as needed
                                               child: ListView.builder(
-                                                scrollDirection: Axis.horizontal,
-                                                itemCount: _randomRecipes.length,
+                                                scrollDirection: Axis.horizontal, // Horizontal scrolling for the list
+                                                itemCount: _randomRecipes.length, // Number of recipes
                                                 itemBuilder: (context, index) {
                                                   final recipe = _randomRecipes[index];
                                                   return GestureDetector(
                                                     onTap: () {
-                                                      // Add the clicked recipe to recentlyViewed, making sure there are no duplicates
+                                                      // Add the clicked recipe to recentlyViewed, avoiding duplicates
                                                       setState(() {
                                                         if (!_recentlyViewed.any((item) => item['id'] == recipe['id'])) {
-                                                          _recentlyViewed.insert(0, recipe);  // Add to the front of the list to keep the most recent ones first
+                                                          _recentlyViewed.insert(0, recipe); // Add to the start for most recent first
                                                         }
                                                       });
                                                       // Navigate to the recipe details screen
-                                                      
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -409,19 +408,40 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                                                     width: 250,
                                                                     fit: BoxFit.cover,
                                                                     errorBuilder: (context, error, stackTrace) {
-                                                                      return const Icon(Icons.broken_image, size: 120); // Show icon if image is broken
+                                                                      return const Icon(Icons.broken_image, size: 120); // Fallback icon
                                                                     },
                                                                   )
                                                                 : Container(
                                                                     height: 120,
-                                                                    width: 120,
-                                                                    color: Colors.grey, // Default placeholder color if no image
+                                                                    width: 250,
+                                                                    color: Colors.grey, // Default placeholder color
+                                                                    child: const Icon(Icons.fastfood, size: 60, color: Colors.white),
                                                                   ),
                                                             Padding(
                                                               padding: const EdgeInsets.all(8.0),
-                                                              child: Text(
-                                                                recipe['title'] ?? 'No Title', // Display title or fallback text
-                                                                style: const TextStyle(fontSize: 16),
+                                                              child: Column(
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  // Recipe Title
+                                                                  Text(
+                                                                    recipe['title'] ?? 'No Title', // Fallback for missing title
+                                                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                                                  ),
+                                                                  const SizedBox(height: 4), // Spacing between title and time
+                                                                  // Cooking Time
+                                                                  Row(
+                                                                    children: [
+                                                                      const Icon(Icons.timer, size: 16, color: Colors.grey),
+                                                                      const SizedBox(width: 4),
+                                                                      Text(
+                                                                        recipe['readyInMinutes'] != null
+                                                                            ? '${recipe['readyInMinutes']} mins'
+                                                                            : 'Time not available', // Fallback for missing time
+                                                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
                                                               ),
                                                             ),
                                                           ],
@@ -433,8 +453,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                               ),
                                             ),
                                           ),
-
-                                    // Recently Viewed Foods Section
+// Recently Viewed Foods Section
 
                                     const Padding(
                                         padding: EdgeInsets.all(20.0),
