@@ -156,13 +156,9 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
         title: const Text('Ingredient Search'),
         backgroundColor: customPurple,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          // decoration: BoxDecoration(
-          //   borderRadius: BorderRadius.circular(15.0),
-          //   border: Border.all(color: Colors.grey),
-          // ),
+      body: SingleChildScrollView(  // Wrap the body in a scrollable view
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               // Search bar
@@ -185,35 +181,35 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
               // Pantry ingredients container
               buildIngredientContainer('Pantry Ingredients', pantryIngredients),
               
+              // Additional ingredients container
               buildIngredientContainer('Vegetables & Greens', Vegetables),
               buildIngredientContainer('Fruits', Fruits),
 
               // Recipe results
-              Expanded(
-                child: _recipes.isEmpty
-                    ? const Center(child: Text('No recipes found.'))
-                    : ListView.builder(
-                        itemCount: _recipes.length,
-                        itemBuilder: (context, index) {
-                          final recipe = _recipes[index];
-                          return ListTile(
-                            leading: recipe['image'] != null
-                                ? Image.network(recipe['image'], width: 100, height: 100)
-                                : null,
-                            title: Text(recipe['title']),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      RecipeDetailScreen(recipeId: recipe['id']),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-              ),
+              _recipes.isEmpty
+                  ? const Center(child: Text('No recipes found.'))
+                  : ListView.builder(
+                      shrinkWrap: true,  // Ensures ListView doesn't take unnecessary space
+                      itemCount: _recipes.length,
+                      itemBuilder: (context, index) {
+                        final recipe = _recipes[index];
+                        return ListTile(
+                          leading: recipe['image'] != null
+                              ? Image.network(recipe['image'], width: 100, height: 100)
+                              : null,
+                          title: Text(recipe['title']),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    RecipeDetailScreen(recipeId: recipe['id']),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
             ],
           ),
         ),
