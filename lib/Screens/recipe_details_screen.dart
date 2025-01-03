@@ -16,10 +16,14 @@ class RecipeDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recipe Details',style: TextStyle(
-                fontWeight: FontWeight.bold, // Make the text bold
-                color: Colors.white,
-                fontSize: 20,),)),
+      appBar: AppBar(title: const Text('Recipe Details',
+                        style: TextStyle(
+                        fontWeight: FontWeight.bold, // Make the text bold
+                        color: Colors.white,
+                        fontSize: 20,),
+                      ),
+                    ),
+                    
       body: FutureBuilder<Map<String, dynamic>>(
         future: ApiService().fetchRecipeDetails(recipeId),
         builder: (context, snapshot) {

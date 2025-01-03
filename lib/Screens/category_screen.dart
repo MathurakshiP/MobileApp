@@ -30,9 +30,40 @@ class _CategoryScreenState extends State<CategoryScreen> {
     });
 
     try {
-      final recipes = await ApiService().fetchRelatedRecipes(715538); // Update this ID if needed
+      final recipes = await ApiService().fetchRandomRecipes(); // Update this ID if needed
+      List<dynamic> filteredRecipes = [];
+      for (var recipe in recipes) {
+        final String lunch ="lunch";
+        final String breakfast ="breakfast";
+        final String dinner ="dinner";
+        final String dessert ="dessert";
+        if (recipe['dishTypes'] != null ) {
+          if(widget.category=="Breakfast"){
+              if (recipe['dishTypes'].contains(breakfast)) {
+                filteredRecipes.add(recipe);
+              }
+          }
+          else if(widget.category == "Lunch"){
+            if (recipe['dishTypes'].contains(lunch)) {
+              filteredRecipes.add(recipe);
+            }
+          }
+          else if(widget.category == "Dinner"){
+            if (recipe['dishTypes'].contains(dinner)) {
+              filteredRecipes.add(recipe);
+            }
+          }
+          else if(widget.category == "Dessert"){
+            if (recipe['dishTypes'].contains(dessert)) {
+              filteredRecipes.add(recipe);
+            }
+          }
+
+          
+  }
+      }
       setState(() {
-        _categoryRecipes = recipes;
+        _categoryRecipes = filteredRecipes;
         _isLoading = false;
       });
     } catch (error) {
@@ -75,14 +106,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                               height: 50,
                               width: 50,
                               fit: BoxFit.cover,
-                              // errorBuilder: (context, error, stackTrace) {
-                              //   return Container(
-                              //     height: 50,
-                              //     width: 50,
-                              //     color: Colors.grey,
-                              //     child: const Icon(Icons.broken_image, size: 30, color: Colors.white),
-                              //   );
-                              // },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 50,
+                                  width: 50,
+                                  color: Colors.grey,
+                                  child: const Icon(Icons.broken_image, size: 30, color: Colors.white),
+                                );
+                              },
                             )
                           : Container(
                               height: 50,
@@ -93,12 +124,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       title: Text(
                         recipe['title'] ?? 'No Title',
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        recipe['description'] ?? 'No description available',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       onTap: () {
                         Navigator.push(
