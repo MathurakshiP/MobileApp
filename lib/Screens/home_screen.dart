@@ -369,72 +369,91 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                     _isLoading
                                         ? const CircularProgressIndicator() // Show loading indicator while fetching data
                                         : Padding(
-                                            padding: const EdgeInsets.only(left: 16.0), // Add left padding here
-                                            child: SizedBox(
-                                              height: 250, // Adjust height as needed
-                                              child: ListView.builder(
-                                                scrollDirection: Axis.horizontal,
-                                                itemCount: _randomRecipes.length,
-                                                itemBuilder: (context, index) {
-                                                  final recipe = _randomRecipes[index];
-                                                  return GestureDetector(
-                                                    onTap: () {
-                                                      // Add the clicked recipe to recentlyViewed, making sure there are no duplicates
-                                                      setState(() {
-                                                        if (!_recentlyViewed.any((item) => item['id'] == recipe['id'])) {
-                                                          _recentlyViewed.insert(0, recipe);  // Add to the front of the list to keep the most recent ones first
-                                                        }
-                                                      });
-                                                      // Navigate to the recipe details screen
-                                                      
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) => RecipeDetailScreen(recipeId: recipe['id']),
-                                                        ),
-                                                      );
-                                                    },
-                                                    child: SizedBox(
-                                                      width: 250, // Fixed width for the card
-                                                      child: Card(
-                                                        margin: const EdgeInsets.only(right: 16),
-                                                        child: Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            // Image handling
-                                                            recipe['image'] != null
-                                                                ? Image.network(
-                                                                    recipe['image'],
-                                                                    height: 120,
-                                                                    width: 250,
-                                                                    fit: BoxFit.cover,
-                                                                    errorBuilder: (context, error, stackTrace) {
-                                                                      return const Icon(Icons.broken_image, size: 120); // Show icon if image is broken
-                                                                    },
-                                                                  )
-                                                                : Container(
-                                                                    height: 120,
-                                                                    width: 120,
-                                                                    color: Colors.grey, // Default placeholder color if no image
-                                                                  ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(8.0),
-                                                              child: Text(
-                                                                recipe['title'] ?? 'No Title', // Display title or fallback text
-                                                                style: const TextStyle(fontSize: 16),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          ),
-
-                                    // Recently Viewed Foods Section
+  padding: const EdgeInsets.only(left: 16.0), // Add left padding here
+  child: SizedBox(
+    height: 250, // Adjust height as needed
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal, // Horizontal scrolling for the list
+      itemCount: _randomRecipes.length, // Number of recipes
+      itemBuilder: (context, index) {
+        final recipe = _randomRecipes[index];
+        return GestureDetector(
+          onTap: () {
+            // Add the clicked recipe to recentlyViewed, avoiding duplicates
+            setState(() {
+              if (!_recentlyViewed.any((item) => item['id'] == recipe['id'])) {
+                _recentlyViewed.insert(0, recipe); // Add to the start for most recent first
+              }
+            });
+            // Navigate to the recipe details screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RecipeDetailScreen(recipeId: recipe['id']),
+              ),
+            );
+          },
+          child: SizedBox(
+            width: 250, // Fixed width for the card
+            child: Card(
+              margin: const EdgeInsets.only(right: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Image handling
+                  recipe['image'] != null
+                      ? Image.network(
+                          recipe['image'],
+                          height: 120,
+                          width: 250,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.broken_image, size: 120); // Fallback icon
+                          },
+                        )
+                      : Container(
+                          height: 120,
+                          width: 250,
+                          color: Colors.grey, // Default placeholder color
+                          child: const Icon(Icons.fastfood, size: 60, color: Colors.white),
+                        ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Recipe Title
+                        Text(
+                          recipe['title'] ?? 'No Title', // Fallback for missing title
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4), // Spacing between title and time
+                        // Cooking Time
+                        Row(
+                          children: [
+                            const Icon(Icons.timer, size: 16, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Text(
+                              recipe['readyInMinutes'] != null
+                                  ? '${recipe['readyInMinutes']} mins'
+                                  : 'Time not available', // Fallback for missing time
+                              style: const TextStyle(fontSize: 14, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    ),
+  ),
+),
+// Recently Viewed Foods Section
 
                                     const Padding(
                                         padding: EdgeInsets.all(20.0),
