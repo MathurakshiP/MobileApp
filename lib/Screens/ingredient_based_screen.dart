@@ -12,118 +12,103 @@ class IngredientSearchScreen extends StatefulWidget {
 
 class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
   final TextEditingController _ingredientController = TextEditingController();
+  final Set<String> _selectedIngredients = {}; // For tracking selected ingredients
   List<dynamic> _recipes = [];
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
+  // Ingredient sets
   final List<String> pantryIngredients = [
-    'Butter',
-    'Egg',
-    'Garlic',
-    'Milk',
-    'Onion',
-    'Sugar',
-    'Flour',
-    'Olive Oil',
-    'Garlic Powder',
-    'White Rice',
-    'Sugar',
-    'Flour',
-    'Olive Oil',
-    'Garlic Powder',
-    'White Rice',
+    'Butter', 'Egg', 'Garlic', 'Milk', 'Onion',
+    'Sugar', 'Flour', 'Olive Oil', 'Garlic Powder', 'White Rice',
+    'Vinegar', 'Salt', 'Honey', 'Cinnamon', 'Nutmeg',
   ];
 
-  final List<String> Vegetables = [
-    'Tomato',
-    'Cheese',
-    'Chicken',
-    'Lemon',
-    'Pepper',
-    'Salt',
-    'Tomato',
-    'Cheese',
-    'Chicken',
-    'Lemon',
-    'Pepper',
-    'Salt',
-    'Tomato',
-    'Cheese',
-    'Chicken',
-    'Lemon',
-    'Pepper',
-    'Salt',
+  final List<String> vegetables = [
+    'Tomato', 'Cheese', 'Chicken', 'Lemon', 'Pepper',
+    'Spinach', 'Carrot', 'Broccoli', 'Cabbage', 'Zucchini',
+    'Cauliflower', 'Potato', 'Cucumber', 'Radish', 'Peas',
   ];
 
-  final List<String> Fruits = [
-    'Tomato',
-    'Cheese',
-    'Chicken',
-    'Lemon',
-    'Pepper',
-    'Salt',
-    'Tomato',
-    'Cheese',
-    'Chicken',
-    'Lemon',
-    'Pepper',
-    'Salt',
-    'Tomato',
-    'Cheese',
-    'Chicken',
-    'Lemon',
-    'Pepper',
-    'Salt',
+  final List<String> fruits = [
+    'Apple', 'Banana', 'Orange', 'Strawberry', 'Blueberry',
+    'Pineapple', 'Grapes', 'Watermelon', 'Mango', 'Peach',
+    'Cherry', 'Pear', 'Kiwi', 'Lime', 'Plum',
   ];
+
+  final List<String> dairyProducts = [
+    'Milk', 'Cheese', 'Yogurt', 'Butter', 'Cream',
+    'Paneer', 'Ghee', 'Curd', 'Whipped Cream', 'Buttermilk',
+    'Kefir', 'Sour Cream', 'Condensed Milk', 'Goat Cheese', 'Mozzarella',
+  ];
+
+  final List<String> grains = [
+    'Rice', 'Wheat', 'Oats', 'Barley', 'Corn',
+    'Quinoa', 'Buckwheat', 'Millet', 'Rye', 'Sorghum',
+    'Bulgur', 'Couscous', 'Wild Rice', 'Teff', 'Amaranth',
+  ];
+
+  final List<String> spicesHerbs = [
+    'Basil', 'Coriander', 'Cumin', 'Turmeric', 'Black Pepper',
+    'Paprika', 'Parsley', 'Thyme', 'Rosemary', 'Oregano',
+    'Saffron', 'Ginger', 'Nutmeg', 'Cloves', 'Dill',
+  ];
+
+  final Map<String, bool> isExpanded = {
+    'Pantry Ingredients': false,
+    'Vegetables & Greens': false,
+    'Fruits': false,
+    'Dairy Products': false,
+    'Grains': false,
+    'Spices & Herbs': false,
+  };
 
   void _searchByIngredients() async {
-    final ingredients = _ingredientController.text
-        .split(',')
-        .map((ingredient) => ingredient.trim())
-        .toList();
+    if (_selectedIngredients.isEmpty) return;
 
-    if (ingredients.isNotEmpty) {
-      try {
-        final apiService = ApiService();
-        final recipes = await apiService.fetchRecipesByIngredients(ingredients);
-        setState(() {
-          _recipes = recipes;
-        });
-      } catch (error) {
-        if (kDebugMode) {
-          print('Error: $error');
-        }
+    try {
+      final apiService = ApiService();
+      final recipes = await apiService.fetchRecipesByIngredients(
+        _selectedIngredients.toList(),
+      );
+      setState(() {
+        _recipes = recipes;
+      });
+    } catch (error) {
+      if (kDebugMode) {
+        print('Error: $error');
       }
     }
   }
 
   void _addIngredient(String ingredient) {
-    _ingredientController.text +=
-        _ingredientController.text.isEmpty ? ingredient : ', $ingredient';
-    setState(() {}); // Refresh the UI if necessary
+    setState(() {
+      _selectedIngredients.add(ingredient); // Add to pantry
+    });
   }
 
   List<Widget> buildIngredientWidgets(List<String> ingredients) {
-  return ingredients.map((ingredient) {
-    return GestureDetector(
-      onTap: () => _addIngredient(ingredient),
-      child: Chip(
-        label: Text(ingredient),
-        backgroundColor: Colors.grey[200],
-        side: const BorderSide(color: Colors.black12),
-      ),
-    );
-  }).toList();
-}
+    return ingredients.map((ingredient) {
+      return GestureDetector(
+        onTap: () => _addIngredient(ingredient),
+        child: Chip(
+          label: Text(
+            ingredient,
+            style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
+          backgroundColor: const Color.fromARGB(255, 96, 26, 182),
+          side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)),
+        ),
+      );
+    }).toList();
+  }
 
-Widget buildIngredientContainer(String title, List<String> ingredients) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-    child: SizedBox(
-      width: 400.0, // Fixed width for all containers
-      height: 330.0, // Fixed height for all containers
+  Widget buildCollapsibleContainer(String title, List<String> ingredients) {
+    final bool expanded = isExpanded[title] ?? false;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
+          borderRadius: BorderRadius.circular(8.0),
           border: Border.all(color: Colors.grey),
         ),
         child: Padding(
@@ -131,117 +116,119 @@ Widget buildIngredientContainer(String title, List<String> ingredients) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Container title
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  title,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isExpanded[title] = !expanded;
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Icon(expanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down),
+                  ],
                 ),
               ),
-              // Chips for ingredients in a scrollable view
-              Expanded(  // Ensures the child scrolls if necessary
-                child: SingleChildScrollView(  // Makes the ingredients list scrollable
+              AnimatedCrossFade(
+                duration: const Duration(milliseconds: 200),
+                crossFadeState: expanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                firstChild: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
                   child: Wrap(
-                    spacing: 4.0, // Horizontal space between chips
-                    runSpacing: -4.0, // Vertical space between chips
-                    children: buildIngredientWidgets(ingredients),
+                    spacing: 4.0,
+                    runSpacing: -4.0,
+                    children: buildIngredientWidgets(
+                        ingredients.take(4).toList()), // Show only 3 chips
                   ),
+                ),
+                secondChild: Wrap(
+                  spacing: 4.0,
+                  runSpacing: -4.0,
+                  children: buildIngredientWidgets(ingredients), // Show all chips
                 ),
               ),
             ],
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: ListView(  // Using ListView for the entire screen
-      padding: const EdgeInsets.all(16.0),
-      children: [
-        // Search bar
-        Container(
-  padding: const EdgeInsets.all(16.0), // Padding for the entire container
-  child: Column(  // Use Column to arrange all child widgets vertically
-    children: [
-      // Search bar (TextField for entering ingredients)
-      Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: TextField(
-          controller: _ingredientController,
-          decoration: InputDecoration(
-            labelText: 'Enter ingredients (comma-separated)',
-            border: const OutlineInputBorder(),
-            focusedBorder: const OutlineInputBorder(),
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: _searchByIngredients,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: _ingredientController,
+                decoration: InputDecoration(
+                  labelText: 'Enter ingredients (comma-separated)',
+                  border: const OutlineInputBorder(),
+                  focusedBorder: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: _searchByIngredients,
+                  ),
+                ),
+              ),
             ),
-          ),
+            // Ingredient containers
+            buildCollapsibleContainer('Pantry Ingredients', pantryIngredients),
+            buildCollapsibleContainer('Vegetables & Greens', vegetables),
+            buildCollapsibleContainer('Fruits', fruits),
+            buildCollapsibleContainer('Dairy Products', dairyProducts),
+            buildCollapsibleContainer('Grains', grains),
+            buildCollapsibleContainer('Spices & Herbs', spicesHerbs),
+          ],
         ),
       ),
-
-      // Pantry ingredients container
-      buildIngredientContainer('Pantry Ingredients', pantryIngredients),
-
-      // Additional ingredients containers
-      buildIngredientContainer('Vegetables & Greens', Vegetables),
-      buildIngredientContainer('Fruits', Fruits),
-    ],
-  ),
-),
-
-        
-
-        // Recipe results
-        if (_recipes.isEmpty)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Text('No recipes found.'),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // My Pantry Button
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) {
+                      return ListView(
+                        children: _selectedIngredients
+                            .map((ingredient) => ListTile(title: Text(ingredient)))
+                            .toList(),
+                      );
+                    },
+                  );
+                },
+                child: Text('My Pantry (${_selectedIngredients.length})'),
+              ),
             ),
-          )
-        else
-          // Use ListView to display recipe results without a fixed height
-          Container(
-            height: 400.0, // Define a fixed height for the recipe list
-            child: ListView.builder(
-              shrinkWrap: true,  // Ensures ListView doesn't take unnecessary space
-              physics: const NeverScrollableScrollPhysics(), // Disable internal scrolling
-              itemCount: _recipes.length,
-              itemBuilder: (context, index) {
-                final recipe = _recipes[index];
-                return ListTile(
-                  leading: recipe['image'] != null
-                      ? Image.network(
-                          recipe['image'],
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                  title: Text(recipe['title']),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            RecipeDetailScreen(recipeId: recipe['id']),
-                      ),
-                    );
-                  },
-                );
-              },
+            // See Recipes Button
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: _searchByIngredients,
+                child: const Text('See Recipes'),
+              ),
             ),
-          ),
-      ],
-    ),
-  );
-}
-
+          ],
+        ),
+      ),
+    );
+  }
 }

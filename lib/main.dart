@@ -35,9 +35,8 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Recipe App',
             theme: themeProvider.currentTheme, // Apply the current theme
-            //  home:  AnimationScreen(),
+            // home:  AnimationScreen(),
             home:  HomeScreen(),
-            // home: GetStartedScreen(),
           );
         },
       ),
