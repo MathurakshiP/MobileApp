@@ -218,29 +218,30 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
         backgroundColor: customPurple,
         automaticallyImplyLeading: false,
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.calendar_today,
-        //         color: _isIconPressed ? customPurple : Colors.white), // Change color based on state
-        //     onPressed: () {
-        //       // Toggle the icon color
-        //       setState(() {
-        //         _isIconPressed = !_isIconPressed;
-        //       });
+        actions: [
+          IconButton(
+            icon: Icon(Icons.calendar_today,
+                color: _isIconPressed ? customPurple : Colors.white), // Change color based on state
+            onPressed: () {
+              // Toggle the icon color
+              setState(() {
+                _isIconPressed = !_isIconPressed;
+              });
               
-        //       // Navigate to meal plan screen or action
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(builder: (context) => MealPlanScreen()),
-        //       ).then((_) {
-        //         // Reset icon color after returning from MealPlannerScreen
-        //         setState(() {
-        //           _isIconPressed = false;
-        //         });
-        //       });
-        //     },
-        //   ),
-        // ],
+              // Navigate to meal plan screen or action
+              Navigator.push(
+                context,
+                
+                MaterialPageRoute(builder: (context) => MealPlanScreen(username: 'abc', templateId: '128')),
+              ).then((_) {
+                // Reset icon color after returning from MealPlannerScreen
+                setState(() {
+                  _isIconPressed = false;
+                });
+              });
+            },
+          ),
+        ],
       );
     } else {
       // Other Screens (do not show app bar)

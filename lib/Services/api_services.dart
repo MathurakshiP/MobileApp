@@ -54,7 +54,7 @@ class ApiService {
   }
 
   // 4. Fetch Random Recipes
-  Future<List<dynamic>> fetchRandomRecipes({int number = 5}) async {
+  Future<List<dynamic>> fetchRandomRecipes({int number = 15}) async {
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/recipes/random?number=$number&apiKey=$_apiKey'),
@@ -169,6 +169,33 @@ Future<List<Map<String, dynamic>>> fetchRecipeInstructions(int id) async {
     throw Exception('Failed to fetch recipe instructions');
   }
 }
+
+Future<Map<String, dynamic>> getMealPlans(String username, String templateId) async {
+    final url = Uri.parse('$_baseUrl/mealplanner/$username/templates/$templateId?hash=ipsum&apiKey=$_apiKey');
+    
+    final response = await http.get(url);
+    
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load meal plan');
+    }
+  }
+  
+  Future<Map<String, dynamic>> connectUser(String username) async {
+    final url = Uri.parse('$_baseUrl/users/connect?apiKey=$_apiKey');
+    
+    final response = await http.post(url, body: json.encode({
+      'username': username,
+      'hash': 'frln13' // Ensure hash is dynamic or set
+    }));
+    
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to connect user');
+    }
+  }
 
   // 9. Favorites (Storing locally)
   List<int> favorites = [];
