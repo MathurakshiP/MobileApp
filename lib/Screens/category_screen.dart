@@ -21,10 +21,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
   String? _selectedCuisine;
   String? _selectedTime;
   List<String> cuisines = [
-    'African', 'Asian', 'American', 'British', 'Cajun', 'Caribbean', 'Chinese', 
-    'Eastern European', 'European', 'French', 'German', 'Greek', 'Indian', 'Irish', 
-    'Italian', 'Japanese', 'Jewish', 'Korean', 'Latin American', 'Mediterranean', 
-    'Mexican', 'Middle Eastern', 'Nordic', 'Southern', 'Spanish', 'Thai', 'Vietnamese'
+     'Asian', 'Chinese', 
+     'Indian', 
+    'Italian', 'Japanese',  
+    'Mexican', 'Thai'
   ];
 
   List<String> times = ['Any', 'Less than 15 minutes', '15 - 30 minutes', '30 - 60 minutes', 'More than 60 minutes'];
@@ -117,58 +117,82 @@ class _CategoryScreenState extends State<CategoryScreen> {
           fontSize: 20,
         )),
         backgroundColor: customPurple,
+        actions: [
+        IconButton(
+          icon: const Icon(Icons.filter_list, color: Colors.white),
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Filter Dropdowns
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButton<String>(
+                              hint: const Text('Select Cuisine'),
+                              value: _selectedCuisine,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _selectedCuisine = newValue;
+                                });
+                                
+                              },
+                              items: ['Any', ...cuisines].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: DropdownButton<String>(
+                              hint: const Text('Select Time'),
+                              value: _selectedTime,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _selectedTime = newValue;
+                                });
+                               
+                              },
+                              items: times.map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close the bottom sheet
+                          _applyFilters(); // Apply the filters
+                        },
+                        child: const Text('Apply Filters'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                // Filter Dropdowns
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButton<String>(
-                          hint: Text('Select Cuisine'),
-                          value: _selectedCuisine,
-                          onChanged: (newValue) {
-                            setState(() {
-                              _selectedCuisine = newValue;
-                            });
-                          },
-                          items: ['Any', ...cuisines].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: DropdownButton<String>(
-                          hint: Text('Select Time'),
-                          value: _selectedTime,
-                          onChanged: (newValue) {
-                            setState(() {
-                              _selectedTime = newValue;
-                            });
-                          },
-                          items: times.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: _applyFilters,
-                  child: Text('Apply Filters'),
-                ),
+                
                 // Recipe List
                 Expanded(
                   child: _categoryRecipes.isEmpty

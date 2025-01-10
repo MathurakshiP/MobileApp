@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
 import 'package:mobile_app/auth.dart';
+
 //import 'package:mobile_app/providers/theme_provider.dart';
 //import 'package:provider/provider.dart';
 
@@ -150,6 +151,10 @@ class CustomClipperPath extends CustomClipper<Path> {
     return false;
   }
 }
+
+
+
+
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
@@ -188,22 +193,31 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> createUserWithEmailAndPassword() async {
-    try {
-      await Auth().createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-      // Redirect to Login Page after successful sign up
-      setState(() {
-        isLogin = true;
-      });
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
-    }
+
+
+Future<void> createUserWithEmailAndPassword() async {
+  try {
+    // Create the user
+    final userCredential = await Auth().createUserWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+
+    // Save the user's name in the displayName field
+    await userCredential.user!.updateDisplayName(nameController.text);
+
+    setState(() {
+      isLogin = true; // Switch to Login view
+    });
+  } on FirebaseAuthException catch (e) {
+    setState(() {
+      errorMessage = e.message;
+    });
   }
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -289,7 +303,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(204, 255, 255, 255),
+                      color: Color.fromARGB(255, 255, 255, 255),
                     ),
                   ),
                 ),

@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
+
 // import 'package:provider/provider.dart';
 // import '../providers/theme_provider.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -21,18 +23,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isDarkMode = false;
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
-  // Simulate updating the profile
-  void _updateProfile(String name, String email, String imageUrl) {
-    setState(() {
-      userName = name;
-      userEmail = email;
-      userImage = imageUrl;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
   }
 
-  // Simulate logging out (for demo purposes)
+  void _loadUserData() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        userName = user.displayName ?? 'User Name'; // Fetch user's name
+        userEmail = user.email ?? 'username@example.com'; // Fetch user's email
+      });
+    }
+  }
+
+
   void _logOut() {
-    // Here you can add your log out logic, such as clearing user data, etc.
+    FirebaseAuth.instance.signOut();
     Navigator.pushReplacementNamed(context, '/');
   }
 
@@ -58,7 +67,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   currentName: userName,
                   currentEmail: userEmail,
                   currentImage: userImage,
-                  onSave: _updateProfile,
+                  onSave: (name, email, imageUrl) {
+                    setState(() {
+                      userName = name;
+                      userEmail = email;
+                      userImage = imageUrl;
+                    });
+                  },
                 ),
               );
             },

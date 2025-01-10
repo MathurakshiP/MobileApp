@@ -18,16 +18,26 @@ class Auth {
       password: password,);
   }
 
-  Future<void> createUserWithEmailAndPassword({
+  Future<UserCredential> createUserWithEmailAndPassword({
     required String email,
     required String password,
 
   })async{
-    await _firebaseAuth.createUserWithEmailAndPassword(
+    // Return the UserCredential to the caller
+    return await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
-      );
+    );
   }
+
+  Future<void> updateDisplayName(String displayName) async {
+  final user = _firebaseAuth.currentUser;
+  if (user != null) {
+    await user.updateDisplayName(displayName);
+    await user.reload(); // Ensure the change is reflected
+  }
+}
+
 
   Future<void> signOut() async{
     await _firebaseAuth.signOut();

@@ -61,8 +61,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
     try {
       final randomRecipes = await ApiService().fetchRandomRecipes(number: 10);
+      // Filter recipes to include only those with an image
+      final recipesWithImages = randomRecipes.where((recipe) => recipe['image'] != null && recipe['image'].isNotEmpty).toList();
+
       setState(() {
-        _randomRecipes = randomRecipes;
+        _randomRecipes = recipesWithImages;
         _isLoading = false; // Stop loading once data is fetched
       });
     } catch (error) {
@@ -79,43 +82,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     }
   }
 
-  void _loadRandomBreakfastRecipes() async {
-  setState(() {
-    _isLoading = true; // Show loading indicator
-  });
-
-  try {
-    // Fetch random recipes from the API (without specifying category)
-    final allRecipes = await ApiService().fetchRandomRecipes(number: 10); // Fetch more recipes initially
-    setState(() {
-      _isLoading = false; // Stop loading once data is fetched
-    });
-
-    // Filter the recipes to find breakfast-related ones
-    final breakfastRecipes = allRecipes.where((recipe) {
-      // Check if the title or ingredients contain typical breakfast keywords
-      final title = recipe['type'].toLowerCase();
-      final ingredients = recipe['ingredients']?.join(' ').toLowerCase() ?? '';
-
-      return title.contains('breakfast') || ingredients.contains('egg') || ingredients.contains('pancake') || ingredients.contains('oats');
-    }).toList();
-
-    // setState(() {
-    //   _randomRecipes = breakfastRecipes; // Set filtered breakfast recipes
-    // });
-  } catch (error) {
-    setState(() {
-      _isLoading = false; // Stop loading in case of error
-    });
-    if (kDebugMode) {
-      print('Error fetching breakfast recipes: $error');
-    }
-    // Show error message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Failed to load breakfast recipes. Please try again later.')),
-    );
-  }
-}
 
 
   // Search function that fetches recipes based on user input
@@ -372,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                         : Padding(
                                             padding: const EdgeInsets.only(left: 16.0), // Add left padding here
                                             child: SizedBox(
-                                              height: 250, // Adjust height as needed
+                                              height: 300, // Adjust height as needed
                                               child: ListView.builder(
                                                 scrollDirection: Axis.horizontal, // Horizontal scrolling for the list
                                                 itemCount: _randomRecipes.length, // Number of recipes
@@ -395,66 +361,62 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                                       );
                                                     },
                                                     child: SizedBox(
-                                                      width: 250, // Fixed width for the card
-                                                      child: Card(
-                                                        margin: const EdgeInsets.only(right: 16),
-                                                        child: Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            // Image handling
-                                                            recipe['image'] != null
-                                                                ? Image.network(
-                                                                    recipe['image'],
-                                                                    height: 120,
-                                                                    width: 250,
-                                                                    fit: BoxFit.cover,
-                                                                    errorBuilder: (context, error, stackTrace) {
-                                                                      return const Icon(Icons.broken_image, size: 120); // Fallback icon
-                                                                    },
-                                                                  )
-                                                                : Container(
-                                                                    height: 120,
-                                                                    width: 250,
-                                                                    color: Colors.grey, // Default placeholder color
-                                                                    child: const Icon(Icons.fastfood, size: 60, color: Colors.white),
-                                                                  ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(8.0),
-                                                              child: Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  // Recipe Title
-                                                                  Text(
-                                                                    recipe['title'] ?? 'No Title', // Fallback for missing title
-                                                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                                                  ),
-                                                                  const SizedBox(height: 4), // Spacing between title and time
-                                                                  // Cooking Time
-                                                                  Row(
-                                                                    children: [
-                                                                      const Icon(Icons.timer, size: 16, color: Colors.grey),
-                                                                      const SizedBox(width: 4),
-                                                                      Text(
-                                                                        recipe['readyInMinutes'] != null
-                                                                            ? '${recipe['readyInMinutes']} mins'
-                                                                            : 'Time not available', // Fallback for missing time
-                                                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
+  width: 250, // Fixed width for the card
+  child: Card(
+    margin: const EdgeInsets.only(right: 16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Image with curved border
+        ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+          ),
+          child: recipe['image'] != null
+              ? Image.network(
+                  recipe['image'],
+                  height: 200,
+                  width: 250,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      width: 250,
+                      color: Colors.grey, // Placeholder color for error
+                      child: const Icon(Icons.broken_image, size: 60, color: Colors.white),
+                    );
+                  },
+                )
+              : Container(
+                  height: 200,
+                  width: 250,
+                  color: Colors.grey, // Default placeholder color
+                  child: const Icon(Icons.fastfood, size: 60, color: Colors.white),
+                ),
+        ),
+        // A separator between the image and the title
+        const SizedBox(height: 8), // Space between the image and title
+        // Recipe Title
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(
+            recipe['title'] ?? 'No Title', // Fallback for missing title
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    ),
+  ),
+),
+
+
                                                   );
                                                 },
                                               ),
                                             ),
                                           ),
-// Recently Viewed Foods Section
+                    // Recently Viewed Foods Section
 
                                     const Padding(
                                         padding: EdgeInsets.all(20.0),
