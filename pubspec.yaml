@@ -85,6 +85,10 @@ flutter:
   - images/pancake.png
   - images/pic.jpg
   - images/egg4.png
+  - images/breakfast.jpg
+  - images/dinner.jpg
+  - images/lunch.jpg
+  - images/dessert.jpg
   - .env
 
 
