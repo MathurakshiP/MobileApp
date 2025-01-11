@@ -259,7 +259,7 @@ void toggleLike(int index) {
                 
 
                 SizedBox(
-                    height: 2000,
+                    height: 1600,
                     child: TabBarView(
                       controller: _tabController,
                       children: [
@@ -486,9 +486,21 @@ void toggleLike(int index) {
                                               const SizedBox(height: 10), // Add some space between the title and the recipe
                                               _isLoading
                                                   ? const CircularProgressIndicator() // Show loading indicator while fetching data
-                                                  : GestureDetector(
+                                                  :  GestureDetector(
                                                       onTap: () {
-                                                        // Handle onTap logic for today's recipe (like navigating to recipe details)
+                                                        // Add the clicked recipe to recentlyViewed, avoiding duplicates
+                                                        setState(() {
+                                                          if (!_recentlyViewed.any((item) => item['id'] == _randomRecipes[9]['id'])) {
+                                                            _recentlyViewed.insert(0, _randomRecipes[9]); // Add to the start for most recent first
+                                                          }
+                                                        });
+                                                        // Navigate to the recipe details screen
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) => RecipeDetailScreen(recipeId: _randomRecipes[9]['id']),
+                                                          ),
+                                                        );
                                                       },
                                                       child: SizedBox(
                                                         height: 300, // Adjust height as needed
@@ -620,10 +632,10 @@ SingleChildScrollView(
   scrollDirection: Axis.horizontal,
   child: Row(
     children: [
-      _buildClickableImage('Breakfast', 'images/pizza.png'),
-      _buildClickableImage('Lunch', 'images/lunch.jpg'),
-      _buildClickableImage('Dinner', 'images/dinner.jpg'),
-      _buildClickableImage('Dessert', 'images/dessert.jpg'),
+      _buildClickableImage('Breakfast', 'images/pancake.png'),
+      _buildClickableImage('Lunch', 'images/pizza.png'),
+      _buildClickableImage('Dinner', 'images/burger.png'),
+      _buildClickableImage('Dessert', 'images/ice_cream.png'),
     ],
   ),
 ),
