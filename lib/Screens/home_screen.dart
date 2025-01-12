@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/Screens/allrecipe_screen.dart';
 import 'package:mobile_app/Screens/category_screen.dart';
 import 'package:mobile_app/Screens/ingredient_based_screen.dart';
 import 'package:mobile_app/Screens/meal_planner_screen.dart';
@@ -100,41 +101,43 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  // Search function that fetches recipes based on user input
   void _searchRecipe() async {
-    final query = _searchController.text;
+  final query = _searchController.text;
 
-    if (query.isNotEmpty) {
-      try {
-        final apiService = ApiService();
-        final recipes = await apiService.fetchRecipes(query);
+  if (query.isNotEmpty) {
+    try {
+      final apiService = ApiService();
+      final recipes = await apiService.fetchRecipes(query);
 
-        setState(() {
-          _recipes = recipes;
-          _recentlyViewed = recipes;
-        });
+      setState(() {
+        _recipes = recipes;
+        _recentlyViewed = recipes;
+      });
 
-        Navigator.push(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                SearchResultsScreen(searchQuery: query, recipes: _recipes),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SearchResultsScreen(
+            searchQuery: query,
+            recipes: _recipes,
+            // Pass the parameter correctly
           ),
-        );
-      } catch (error) {
-        if (kDebugMode) {
-          print('Error: $error');
-        }
-
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Failed to load recipes. Please try again.')),
-        );
+        ),
+      );
+    } catch (error) {
+      if (kDebugMode) {
+        print('Error: $error');
       }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to load recipes. Please try again.'),
+        ),
+      );
     }
   }
+}
+
 
 // Update this method to call the API
   // Update this method to call the API
@@ -251,13 +254,13 @@ class _HomeScreenState extends State<HomeScreen>
                     Tab(text: 'Explore Recipe'),
                     Tab(text: "What's in Your Kitchen"),
                   ],
-                  // labelColor: Colors.black, // Selected tab color
-                  // unselectedLabelColor: Colors.black, // Unselected tab color
-                  // indicatorColor: Colors.black,
+                  labelColor: customPurple, // Selected tab color
+                  unselectedLabelColor: Colors.black, // Unselected tab color
+                  indicatorColor: customPurple,
                 ),
 
                 SizedBox(
-                  height: 1600,
+                  height: 1650,
                   child: TabBarView(
                     controller: _tabController,
                     children: [
@@ -276,15 +279,16 @@ class _HomeScreenState extends State<HomeScreen>
                               },
                               decoration: InputDecoration(
                                 labelText: 'Search Recipe...',
-                                // labelStyle: const TextStyle(color: Colors.black),
+                                labelStyle: TextStyle(color: customPurple),
                                 border: const OutlineInputBorder(
-                                    // borderSide: BorderSide(color: Colors.black),
+                                    borderSide: BorderSide(color: Colors.black),
                                     ),
                                 focusedBorder: const OutlineInputBorder(
                                     // borderSide: BorderSide(color: Colors.black),
                                     ),
                                 suffixIcon: IconButton(
-                                  icon: const Icon(Icons.search),
+                                  icon: Icon(Icons.search,
+                                  color: customPurple,),
                                   onPressed: _searchRecipe,
                                 ),
                               ),
@@ -319,11 +323,10 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
 
                           // Latest Recipes Section (Horizontally Scrollable)
-                          const Padding(
+                           Padding(
                             padding: EdgeInsets.all(20.0),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .start, // Align text to the left
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   'Our Latest Recipes',
@@ -331,6 +334,30 @@ class _HomeScreenState extends State<HomeScreen>
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold),
                                 ),
+                                
+                                // Add the "See All" button
+                                TextButton(
+                                  onPressed: () {
+                                    // Navigate to AllRecipesScreen when clicked
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) {
+                                          return AllRecipesScreen(recipes: _randomRecipes,initialLikeCounts: likeCounts,);
+                                        },
+                                      ),
+                                    );
+
+                                  },
+                                  child: Text(
+                                    'See All',
+                                    style: TextStyle(
+                                      color: customPurple, // Set the text color to customPurple
+                                    ),
+                                  ),
+
+                                ),
+
                               ],
                             ),
                           ),
@@ -583,7 +610,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                                 const SizedBox(
                                     height:
-                                        10), // Add some space between the title and the recipe
+                                        20), // Add some space between the title and the recipe
                                 _isLoading
                                     ? const CircularProgressIndicator() // Show loading indicator while fetching data
                                     : GestureDetector(
@@ -819,7 +846,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(
-                                    height: 16), // Space between title and tabs
+                                    height: 20), // Space between title and tabs
 
                                 // Horizontal Tabs for Meal Categories
                                 SingleChildScrollView(
@@ -827,13 +854,13 @@ class _HomeScreenState extends State<HomeScreen>
                                   child: Row(
                                     children: [
                                       _buildClickableImage(
-                                          'Breakfast', 'images/pancake.png'),
+                                          'Breakfast', 'images/pancake.png',_recentlyViewed),
                                       _buildClickableImage(
-                                          'Lunch', 'images/pizza.png'),
+                                          'Lunch', 'images/pizza.png',_recentlyViewed),
                                       _buildClickableImage(
-                                          'Dinner', 'images/burger.png'),
+                                          'Dinner', 'images/burger.png',_recentlyViewed),
                                       _buildClickableImage(
-                                          'Dessert', 'images/ice_cream.png'),
+                                          'Dessert', 'images/ice_cream.png',_recentlyViewed),
                                     ],
                                   ),
                                 ),
@@ -859,7 +886,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ],
                             ),
                           ),
-
+                          const SizedBox(  height:  10),
                           // Check if there are any recently viewed recipes
                           _recentlyViewed.isEmpty
                               ? const Center(
@@ -1145,7 +1172,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildClickableImage(String category, String imagePath) {
+  Widget _buildClickableImage(String category, String imagePath,List _recentlyViewed) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
 
@@ -1155,7 +1182,7 @@ class _HomeScreenState extends State<HomeScreen>
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CategoryScreen(category: category),
+            builder: (context) => CategoryScreen(category: category,recentlyViewed: _recentlyViewed,),
           ),
         );
       },

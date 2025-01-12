@@ -4,10 +4,17 @@ import 'package:mobile_app/Screens/recipe_details_screen.dart';
 class SearchResultsScreen extends StatelessWidget {
   final String searchQuery;
   final List<dynamic> recipes;
-
-  SearchResultsScreen({super.key, required this.searchQuery, required this.recipes});
-  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
   
+
+  SearchResultsScreen({
+    super.key,
+    required this.searchQuery,
+    required this.recipes,
+    
+  });
+
+  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +40,8 @@ class SearchResultsScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => RecipeDetailScreen(recipeId: recipe['id']),
+                        builder: (_) =>
+                            RecipeDetailScreen(recipeId: recipe['id']),
                       ),
                     );
                   },

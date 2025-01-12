@@ -5,8 +5,9 @@ import 'package:mobile_app/screens/recipe_details_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   final String category;
+   final List<dynamic> recentlyViewed;
 
-  const CategoryScreen({super.key, required this.category});
+  const CategoryScreen({super.key, required this.category, required this.recentlyViewed,});
 
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
@@ -229,6 +230,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               onTap: () {
+                                setState(() {
+                                  if (!widget.recentlyViewed.any((item) =>
+                                      item['id'] == recipe['id'])) {
+                                    widget.recentlyViewed.insert(0,
+                                        recipe); // Add to the start for most recent first
+                                  }
+                                });
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
