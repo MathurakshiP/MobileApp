@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mobile_app/screens/recipe_details_screen.dart'; // Import RecipeDetailScreen
 import 'package:mobile_app/screens/recipe_list_screen.dart'; // Import RecipeListScreen
 
 class IngredientSearchScreen extends StatefulWidget {
@@ -221,7 +220,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.search),
-                          onPressed: () {} // You may handle ingredient search here
+                          onPressed: fetchRecipes, // Directly fetch recipes on search icon click
                         ),
                       ),
                     ),
@@ -232,13 +231,6 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                   buildCollapsibleContainer('Dairy Products', dairyProducts),
                   buildCollapsibleContainer('Grains', grains),
                   buildCollapsibleContainer('Spices & Herbs', spicesHerbs),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ElevatedButton(
-                      onPressed: fetchRecipes,
-                      child: const Text('See Recipes'),
-                    ),
-                  ),
                   if (_isLoading)
                     const Center(
                       child: CircularProgressIndicator(),
