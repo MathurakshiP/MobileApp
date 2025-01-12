@@ -152,6 +152,12 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
 
   // Function to fetch recipes from the API
   Future<void> fetchRecipes() async {
+    // If ingredients are typed in the search bar, use them
+    if (_ingredientController.text.isNotEmpty) {
+      _selectedIngredients.clear();
+      _selectedIngredients.addAll(_ingredientController.text.split(',').map((e) => e.trim()).toList());
+    }
+
     if (_selectedIngredients.isEmpty) {
       print("No ingredients selected");
       return;
