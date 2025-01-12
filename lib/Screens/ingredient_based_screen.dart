@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/screens/recipe_details_screen.dart'; // Import RecipeDetailScreen
+import 'package:mobile_app/screens/recipe_list_screen.dart'; // Import RecipeListScreen
 
 class IngredientSearchScreen extends StatefulWidget {
   const IngredientSearchScreen({super.key});
@@ -179,6 +180,14 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
           _recipes = data;
           _isLoading = false;
         });
+
+        // Navigate to the new RecipeListScreen with the fetched recipes
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RecipeListScreen(recipes: _recipes),
+          ),
+        );
       } else {
         setState(() {
           _isLoading = false;
@@ -233,39 +242,6 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                   if (_isLoading)
                     const Center(
                       child: CircularProgressIndicator(),
-                    ),
-                  // Displaying fetched recipes with images
-                  if (_recipes.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          ..._recipes.map((recipe) {
-                            return GestureDetector(
-                              onTap: () {
-                                // Navigate to RecipeDetailScreen
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        RecipeDetailScreen(
-                                          recipeId: recipe['id'],
-                                        ),
-                                  ),
-                                );
-                              },
-                              child: Card(
-                                child: ListTile(
-                                  title: Text(recipe['title'] ?? 'Recipe'),
-                                  leading: recipe['image'] != null
-                                      ? Image.network(recipe['image'])
-                                      : const Icon(Icons.image),
-                                ),
-                              ),
-                            );
-                          }).toList()
-                        ],
-                      ),
                     ),
                 ],
               ),
