@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Services/api_services.dart';
-import 'package:mobile_app/Screens/recipe_details_screen.dart';
 
 class IngredientSearchScreen extends StatefulWidget {
   const IngredientSearchScreen({super.key});
@@ -12,47 +11,119 @@ class IngredientSearchScreen extends StatefulWidget {
 
 class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
   final TextEditingController _ingredientController = TextEditingController();
-  final Set<String> _selectedIngredients = {}; // For tracking selected ingredients
+  final Set<String> _selectedIngredients = {};
   List<dynamic> _recipes = [];
-  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
+  bool _isLoading = false;
+
+  // Custom colors
+  final Color customPurple = const Color.fromARGB(255, 96, 26, 182);
+  final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
 
   // Ingredient sets
   final List<String> pantryIngredients = [
-    'Butter', 'Egg', 'Garlic', 'Milk', 'Onion',
-    'Sugar', 'Flour', 'Olive Oil', 'Garlic Powder', 'White Rice',
-    'Vinegar', 'Salt', 'Honey', 'Cinnamon', 'Nutmeg',
+    'Butter',
+    'Egg',
+    'Garlic',
+    'Milk',
+    'Onion',
+    'Sugar',
+    'Flour',
+    'Olive Oil',
+    'Garlic Powder',
+    'White Rice',
+    'Vinegar',
+    'Salt',
+    'Honey',
+    'Cinnamon',
+    'Nutmeg',
   ];
-
   final List<String> vegetables = [
-    'Tomato', 'Cheese', 'Chicken', 'Lemon', 'Pepper',
-    'Spinach', 'Carrot', 'Broccoli', 'Cabbage', 'Zucchini',
-    'Cauliflower', 'Potato', 'Cucumber', 'Radish', 'Peas',
+    'Tomato',
+    'Cheese',
+    'Chicken',
+    'Lemon',
+    'Pepper',
+    'Spinach',
+    'Carrot',
+    'Broccoli',
+    'Cabbage',
+    'Zucchini',
+    'Cauliflower',
+    'Potato',
+    'Cucumber',
+    'Radish',
+    'Peas',
   ];
-
   final List<String> fruits = [
-    'Apple', 'Banana', 'Orange', 'Strawberry', 'Blueberry',
-    'Pineapple', 'Grapes', 'Watermelon', 'Mango', 'Peach',
-    'Cherry', 'Pear', 'Kiwi', 'Lime', 'Plum',
+    'Apple',
+    'Banana',
+    'Orange',
+    'Strawberry',
+    'Blueberry',
+    'Pineapple',
+    'Grapes',
+    'Watermelon',
+    'Mango',
+    'Peach',
+    'Cherry',
+    'Pear',
+    'Kiwi',
+    'Lime',
+    'Plum',
   ];
-
   final List<String> dairyProducts = [
-    'Milk', 'Cheese', 'Yogurt', 'Butter', 'Cream',
-    'Paneer', 'Ghee', 'Curd', 'Whipped Cream', 'Buttermilk',
-    'Kefir', 'Sour Cream', 'Condensed Milk', 'Goat Cheese', 'Mozzarella',
+    'Milk',
+    'Cheese',
+    'Yogurt',
+    'Butter',
+    'Cream',
+    'Paneer',
+    'Ghee',
+    'Curd',
+    'Whipped Cream',
+    'Buttermilk',
+    'Kefir',
+    'Sour Cream',
+    'Condensed Milk',
+    'Goat Cheese',
+    'Mozzarella',
   ];
 
   final List<String> grains = [
-    'Rice', 'Wheat', 'Oats', 'Barley', 'Corn',
-    'Quinoa', 'Buckwheat', 'Millet', 'Rye', 'Sorghum',
-    'Bulgur', 'Couscous', 'Wild Rice', 'Teff', 'Amaranth',
+    'Rice',
+    'Wheat',
+    'Oats',
+    'Barley',
+    'Corn',
+    'Quinoa',
+    'Buckwheat',
+    'Millet',
+    'Rye',
+    'Sorghum',
+    'Bulgur',
+    'Couscous',
+    'Wild Rice',
+    'Teff',
+    'Amaranth',
   ];
 
   final List<String> spicesHerbs = [
-    'Basil', 'Coriander', 'Cumin', 'Turmeric', 'Black Pepper',
-    'Paprika', 'Parsley', 'Thyme', 'Rosemary', 'Oregano',
-    'Saffron', 'Ginger', 'Nutmeg', 'Cloves', 'Dill',
+    'Basil',
+    'Coriander',
+    'Cumin',
+    'Turmeric',
+    'Black Pepper',
+    'Paprika',
+    'Parsley',
+    'Thyme',
+    'Rosemary',
+    'Oregano',
+    'Saffron',
+    'Ginger',
+    'Nutmeg',
+    'Cloves',
+    'Dill',
   ];
-
   final Map<String, bool> isExpanded = {
     'Pantry Ingredients': false,
     'Vegetables & Greens': false,
@@ -62,40 +133,33 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
     'Spices & Herbs': false,
   };
 
-  void _searchByIngredients() async {
-    if (_selectedIngredients.isEmpty) return;
-
-    try {
-      final apiService = ApiService();
-      final recipes = await apiService.fetchRecipesByIngredients(
-        _selectedIngredients.toList(),
-      );
-      setState(() {
-        _recipes = recipes;
-      });
-    } catch (error) {
-      if (kDebugMode) {
-        print('Error: $error');
-      }
-    }
-  }
-
-  void _addIngredient(String ingredient) {
+  void _toggleIngredient(String ingredient) {
     setState(() {
-      _selectedIngredients.add(ingredient); // Add to pantry
+      if (_selectedIngredients.contains(ingredient)) {
+        _selectedIngredients.remove(ingredient);
+      } else {
+        _selectedIngredients.add(ingredient);
+      }
+
+      // Update the search bar content
+      _ingredientController.text = _selectedIngredients.join(', ');
     });
   }
 
   List<Widget> buildIngredientWidgets(List<String> ingredients) {
     return ingredients.map((ingredient) {
+      final isSelected = _selectedIngredients.contains(ingredient);
       return GestureDetector(
-        onTap: () => _addIngredient(ingredient),
+        onTap: () => _toggleIngredient(ingredient),
         child: Chip(
           label: Text(
             ingredient,
-            style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
-          backgroundColor: const Color.fromARGB(255, 96, 26, 182),
-          side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)),
+            style: TextStyle(
+              color: isSelected ? Colors.black : Colors.white,
+            ),
+          ),
+          backgroundColor: isSelected ? selectedPurple : customPurple,
+          side: const BorderSide(color: Colors.white),
         ),
       );
     }).toList();
@@ -141,19 +205,15 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                 crossFadeState: expanded
                     ? CrossFadeState.showSecond
                     : CrossFadeState.showFirst,
-                firstChild: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Wrap(
-                    spacing: 4.0,
-                    runSpacing: -4.0,
-                    children: buildIngredientWidgets(
-                        ingredients.take(4).toList()), // Show only 3 chips
-                  ),
+                firstChild: Wrap(
+                  spacing: 4.0,
+                  children: buildIngredientWidgets(
+                      ingredients.take(4).toList()), // Show only 4 chips
                 ),
                 secondChild: Wrap(
                   spacing: 4.0,
-                  runSpacing: -4.0,
-                  children: buildIngredientWidgets(ingredients), // Show all chips
+                  children:
+                      buildIngredientWidgets(ingredients), // Show all chips
                 ),
               ),
             ],
@@ -166,40 +226,50 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _ingredientController,
-                decoration: InputDecoration(
-                  labelText: 'Enter ingredients (comma-separated)',
-                  border: const OutlineInputBorder(),
-                  focusedBorder: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: _searchByIngredients,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextField(
+                    controller: _ingredientController,
+                    decoration: InputDecoration(
+                      labelText: 'Enter ingredients (comma-separated)',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {},
+                      ),
+                    ),
                   ),
                 ),
+                buildCollapsibleContainer(
+                    'Pantry Ingredients', pantryIngredients),
+                buildCollapsibleContainer('Vegetables & Greens', vegetables),
+                buildCollapsibleContainer('Fruits', fruits),
+                buildCollapsibleContainer('Fruits', fruits),
+                buildCollapsibleContainer('Dairy Products', dairyProducts),
+                buildCollapsibleContainer('Grains', grains),
+                buildCollapsibleContainer('Spices & Herbs', spicesHerbs),
+              ],
+            ),
+          ),
+          if (_isLoading)
+            Center(
+              child: Container(
+                color: Colors.black54,
+                child: const CircularProgressIndicator(),
               ),
             ),
-            // Ingredient containers
-            buildCollapsibleContainer('Pantry Ingredients', pantryIngredients),
-            buildCollapsibleContainer('Vegetables & Greens', vegetables),
-            buildCollapsibleContainer('Fruits', fruits),
-            buildCollapsibleContainer('Dairy Products', dairyProducts),
-            buildCollapsibleContainer('Grains', grains),
-            buildCollapsibleContainer('Spices & Herbs', spicesHerbs),
-          ],
-        ),
+        ],
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // My Pantry Button
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
@@ -208,9 +278,22 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                     context: context,
                     builder: (_) {
                       return ListView(
-                        children: _selectedIngredients
-                            .map((ingredient) => ListTile(title: Text(ingredient)))
-                            .toList(),
+                        children: _selectedIngredients.map((ingredient) {
+                          return ListTile(
+                            title: Text(ingredient),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedIngredients.remove(ingredient);
+                                  _ingredientController.text =
+                                      _selectedIngredients.join(', ');
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                          );
+                        }).toList(),
                       );
                     },
                   );
@@ -218,11 +301,10 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                 child: Text('My Pantry (${_selectedIngredients.length})'),
               ),
             ),
-            // See Recipes Button
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                onPressed: _searchByIngredients,
+                onPressed: () {},
                 child: const Text('See Recipes'),
               ),
             ),
