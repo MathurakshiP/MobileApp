@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/recipe_details_screen.dart';
+
 class RecipeListScreen extends StatelessWidget {
   final List<dynamic> recipes;
 
@@ -31,7 +32,15 @@ class RecipeListScreen extends StatelessWidget {
                   },
                   child: Card(
                     child: ListTile(
-                      title: Text(recipe['title'] ?? 'Recipe'),
+                      title: recipe['title'] != null
+                          ? Text(recipe['title']!) // Use default style if title exists
+                          : const Text(
+                              'Recipe',
+                              style: TextStyle(
+                                fontSize: 18, // Font size for "Recipe"
+                                color: Colors.white, // White color for "Recipe"
+                              ),
+                            ),
                       leading: recipe['image'] != null
                           ? Image.network(recipe['image'])
                           : const Icon(Icons.image),

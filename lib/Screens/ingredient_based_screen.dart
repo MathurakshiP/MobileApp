@@ -223,9 +223,10 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                       controller: _ingredientController,
                       decoration: InputDecoration(
                         labelText: 'Enter ingredients (comma-separated)',
+                        labelStyle: TextStyle(color: customPurple), // Placeholder text color
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.search),
+                          icon: Icon(Icons.search, color: customPurple), // Search icon color
                           onPressed: fetchRecipes, // Directly fetch recipes on search icon click
                         ),
                       ),
