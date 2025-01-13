@@ -170,14 +170,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // Show Help & Support page or navigate to its screen
               },
             ),
-            ListTile(
+            /*ListTile(
               leading: const Icon(Icons.rate_review),
               title: const Text('Rate Us'),
               onTap: () {
                 // Logic to redirect user to app rating page
               },
             ),
-            const Divider(),
+            const Divider(),*/
+
+            ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RateUsScreen()),
+    );
+  },
+  child: Text('Rate Us'),
+);
+
 
             // Dark Mode Setting
             Padding(
