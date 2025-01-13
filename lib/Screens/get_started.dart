@@ -152,72 +152,100 @@ class CustomClipperPath extends CustomClipper<Path> {
   }
 }
 
-
-
-
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
-
-  final User? user = Auth().currentUser;
-
-  Future<void> signOut() async {
-    await Auth().signOut();
-  }
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String? errorMessage = '';
-  bool isLogin = true;
-
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
+  bool isLogin = true;
+  bool isPasswordVisible = false;
+
+  String? errorMessage;
 
   Future<void> signInWithEmailAndPassword() async {
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      showErrorSnackbar('Email and Password cannot be empty');
+      return;
+    }
+
     try {
       await Auth().signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
+      showErrorSnackbar(e.message ?? 'Error occurred while signing in');
     }
   }
 
+  Future<void> createUserWithEmailAndPassword() async {
+    if (emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        nameController.text.isEmpty) {
+      showErrorSnackbar('All fields are required');
+      return;
+    }
 
-
-Future<void> createUserWithEmailAndPassword() async {
-  try {
-    // Create the user
-    final userCredential = await Auth().createUserWithEmailAndPassword(
-      email: emailController.text,
-      password: passwordController.text,
-    );
-
-    // Save the user's name in the displayName field
-    await userCredential.user!.updateDisplayName(nameController.text);
-
-    setState(() {
-      isLogin = true; // Switch to Login view
-    });
-  } on FirebaseAuthException catch (e) {
-    setState(() {
-      errorMessage = e.message;
-    });
+    try {
+      final userCredential = await Auth().createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      await userCredential.user!.updateDisplayName(nameController.text.trim());
+      setState(() => isLogin = true); // Switch to Login view
+      clearTextFields();
+      showSuccessSnackbar('Account created successfully! Please log in.');
+    } on FirebaseAuthException catch (e) {
+      showErrorSnackbar(e.message ?? 'Error occurred while signing up');
+    }
   }
-}
 
+  void clearTextFields() {
+    emailController.clear();
+    passwordController.clear();
+    nameController.clear();
+  }
 
+  void showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message, style: const TextStyle(color: Colors.red))),
+    );
+  }
 
+  void showSuccessSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message, style: const TextStyle(color: Colors.green))),
+    );
+  }
+
+  Widget buildTextField({
+    required String labelText,
+    required TextEditingController controller,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          labelText: labelText,
+          suffixIcon: suffixIcon,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +265,7 @@ Future<void> createUserWithEmailAndPassword() async {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: isLogin ?  const Color.fromARGB(255, 96, 26, 182) : Colors.grey,
+                        color: isLogin ? Colors.purple : Colors.grey,
                       ),
                     ),
                   ),
@@ -249,7 +277,7 @@ Future<void> createUserWithEmailAndPassword() async {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: isLogin ? Colors.grey :  const Color.fromARGB(255, 96, 26, 182),
+                        color: isLogin ? Colors.grey : Colors.purple,
                       ),
                     ),
                   ),
@@ -257,78 +285,42 @@ Future<void> createUserWithEmailAndPassword() async {
               ),
               const SizedBox(height: 20),
               if (!isLogin)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
-                  ),
+                buildTextField(
+                  labelText: 'Name',
+                  controller: nameController,
                 ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
+              buildTextField(
+                labelText: 'Email',
+                controller: emailController,
+              ),
+              buildTextField(
+                labelText: 'Password',
+                controller: passwordController,
+                obscureText: !isPasswordVisible,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () =>
+                      setState(() => isPasswordVisible = !isPasswordVisible),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                ),
-              ),
-              if (errorMessage != '')
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    errorMessage!,
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
-              const SizedBox(height: 20),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: isLogin ? 150 : 150,
-                child: ElevatedButton(
-                  onPressed: isLogin
-                      ? signInWithEmailAndPassword
-                      : createUserWithEmailAndPassword,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 96, 26, 182),
-                  ),
-                  child: Text(
-                    isLogin ? 'Login' : 'Sign Up',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 255, 255, 255),
-                    ),
-                  ),
-                ),
-              ),
-              // Bottom button to navigate to HomeScreen or "Do it later"
               const SizedBox(height: 10),
               ElevatedButton(
+                onPressed: isLogin
+                    ? signInWithEmailAndPassword
+                    : createUserWithEmailAndPassword,
+                child: Text(isLogin ? 'Login' : 'Sign Up'),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
                 onPressed: () {
-                  // Navigate directly to Home Screen
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 96, 26, 182),
-                ),
-                child: const Text(
-                  'Do it Later',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
+                child: const Text('Do it Later'),
               ),
             ],
           ),

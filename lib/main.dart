@@ -2,6 +2,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/animation_screen.dart';
+import 'package:mobile_app/Screens/get_started.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
 
 import 'package:mobile_app/providers/shopping_list_provider.dart';
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
             title: 'Recipe App',
             theme: themeProvider.currentTheme, // Apply the current theme
             // home:  AnimationScreen(),
-            home: HomeScreen(),
+            home: GetStartedScreen(),
           );
         },
       ),

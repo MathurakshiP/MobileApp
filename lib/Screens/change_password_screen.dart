@@ -15,30 +15,55 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isLoading = false;
 
-  void _changePassword() async {
+  Future<void> _changePassword() async {
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       User? user = _auth.currentUser;
-      String email = user?.email ?? "";
-
-      AuthCredential credential = EmailAuthProvider.credential(
-          email: email, password: _currentPasswordController.text);
-
-      await user?.reauthenticateWithCredential(credential);
-      if (_newPasswordController.text == _confirmPasswordController.text) {
-        await user?.updatePassword(_newPasswordController.text);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password changed successfully')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Passwords do not match')),
-        );
+      if (user == null) {
+        throw Exception('No user is currently signed in.');
       }
+
+      String email = user.email ?? "";
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: email,
+        password: _currentPasswordController.text,
+      );
+
+      // Re-authenticate the user
+      await user.reauthenticateWithCredential(credential);
+
+      // Update the password
+      await user.updatePassword(_newPasswordController.text);
+
+      // Notify the user of success
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password changed successfully')),
+      );
+
+      // Clear the input fields
+      _currentPasswordController.clear();
+      _newPasswordController.clear();
+      _confirmPasswordController.clear();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -50,31 +75,41 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _currentPasswordController,
-              decoration: const InputDecoration(labelText: 'Current Password'),
-              obscureText: true,
-            ),
-            TextField(
-              controller: _newPasswordController,
-              decoration: const InputDecoration(labelText: 'New Password'),
-              obscureText: true,
-            ),
-            TextField(
-              controller: _confirmPasswordController,
-              decoration:
-                  const InputDecoration(labelText: 'Confirm New Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _changePassword,
-              child: const Text('Change Password'),
-            ),
-          ],
-        ),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  TextField(
+                    controller: _currentPasswordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Current Password',
+                      hintText: 'Enter your current password',
+                    ),
+                    obscureText: true,
+                  ),
+                  TextField(
+                    controller: _newPasswordController,
+                    decoration: const InputDecoration(
+                      labelText: 'New Password',
+                      hintText: 'Enter a strong new password',
+                    ),
+                    obscureText: true,
+                  ),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirm New Password',
+                      hintText: 'Re-enter your new password',
+                    ),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _changePassword,
+                    child: const Text('Change Password'),
+                  ),
+                ],
+              ),
       ),
     );
   }

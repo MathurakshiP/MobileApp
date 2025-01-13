@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class RateUsScreen extends StatefulWidget {
+  const RateUsScreen({super.key});
+
   @override
   _RateUsScreenState createState() => _RateUsScreenState();
 }
 
 class _RateUsScreenState extends State<RateUsScreen> {
   double _rating = 0;
-  TextEditingController _feedbackController = TextEditingController();
+  final TextEditingController _feedbackController = TextEditingController();
 
   void _submitFeedback() {
     String feedback = _feedbackController.text;
