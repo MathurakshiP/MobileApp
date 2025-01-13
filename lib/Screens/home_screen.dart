@@ -651,13 +651,13 @@ class _HomeScreenState extends State<HomeScreen>
                                   child: Row(
                                     children: [
                                       _buildClickableImage(
-                                          'Breakfast', 'images/pancake.png',_recentlyViewed),
+                                          'Breakfast', 'images/breakfast.jpg',_recentlyViewed),
                                       _buildClickableImage(
-                                          'Lunch', 'images/pizza.png',_recentlyViewed),
+                                          'Lunch', 'images/lunch.jpg',_recentlyViewed),
                                       _buildClickableImage(
-                                          'Dinner', 'images/burger.png',_recentlyViewed),
+                                          'Dinner', 'images/dinner.jpg',_recentlyViewed),
                                       _buildClickableImage(
-                                          'Dessert', 'images/ice_cream.png',_recentlyViewed),
+                                          'Dessert', 'images/dessert.jpg',_recentlyViewed),
                                     ],
                                   ),
                                 ),
