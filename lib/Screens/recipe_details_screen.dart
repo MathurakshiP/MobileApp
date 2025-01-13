@@ -6,7 +6,6 @@ import 'package:mobile_app/Services/api_services.dart';
 import 'package:mobile_app/providers/saved_food_provider.dart';
 import 'package:mobile_app/providers/shopping_list_provider.dart';
 
-// ignore: must_be_immutable
 class RecipeDetailScreen extends StatelessWidget {
   final int recipeId;
 
@@ -16,14 +15,16 @@ class RecipeDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recipe Details',
-                        style: TextStyle(
-                        fontWeight: FontWeight.bold, // Make the text bold
-                        color: Colors.white,
-                        fontSize: 20,),
-                      ),
-                    ),
-                    
+      appBar: AppBar(
+        title: const Text(
+          'Recipe Details',
+          style: TextStyle(
+            fontWeight: FontWeight.bold, // Make the text bold
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
+      ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: ApiService().fetchRecipeDetails(recipeId),
         builder: (context, snapshot) {
@@ -99,10 +100,29 @@ class RecipeDetailScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 const Text('Ingredients', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                ...List.generate(recipe['extendedIngredients']?.length ?? 0, (index) {
-                  return Text('- ${recipe['extendedIngredients'][index]['original']}');
-                }),
-                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('Ingredient', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('Measurement', style: TextStyle(fontWeight: FontWeight.bold))),
+                    ],
+                    rows: List.generate(recipe['extendedIngredients']?.length ?? 0, (index) {
+                      final ingredient = recipe['extendedIngredients'][index];
+                      final nameWithMeasurement = ingredient['original'] ?? '';
+                      final name = _extractIngredientName(nameWithMeasurement);
+                      final measurement = _extractMeasurement(ingredient);
+                      
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(name)),
+                          DataCell(Text(measurement)),
+                        ],
+                      );
+                    }),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 const Text('Instructions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 // Directly use _buildInstructionSections with the fetched instructions data
                 ..._buildInstructionSections(instructions),
@@ -114,6 +134,28 @@ class RecipeDetailScreen extends StatelessWidget {
     );
   }
 
+  // Function to extract only the ingredient name (without the measurement)
+  String _extractIngredientName(String ingredient) {
+    // Regular expression to match and remove measurement part (like "1/2 cup", "1 cup", etc.)
+    final regExp = RegExp(r'^[0-9\/\.\-\+\*\s]*');
+    return ingredient.replaceFirst(regExp, '').trim();
+  }
+
+  // Function to extract the full measurement as a string (preserving the fraction, like "1/2 cup")
+  String _extractMeasurement(Map<String, dynamic> ingredient) {
+    final amount = ingredient['amount']?.toString() ?? '';
+    final unit = ingredient['unit'] ?? '';
+
+    // Handle fractions as strings (e.g., "1/2 cup" instead of "0.5 cup")
+    final originalMeasurement = ingredient['originalString'] ?? '';
+    if (originalMeasurement.isNotEmpty) {
+      return originalMeasurement; // Use the original string directly
+    }
+
+    // If originalString is not available, use the amount and unit
+    return '$amount $unit';
+  }
+  
   // Function to handle displaying instructions
   List<Widget> _buildInstructionSections(List<dynamic> instructionData) {
     if (instructionData == null || instructionData.isEmpty) {
@@ -136,12 +178,39 @@ class RecipeDetailScreen extends StatelessWidget {
             ),
           if (steps.isEmpty)
             const Text('No steps available.', style: TextStyle(fontStyle: FontStyle.italic)),
-          ...steps.map<Widget>((step) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Text('${step['number']}. ${step['step']}'),
-            );
-          }).toList(),
+          // The entire instruction section in a rounded black container with white text
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            decoration: BoxDecoration(
+              color: customPurple,
+              borderRadius: BorderRadius.circular(15), // Rounded corners
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...steps.map<Widget>((step) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Display step number and step description in white text
+                        Text(
+                          '${step['number']}. ${step['step']}',
+                          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        // White divider line after each step
+                        const Divider(
+                          color: Colors.white, // White divider
+                          thickness: 1,
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
         ],
       );
     }).toList();

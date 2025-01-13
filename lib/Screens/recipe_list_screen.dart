@@ -31,19 +31,28 @@ class RecipeListScreen extends StatelessWidget {
                     );
                   },
                   child: Card(
-                    child: ListTile(
-                      title: recipe['title'] != null
-                          ? Text(recipe['title']!) // Use default style if title exists
-                          : const Text(
-                              'Recipe',
-                              style: TextStyle(
-                                fontSize: 18, // Font size for "Recipe"
-                                color: Colors.white, // White color for "Recipe"
-                              ),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0), // Gap between items
+                    child: Column(
+                      children: [
+                        recipe['image'] != null
+                            ? Image.network(
+                                recipe['image'],
+                                width: double.infinity, // Fill the width
+                                height: 250, // Set a fixed height for the image
+                                fit: BoxFit.cover, // Make sure the image covers the space
+                              )
+                            : const Icon(Icons.image, size: 80),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            recipe['title'] ?? 'Recipe',
+                            style: TextStyle(
+                              fontSize: 18, // Font size for the title
+                              fontWeight: FontWeight.bold,
                             ),
-                      leading: recipe['image'] != null
-                          ? Image.network(recipe['image'])
-                          : const Icon(Icons.image),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
