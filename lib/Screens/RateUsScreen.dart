@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
 class RateUsScreen extends StatefulWidget {
-  const RateUsScreen({super.key});
-
   @override
   _RateUsScreenState createState() => _RateUsScreenState();
 }
 
 class _RateUsScreenState extends State<RateUsScreen> {
   double _rating = 0;
-  final TextEditingController _feedbackController = TextEditingController();
+  TextEditingController _feedbackController = TextEditingController();
 
   void _submitFeedback() {
     String feedback = _feedbackController.text;
@@ -59,11 +57,6 @@ class _RateUsScreenState extends State<RateUsScreen> {
     Navigator.of(context).pop();
   }
 
-  void _contactSupport() {
-    // Logic to contact support
-    print('User is contacting support.');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,12 +92,15 @@ class _RateUsScreenState extends State<RateUsScreen> {
               }),
             ),
             SizedBox(height: 16),
-            TextField(
-              controller: _feedbackController,
-              maxLines: 4,
-              decoration: InputDecoration(
-                hintText: 'Write your feedback here...',
-                border: OutlineInputBorder(),
+            ListTile(
+              title: Text('Your Feedback'),
+              subtitle: TextField(
+                controller: _feedbackController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: 'Write your feedback here...',
+                  border: OutlineInputBorder(),
+                ),
               ),
             ),
             SizedBox(height: 16),
@@ -112,13 +108,11 @@ class _RateUsScreenState extends State<RateUsScreen> {
               onPressed: _submitFeedback,
               child: Text('Submit'),
             ),
-            TextButton(
-              onPressed: _contactSupport,
-              child: Text('Contact Support'),
-            ),
-            TextButton(
-              onPressed: _skipFeedback,
-              child: Text('Skip/Remind Later'),
+            ListTile(
+              title: TextButton(
+                onPressed: _skipFeedback,
+                child: Text('Skip/Remind Later'),
+              ),
             ),
             Spacer(),
             Text(
