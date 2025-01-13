@@ -13,7 +13,7 @@ class IngredientSearchScreen extends StatefulWidget {
 
 class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
   final TextEditingController _ingredientController = TextEditingController();
-  final Set<String> _selectedIngredients = {};
+  final Set<String> _selectedIngredients = {}; // For selected ingredients
   List<dynamic> _recipes = [];
   bool _isLoading = false;
 
@@ -69,7 +69,6 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
       } else {
         _selectedIngredients.add(ingredient);
       }
-      _ingredientController.text = _selectedIngredients.join(', ');
     });
   }
 
@@ -152,14 +151,16 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
 
   // Function to fetch recipes from the API
   Future<void> fetchRecipes() async {
-    // If ingredients are typed in the search bar, use them
-    if (_ingredientController.text.isNotEmpty) {
-      _selectedIngredients.clear();
-      _selectedIngredients.addAll(_ingredientController.text.split(',').map((e) => e.trim()).toList());
-    }
+    // Get typed ingredients from the text field
+    List<String> typedIngredients = _ingredientController.text.isNotEmpty
+        ? _ingredientController.text.split(',').map((e) => e.trim()).toList()
+        : [];
 
-    if (_selectedIngredients.isEmpty) {
-      print("No ingredients selected");
+    // Merge typed ingredients with selected ingredients
+    List<String> allIngredients = [...typedIngredients, ..._selectedIngredients];
+
+    if (allIngredients.isEmpty) {
+      print("No ingredients selected or typed");
       return;
     }
 
@@ -168,7 +169,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
       _recipes = [];
     });
 
-    final String apiUrl = 'https://api.spoonacular.com/recipes/findByIngredients?ingredients=${_selectedIngredients.join(',')}&apiKey=9ecee3af427949d4b5e9831e0b458576';
+    final String apiUrl =
+        'https://api.spoonacular.com/recipes/findByIngredients?ingredients=${allIngredients.join(',')}&apiKey=9ecee3af427949d4b5e9831e0b458576';
     print("Fetching recipes with URL: $apiUrl");
 
     try {
@@ -209,6 +211,12 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Combine the selected ingredients and typed ingredients to show in the text field
+    String allIngredientsText = [
+      ..._selectedIngredients,
+      ..._ingredientController.text.split(',').map((e) => e.trim())
+    ].join(', ');
+
     return Scaffold(
       body: Column(
         children: [
@@ -230,6 +238,19 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                           onPressed: fetchRecipes, // Directly fetch recipes on search icon click
                         ),
                       ),
+                      onChanged: (text) {
+                        setState(() {
+                          // Update the ingredients text dynamically
+                        });
+                      },
+                    ),
+                  ),
+                  // Display the selected ingredients at the top of the screen
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    child: Wrap(
+                      spacing: 4.0,
+                      children: buildIngredientWidgets([..._selectedIngredients]),
                     ),
                   ),
                   buildCollapsibleContainer('Pantry Ingredients', pantryIngredients),
@@ -238,10 +259,6 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                   buildCollapsibleContainer('Dairy Products', dairyProducts),
                   buildCollapsibleContainer('Grains', grains),
                   buildCollapsibleContainer('Spices & Herbs', spicesHerbs),
-                  if (_isLoading)
-                    const Center(
-                      child: CircularProgressIndicator(),
-                    ),
                 ],
               ),
             ),
