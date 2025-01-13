@@ -7,27 +7,24 @@ import 'package:mobile_app/Screens/category_screen.dart';
 import 'package:mobile_app/Screens/ingredient_based_screen.dart';
 import 'package:mobile_app/Screens/meal_planner_screen.dart';
 import 'package:mobile_app/providers/theme_provider.dart';
-// import 'package:team_project/screens/category_screen.dart';
 import 'package:mobile_app/screens/saved_food_screen.dart';
 import 'package:mobile_app/screens/shopping_list_screen.dart';
-import 'package:mobile_app/screens/profile_screen.dart'; // Placeholder for Profile screen
+import 'package:mobile_app/screens/profile_screen.dart'; 
 import 'package:mobile_app/services/api_services.dart';
 import 'package:mobile_app/screens/recipe_details_screen.dart';
 import 'package:mobile_app/screens/search_results_screen.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
 
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+  with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   List<dynamic> _suggestions = [];
@@ -37,10 +34,9 @@ class _HomeScreenState extends State<HomeScreen>
   List<dynamic> _recentlyViewed = [];
   late List<int> likeCounts;
   late List<bool> isLiked;
-
+  bool _isIconPressed = false; 
   bool _isLoading = false;
   int _selectedIndex = 0;
-  String? _selectedCategory;
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   @override
@@ -49,8 +45,7 @@ class _HomeScreenState extends State<HomeScreen>
     _tabController = TabController(length: 2, vsync: this);
     _loadRandomRecipes(); // Load random recipes on init
     final random = Random();
-    likeCounts = List.generate(10,
-        (_) => random.nextInt(20) + 1); // Random like count between 1 and 100
+    likeCounts = List.generate(10,(_) => random.nextInt(20) + 1); // Random like count between 1 and 100
     isLiked = List.generate(10, (_) => false); // Initial liked state
   }
 
@@ -67,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  // Fetch random recipes for "Latest Recipes" section
   void _loadRandomRecipes() async {
     setState(() {
       _isLoading = true; // Show loading indicator
@@ -75,10 +69,8 @@ class _HomeScreenState extends State<HomeScreen>
 
     try {
       final randomRecipes = await ApiService().fetchRandomRecipes(number: 10);
-      // Filter recipes to include only those with an image
       final recipesWithImages = randomRecipes
-          .where(
-              (recipe) => recipe['image'] != null && recipe['image'].isNotEmpty)
+          .where((recipe) => recipe['image'] != null && recipe['image'].isNotEmpty)
           .toList();
 
       setState(() {
@@ -102,32 +94,31 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _searchRecipe() async {
-  final query = _searchController.text;
+    final query = _searchController.text;
 
-  if (query.isNotEmpty) {
-    try {
-      final apiService = ApiService();
-      final recipes = await apiService.fetchRecipes(query);
+    if (query.isNotEmpty) {
+      try {
+        final apiService = ApiService();
+        final recipes = await apiService.fetchRecipes(query);
 
-      setState(() {
-        _recipes = recipes;
-        _recentlyViewed = recipes;
-      });
+        setState(() {
+          _recipes = recipes;
+          _recentlyViewed = recipes;
+        });
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SearchResultsScreen(
-            searchQuery: query,
-            recipes: _recipes,
-            // Pass the parameter correctly
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SearchResultsScreen(
+              searchQuery: query,
+              recipes: _recipes,
+            ),
           ),
-        ),
-      );
-    } catch (error) {
-      if (kDebugMode) {
-        print('Error: $error');
-      }
+        );
+      } catch (error) {
+        if (kDebugMode) {
+          print('Error: $error');
+        }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -138,13 +129,9 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-
-// Update this method to call the API
-  // Update this method to call the API
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () async {
-      // Fetch suggestions from the API, matching the start of the query
       ApiService apiService = ApiService();
       try {
         var results = await apiService.fetchAutocompleteSuggestions(query);
@@ -160,7 +147,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _onSuggestionTap(Map<String, dynamic> suggestion) {
-    // Navigate to recipe details based on the selected suggestion
     _recentlyViewed.insert(0, suggestion);
     Navigator.push(
       context,
@@ -173,26 +159,22 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  // Bottom navigation bar action
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  // To show different app bar based on the current screen
-  bool _isIconPressed = false; // Track the icon press state
-
+  
   PreferredSizeWidget _buildAppBar() {
     if (_selectedIndex == 0) {
-      // Home Screen AppBar
       return AppBar(
         title: const Row(
           children: [
             Text(
-              'Cookify', // Top left title
+              'Cookify', 
               style: TextStyle(
-                fontWeight: FontWeight.bold, // Make the text bold
+                fontWeight: FontWeight.bold, 
                 color: Colors.white,
                 fontSize: 30,
               ),
@@ -205,32 +187,26 @@ class _HomeScreenState extends State<HomeScreen>
           IconButton(
             icon: Icon(Icons.calendar_today,
                 color: _isIconPressed
-                    ? customPurple
-                    : Colors.white), // Change color based on state
+                    ? customPurple: Colors.white), // Change color based on state
             onPressed: () {
-              // Toggle the icon color
               setState(() {
-                _isIconPressed = !_isIconPressed;
-              });
-
-              // Navigate to meal plan screen or action
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        MealPlanScreen(username: 'abc', templateId: '128')),
-              ).then((_) {
-                // Reset icon color after returning from MealPlannerScreen
-                setState(() {
-                  _isIconPressed = false;
+                  _isIconPressed = !_isIconPressed;
                 });
-              });
-            },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          MealPlanScreen(username: 'abc', templateId: '128')),
+                ).then((_) {
+                  setState(() {
+                    _isIconPressed = false;
+                  });
+                });
+              },
           ),
         ],
       );
     } else {
-      // Other Screens (do not show app bar)
       return PreferredSize(preferredSize: const Size(0, 0), child: Container());
     }
   }
@@ -238,13 +214,11 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(), // Use custom app bar method
+      appBar: _buildAppBar(), 
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          // Home Screen Content
           SingleChildScrollView(
-            // Added scrollable functionality
             child: Column(
               children: [
                 // Tab Navigation for Explore Recipe and What's in Your Kitchen
@@ -254,8 +228,8 @@ class _HomeScreenState extends State<HomeScreen>
                     Tab(text: 'Explore Recipe'),
                     Tab(text: "What's in Your Kitchen"),
                   ],
-                  labelColor: customPurple, // Selected tab color
-                  unselectedLabelColor: Colors.black, // Unselected tab color
+                  labelColor: customPurple, 
+                  unselectedLabelColor: Colors.black, 
                   indicatorColor: customPurple,
                 ),
 
@@ -264,17 +238,15 @@ class _HomeScreenState extends State<HomeScreen>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      // Content for "Explore Recipe" tab
                       Column(
                         children: [
-                          // Search Bar
+                          //search recipe
                           Padding(
                             padding: const EdgeInsets.only(
                                 left: 16.0, right: 16.0, top: 20.0),
                             child: TextField(
                               controller: _searchController,
                               onChanged: (query) {
-                                // Call the function to handle search
                                 _onSearchChanged(query);
                               },
                               decoration: InputDecoration(
@@ -282,9 +254,6 @@ class _HomeScreenState extends State<HomeScreen>
                                 labelStyle: TextStyle(color: customPurple),
                                 border: const OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.black),
-                                    ),
-                                focusedBorder: const OutlineInputBorder(
-                                    // borderSide: BorderSide(color: Colors.black),
                                     ),
                                 suffixIcon: IconButton(
                                   icon: Icon(Icons.search,
@@ -297,24 +266,18 @@ class _HomeScreenState extends State<HomeScreen>
 
                           if (_suggestions.isNotEmpty)
                             Positioned(
-                              top:
-                                  72, // Adjust this to position the dropdown above the TextField
-                              left: 16,
-                              right: 16,
+                              top: 72,left: 16,right: 16,
                               child: Material(
                                 color: Colors.transparent,
                                 child: SizedBox(
-                                  // color: Colors.white,
                                   height: 200,
                                   child: ListView.builder(
                                     itemCount: _suggestions.length,
                                     itemBuilder: (context, index) {
-                                      var suggestion =
-                                          _suggestions[index]['title'] ?? '';
+                                      var suggestion =_suggestions[index]['title'] ?? '';
                                       return ListTile(
                                         title: Text(suggestion),
-                                        onTap: () => _onSuggestionTap(
-                                            _suggestions[index]),
+                                        onTap: () => _onSuggestionTap(_suggestions[index]),
                                       );
                                     },
                                   ),
@@ -322,14 +285,13 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
 
-                          // Latest Recipes Section (Horizontally Scrollable)
+                          // Latest Recipes Section 
                            Padding(
                             padding: EdgeInsets.all(20.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Our Latest Recipes',
+                                Text('Our Latest Recipes',
                                   style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold),
@@ -338,175 +300,118 @@ class _HomeScreenState extends State<HomeScreen>
                                 // Add the "See All" button
                                 TextButton(
                                   onPressed: () {
-                                    // Navigate to AllRecipesScreen when clicked
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (BuildContext context) {
-                                          return AllRecipesScreen(recipes: _randomRecipes,initialLikeCounts: likeCounts,);
+                                          return AllRecipesScreen(recipes: _randomRecipes,
+                                          initialLikeCounts: likeCounts,
+                                          isLiked:isLiked,
+                                          toggleLike: toggleLike,);
                                         },
                                       ),
                                     );
-
                                   },
-                                  child: Text(
-                                    'See All',
+                                  child: Text('See All',
                                     style: TextStyle(
                                       color: customPurple, // Set the text color to customPurple
                                     ),
                                   ),
-
                                 ),
-
                               ],
                             ),
                           ),
 
-                          _isLoading
-                              ? const CircularProgressIndicator() // Show loading indicator while fetching data
+                          _isLoading? const CircularProgressIndicator() 
                               : Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 16.0), // Add left padding here
+                                  padding: const EdgeInsets.only(left: 16.0), 
                                   child: SizedBox(
-                                    height: 300, // Adjust height as needed
+                                    height: 300, 
                                     child: ListView.builder(
-                                      scrollDirection: Axis
-                                          .horizontal, // Horizontal scrolling for the list
-                                      itemCount: _randomRecipes
-                                          .length, // Number of recipes
+                                      scrollDirection: Axis.horizontal, 
+                                      itemCount: _randomRecipes.length, 
                                       itemBuilder: (context, index) {
                                         final recipe = _randomRecipes[index];
-
                                         return GestureDetector(
                                           onTap: () {
-                                            // Add the clicked recipe to recentlyViewed, avoiding duplicates
                                             setState(() {
-                                              if (!_recentlyViewed.any((item) =>
-                                                  item['id'] == recipe['id'])) {
-                                                _recentlyViewed.insert(0,
-                                                    recipe); // Add to the start for most recent first
+                                              if (!_recentlyViewed.any((item) =>item['id'] == recipe['id'])) {
+                                                _recentlyViewed.insert(0,recipe); 
                                               }
                                             });
                                             // Navigate to the recipe details screen
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) =>
-                                                    RecipeDetailScreen(
-                                                        recipeId: recipe['id']),
+                                                builder: (context) =>RecipeDetailScreen(recipeId: recipe['id']),
                                               ),
                                             );
                                           },
                                           child: SizedBox(
-                                            width:
-                                                250, // Fixed width for the card
+                                            width:250, 
                                             child: Card(
-                                              margin: const EdgeInsets.only(
-                                                  right: 16, bottom: 10),
+                                              margin: const EdgeInsets.only(right: 16, bottom: 10),
                                               child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                crossAxisAlignment:CrossAxisAlignment.start,
                                                 children: [
-                                                  // Image with curved border and time overlay
                                                   Stack(
                                                     children: [
-                                                      // Image with rounded corners
                                                       ClipRRect(
-                                                        borderRadius:
-                                                            const BorderRadius
-                                                                .only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  10),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  10),
+                                                        borderRadius:const BorderRadius.only(
+                                                          topLeft:Radius.circular(10),
+                                                          topRight:Radius.circular(10),
                                                         ),
-                                                        child: recipe[
-                                                                    'image'] !=
-                                                                null
-                                                            ? Image.network(
+                                                        child: recipe['image'] !=null? Image.network(
                                                                 recipe['image'],
                                                                 height: 200,
                                                                 width: 250,
-                                                                fit: BoxFit
-                                                                    .cover,
+                                                                fit: BoxFit.cover,
                                                                 errorBuilder:
-                                                                    (context,
-                                                                        error,
-                                                                        stackTrace) {
+                                                                    (context,error,stackTrace) {
                                                                   return Container(
                                                                     height: 200,
                                                                     width: 250,
-                                                                    color: Colors
-                                                                        .grey, // Placeholder color for error
-                                                                    child: const Icon(
-                                                                        Icons
-                                                                            .broken_image,
-                                                                        size:
-                                                                            60,
-                                                                        color: Colors
-                                                                            .white),
+                                                                    color: Colors.grey, 
+                                                                    child: const Icon(Icons.broken_image,
+                                                                        size:60,
+                                                                        color: Colors.white),
                                                                   );
                                                                 },
                                                               )
                                                             : Container(
                                                                 height: 200,
                                                                 width: 250,
-                                                                color: Colors
-                                                                    .grey, // Default placeholder color
-                                                                child: const Icon(
-                                                                    Icons
-                                                                        .fastfood,
+                                                                color: Colors.grey, 
+                                                                child: const Icon(Icons.fastfood,
                                                                     size: 60,
-                                                                    color: Colors
-                                                                        .white),
+                                                                    color: Colors.white),
                                                               ),
                                                       ),
+
                                                       // Time overlay in the top-left corner
                                                       Positioned(
                                                         top: 8,
                                                         left: 8,
                                                         child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal: 8,
-                                                                  vertical: 4),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    0,
-                                                                    0,
-                                                                    0)
-                                                                .withOpacity(
-                                                                    0.6),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
+                                                          padding:const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
+                                                          decoration:BoxDecoration(
+                                                            color: const Color.fromARGB(255,0,0,0).withOpacity(0.6),
+                                                            borderRadius:BorderRadius.circular(5),
                                                           ),
                                                           child: Row(
                                                             children: [
                                                               const Icon(
                                                                   Icons.timer,
                                                                   size: 14,
-                                                                  color: Colors
-                                                                      .white),
-                                                              const SizedBox(
-                                                                  width: 4),
+                                                                  color: Colors.white),
+                                                              const SizedBox(width: 4),
                                                               Text(
-                                                                recipe['readyInMinutes'] !=
-                                                                        null
+                                                                recipe['readyInMinutes'] !=null
                                                                     ? '${recipe['readyInMinutes']} mins'
                                                                     : 'N/A',
                                                                 style: const TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .white),
+                                                                    fontSize:12,
+                                                                    color: Colors.white),
                                                               ),
                                                             ],
                                                           ),
@@ -517,53 +422,27 @@ class _HomeScreenState extends State<HomeScreen>
                                                         bottom: 8,
                                                         right: 8,
                                                         child: GestureDetector(
-                                                          onTap: () => toggleLike(
-                                                              index), // Pass the index here
+                                                          onTap: () => toggleLike(index), 
                                                           child: Container(
                                                             padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        8,
-                                                                    vertical:
-                                                                        4),
+                                                                const EdgeInsets.symmetric(horizontal:8,vertical:4),
                                                             decoration:
-                                                                BoxDecoration(
-                                                              color: Colors
-                                                                  .black
-                                                                  .withOpacity(
-                                                                      0.6), // Keep background color unchanged
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
+                                                                BoxDecoration(color: Colors.black.withOpacity(0.6), // Keep background color unchanged
+                                                              borderRadius:BorderRadius.circular(5),
                                                             ),
                                                             child: Row(
                                                               children: [
                                                                 Icon(
-                                                                  Icons
-                                                                      .thumb_up,
+                                                                  Icons.thumb_up,
                                                                   size: 14,
-                                                                  color: isLiked[
-                                                                          index]
-                                                                      ? const Color
-                                                                          .fromARGB(
-                                                                          255,
-                                                                          93,
-                                                                          167,
-                                                                          199)
-                                                                      : Colors
-                                                                          .white, // Change icon color based on the like state
+                                                                  color: isLiked[index]? const Color.fromARGB(255,93,167,199): Colors.white, // Change icon color based on the like state
                                                                 ),
-                                                                const SizedBox(
-                                                                    width: 4),
+                                                                const SizedBox(width: 4),
                                                                 Text(
-                                                                  '${likeCounts[index]}', // Use the specific like count for this item
+                                                                  '${likeCounts[index]}', 
                                                                   style: const TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      color: Colors
-                                                                          .white),
+                                                                      fontSize:12,
+                                                                      color: Colors.white),
                                                                 ),
                                                               ],
                                                             ),
@@ -574,16 +453,11 @@ class _HomeScreenState extends State<HomeScreen>
                                                   ),
                                                   // Recipe Title
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                      recipe['title'] ??
-                                                          'No Title', // Fallback for missing title
+                                                    padding:const EdgeInsets.all(8.0),
+                                                    child: Text(recipe['title'] ??'No Title', // Fallback for missing title
                                                       style: const TextStyle(
                                                           fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                                          fontWeight:FontWeight.bold),
                                                     ),
                                                   ),
                                                 ],
@@ -603,27 +477,20 @@ class _HomeScreenState extends State<HomeScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  'Today\'s Recipe', // Title for today's recipe
+                                  'Today\'s Recipe', 
                                   style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                const SizedBox(
-                                    height:
-                                        20), // Add some space between the title and the recipe
+                                const SizedBox(height:20), // Add some space between the title and the recipe
                                 _isLoading
                                     ? const CircularProgressIndicator() // Show loading indicator while fetching data
                                     : GestureDetector(
                                         onTap: () {
                                           // Add the clicked recipe to recentlyViewed, avoiding duplicates
                                           setState(() {
-                                            if (!_recentlyViewed.any((item) =>
-                                                item['id'] ==
-                                                _randomRecipes[9]['id'])) {
-                                              _recentlyViewed.insert(
-                                                  0,
-                                                  _randomRecipes[
-                                                      9]); // Add to the start for most recent first
+                                            if (!_recentlyViewed.any((item) =>item['id'] ==_randomRecipes[9]['id'])) {
+                                              _recentlyViewed.insert(0,_randomRecipes[9]); // Add to the start for most recent first
                                             }
                                           });
                                           // Navigate to the recipe details screen
@@ -631,76 +498,50 @@ class _HomeScreenState extends State<HomeScreen>
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  RecipeDetailScreen(
-                                                      recipeId:
-                                                          _randomRecipes[9]
-                                                              ['id']),
+                                                  RecipeDetailScreen(recipeId:_randomRecipes[9]['id']),
                                             ),
                                           );
                                         },
                                         child: SizedBox(
-                                          height:
-                                              300, // Adjust height as needed
+                                          height:300, // Adjust height as needed
                                           width: 400,
                                           child: Card(
-                                            margin:
-                                                const EdgeInsets.only(top: 10),
+                                            margin:const EdgeInsets.only(top: 10),
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              crossAxisAlignment:CrossAxisAlignment.start,
                                               children: [
-                                                // Image with curved border and time overlay
                                                 Stack(
                                                   children: [
                                                     ClipRRect(
-                                                      borderRadius:
-                                                          const BorderRadius
-                                                              .only(
-                                                        topLeft:
-                                                            Radius.circular(10),
-                                                        topRight:
-                                                            Radius.circular(10),
+                                                      borderRadius:const BorderRadius.only(
+                                                        topLeft:Radius.circular(10),
+                                                        topRight:Radius.circular(10),
                                                       ),
-                                                      child: _randomRecipes
-                                                                  .isNotEmpty &&
-                                                              _randomRecipes[9][
-                                                                      'image'] !=
-                                                                  null
-                                                          ? Image.network(
-                                                              _randomRecipes[9][
-                                                                  'image'], // Use the first recipe image
+                                                      child: _randomRecipes.isNotEmpty && _randomRecipes[9]['image'] !=null
+                                                          ? Image.network(_randomRecipes[9]['image'], // Use the first recipe image
                                                               height: 200,
                                                               width: 400,
                                                               fit: BoxFit.cover,
                                                               errorBuilder:
-                                                                  (context,
-                                                                      error,
-                                                                      stackTrace) {
+                                                                  (context,error,stackTrace) {
                                                                 return Container(
                                                                   height: 200,
                                                                   width: 400,
-                                                                  color: Colors
-                                                                      .grey, // Placeholder color for error
-                                                                  child: const Icon(
-                                                                      Icons
-                                                                          .broken_image,
+                                                                  color: Colors.grey, // Placeholder color for error
+                                                                  child: const Icon(Icons.broken_image,
                                                                       size: 60,
-                                                                      color: Colors
-                                                                          .white),
+                                                                      color: Colors.white),
                                                                 );
                                                               },
                                                             )
                                                           : Container(
                                                               height: 200,
                                                               width: 400,
-                                                              color: Colors
-                                                                  .grey, // Default placeholder color
+                                                              color: Colors.grey, // Default placeholder color
                                                               child: const Icon(
-                                                                  Icons
-                                                                      .fastfood,
+                                                                  Icons.fastfood,
                                                                   size: 60,
-                                                                  color: Colors
-                                                                      .white),
+                                                                  color: Colors.white),
                                                             ),
                                                     ),
                                                     // Time overlay in the top-left corner
@@ -709,42 +550,27 @@ class _HomeScreenState extends State<HomeScreen>
                                                       left: 8,
                                                       child: Container(
                                                         padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
+                                                            const EdgeInsets.symmetric(
                                                                 horizontal: 8,
                                                                 vertical: 4),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: const Color
-                                                                  .fromARGB(
-                                                                  255, 0, 0, 0)
-                                                              .withOpacity(0.6),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5),
+                                                        decoration:BoxDecoration(
+                                                          color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.6),
+                                                          borderRadius:BorderRadius.circular(5),
                                                         ),
                                                         child: Row(
                                                           children: [
                                                             const Icon(
                                                                 Icons.timer,
                                                                 size: 14,
-                                                                color: Colors
-                                                                    .white),
-                                                            const SizedBox(
-                                                                width: 4),
+                                                                color: Colors.white),
+                                                            const SizedBox(width: 4),
                                                             Text(
-                                                              _randomRecipes
-                                                                          .isNotEmpty &&
-                                                                      _randomRecipes[0]
-                                                                              [
-                                                                              'readyInMinutes'] !=
-                                                                          null
+                                                              _randomRecipes.isNotEmpty &&_randomRecipes[0]['readyInMinutes'] !=null
                                                                   ? '${_randomRecipes[0]['readyInMinutes']} mins'
                                                                   : 'N/A',
                                                               style: const TextStyle(
                                                                   fontSize: 12,
-                                                                  color: Colors
-                                                                      .white),
+                                                                  color: Colors.white),
                                                             ),
                                                           ],
                                                         ),
@@ -755,50 +581,27 @@ class _HomeScreenState extends State<HomeScreen>
                                                       bottom: 8,
                                                       right: 8,
                                                       child: GestureDetector(
-                                                        onTap: () => toggleLike(
-                                                            0), // Use index for "Today's Recipe" (0 in this case)
+                                                        onTap: () => toggleLike(9), // Use index for "Today's Recipe" (0 in this case)
                                                         child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal: 8,
-                                                                  vertical: 4),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.6),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
+                                                          padding:const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
+                                                          decoration:BoxDecoration(
+                                                            color: Colors.black.withOpacity( 0.6),
+                                                            borderRadius:BorderRadius.circular(5),
                                                           ),
                                                           child: Row(
                                                             children: [
                                                               Icon(
-                                                                Icons
-                                                                    .thumb_up, // Thumbs-up icon
+                                                                Icons.thumb_up, // Thumbs-up icon
                                                                 size: 14,
-                                                                color: isLiked[
-                                                                        9]
-                                                                    ? const Color
-                                                                        .fromARGB(
-                                                                        255,
-                                                                        93,
-                                                                        167,
-                                                                        199)
-                                                                    : Colors
-                                                                        .white,
+                                                                color: isLiked[9]? const Color.fromARGB(255,93,167,199)
+                                                                    : Colors.white,
                                                               ),
-                                                              const SizedBox(
-                                                                  width: 4),
+                                                              const SizedBox(width: 4),
                                                               Text(
                                                                 '${likeCounts[9]}', // Like count for "Today's Recipe"
                                                                 style: const TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .white),
+                                                                    fontSize:12,
+                                                                    color: Colors.white),
                                                               ),
                                                             ],
                                                           ),
@@ -809,18 +612,12 @@ class _HomeScreenState extends State<HomeScreen>
                                                 ),
                                                 // Recipe Title
                                                 Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                    _randomRecipes.isNotEmpty
-                                                        ? _randomRecipes[9]
-                                                                ['title'] ??
-                                                            'No Title'
+                                                  padding:const EdgeInsets.all(8.0),
+                                                  child: Text(_randomRecipes.isNotEmpty? _randomRecipes[9]['title'] ??'No Title'
                                                         : 'No Recipe Available',
                                                     style: const TextStyle(
                                                         fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                                        fontWeight:FontWeight.bold),
                                                   ),
                                                 ),
                                               ],
@@ -828,9 +625,9 @@ class _HomeScreenState extends State<HomeScreen>
                                           ),
                                         ),
                                       ),
-                              ],
-                            ),
-                          ),
+                                    ],
+                                  ),
+                                ),
 
                           // Quick Links For You Section
                           Padding(
@@ -868,14 +665,12 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                           ),
 
-                          // Recently Viewed Foods Section
-
+                          
                           // Title for Recently Viewed Foods
                           const Padding(
                             padding: EdgeInsets.all(20.0),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment
-                                  .start, // Align text to the left
+                              mainAxisAlignment: MainAxisAlignment.start, // Align text to the left
                               children: [
                                 Text(
                                   'Recently Viewed Foods',
@@ -887,84 +682,58 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                           ),
                           const SizedBox(  height:  10),
-                          // Check if there are any recently viewed recipes
                           _recentlyViewed.isEmpty
                               ? const Center(
                                   child: Text('No recently viewed foods'))
                               : Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 16.0), // Add padding
+                                  padding: const EdgeInsets.only(left: 16.0), // Add padding
                                   child: SizedBox(
                                     height: 300, // Adjust height as needed
                                     child: ListView.builder(
-                                      scrollDirection: Axis
-                                          .horizontal, // Horizontal scrolling
+                                      scrollDirection: Axis.horizontal, // Horizontal scrolling
                                       itemCount: _recentlyViewed.length,
                                       itemBuilder: (context, index) {
                                         final recipe = _recentlyViewed[index];
 
                                         return GestureDetector(
                                           onTap: () {
-                                            // Navigate to the recipe details screen
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) =>
-                                                    RecipeDetailScreen(
-                                                        recipeId: recipe['id']),
+                                                builder: (context) =>RecipeDetailScreen(recipeId: recipe['id']),
                                               ),
                                             );
                                           },
                                           child: SizedBox(
-                                            width:
-                                                250, // Fixed width for the card
+                                            width:250, // Fixed width for the card
                                             child: Card(
-                                              margin: const EdgeInsets.only(
-                                                  right: 16, bottom: 10),
+                                              margin: const EdgeInsets.only(right: 16, bottom: 10),
                                               child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                crossAxisAlignment:CrossAxisAlignment.start,
                                                 children: [
-                                                  // Image with time and like overlay
                                                   Stack(
                                                     children: [
-                                                      // Recipe Image
                                                       ClipRRect(
-                                                        borderRadius:
-                                                            const BorderRadius
-                                                                .only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  10),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  10),
+                                                        borderRadius:const BorderRadius.only(
+                                                          topLeft:Radius.circular(10),
+                                                          topRight:Radius.circular(10),
                                                         ),
-                                                        child: recipe[
-                                                                    'image'] !=
-                                                                null
+                                                        child: recipe['image'] !=null
                                                             ? Image.network(
                                                                 recipe['image'],
                                                                 height: 200,
                                                                 width: 250,
-                                                                fit: BoxFit
-                                                                    .cover,
+                                                                fit: BoxFit.cover,
                                                                 errorBuilder:
-                                                                    (context,
-                                                                        error,
-                                                                        stackTrace) {
+                                                                    (context,error,stackTrace) {
                                                                   return Container(
                                                                     height: 200,
                                                                     width: 250,
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    child:
-                                                                        const Icon(
-                                                                      Icons
-                                                                          .broken_image,
+                                                                    color: Colors.grey,
+                                                                    child:const Icon(
+                                                                      Icons.broken_image,
                                                                       size: 60,
-                                                                      color: Colors
-                                                                          .white,
+                                                                      color: Colors.white,
                                                                     ),
                                                                   );
                                                                 },
@@ -972,15 +741,11 @@ class _HomeScreenState extends State<HomeScreen>
                                                             : Container(
                                                                 height: 200,
                                                                 width: 250,
-                                                                color:
-                                                                    Colors.grey,
-                                                                child:
-                                                                    const Icon(
-                                                                  Icons
-                                                                      .fastfood,
+                                                                color:Colors.grey,
+                                                                child:const Icon(
+                                                                  Icons.fastfood,
                                                                   size: 60,
-                                                                  color: Colors
-                                                                      .white,
+                                                                  color: Colors.white,
                                                                 ),
                                                               ),
                                                       ),
@@ -991,40 +756,26 @@ class _HomeScreenState extends State<HomeScreen>
                                                         left: 8,
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal: 8,
-                                                                  vertical: 4),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.6),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
+                                                              const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
+                                                          decoration:BoxDecoration(
+                                                            color: Colors.black.withOpacity(0.6),
+                                                            borderRadius:BorderRadius.circular(5),
                                                           ),
                                                           child: Row(
                                                             children: [
                                                               const Icon(
                                                                 Icons.timer,
                                                                 size: 14,
-                                                                color: Colors
-                                                                    .white,
+                                                                color: Colors.white,
                                                               ),
-                                                              const SizedBox(
-                                                                  width: 4),
+                                                              const SizedBox(width: 4),
                                                               Text(
-                                                                recipe['readyInMinutes'] !=
-                                                                        null
+                                                                recipe['readyInMinutes'] !=null
                                                                     ? '${recipe['readyInMinutes']} mins'
                                                                     : 'N/A',
-                                                                style:
-                                                                    const TextStyle(
+                                                                style:const TextStyle(
                                                                   fontSize: 12,
-                                                                  color: Colors
-                                                                      .white,
+                                                                  color: Colors.white,
                                                                 ),
                                                               ),
                                                             ],
@@ -1037,54 +788,29 @@ class _HomeScreenState extends State<HomeScreen>
                                                         bottom: 8,
                                                         right: 8,
                                                         child: GestureDetector(
-                                                          onTap: () => toggleLike(
-                                                              index), // Toggle like
+                                                          onTap: () => toggleLike(index), // Toggle like
                                                           child: Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        8,
-                                                                    vertical:
-                                                                        4),
+                                                            padding:const EdgeInsets.symmetric(horizontal: 8,vertical:4),
                                                             decoration:
                                                                 BoxDecoration(
-                                                              color: Colors
-                                                                  .black
-                                                                  .withOpacity(
-                                                                      0.6),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
+                                                              color: Colors.black.withOpacity( 0.6),
+                                                              borderRadius:BorderRadius.circular( 5),
                                                             ),
                                                             child: Row(
                                                               children: [
                                                                 Icon(
-                                                                  Icons
-                                                                      .thumb_up,
+                                                                  Icons.thumb_up,
                                                                   size: 14,
-                                                                  color: isLiked[
-                                                                          index]
-                                                                      ? const Color
-                                                                          .fromARGB(
-                                                                          255,
-                                                                          93,
-                                                                          167,
-                                                                          199)
-                                                                      : Colors
-                                                                          .white, // Change based on state
+                                                                  color: isLiked[index]
+                                                                      ? const Color.fromARGB(255,93,167,199)
+                                                                      : Colors.white, // Change based on state
                                                                 ),
-                                                                const SizedBox(
-                                                                    width: 4),
+                                                                const SizedBox(width: 4),
                                                                 Text(
                                                                   '${likeCounts[index]}', // Display like count
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .white,
+                                                                  style: const TextStyle(
+                                                                    fontSize:12,
+                                                                    color: Colors.white,
                                                                   ),
                                                                 ),
                                                               ],
@@ -1097,12 +823,8 @@ class _HomeScreenState extends State<HomeScreen>
 
                                                   // Recipe Title
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                      recipe['title'] ??
-                                                          'No Title',
+                                                    padding:const EdgeInsets.all(8.0),
+                                                    child: Text(recipe['title'] ?? 'No Title',
                                                       style: const TextStyle(
                                                         fontSize: 16,
                                                         fontWeight:

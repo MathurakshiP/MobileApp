@@ -2,33 +2,22 @@ import 'package:flutter/material.dart';
 
 class AllRecipesScreen extends StatefulWidget {
   final List<dynamic> recipes;
-  final List<int> initialLikeCounts; // Like counts passed from HomeScreen
-
-  // Constructor to receive recipes and initial like counts
-  AllRecipesScreen({required this.recipes, required this.initialLikeCounts});
+  late List<int> initialLikeCounts; 
+  late List<bool> isLiked;
+  late void Function(int index) toggleLike;
+  AllRecipesScreen({required this.recipes, required this.initialLikeCounts, required this.isLiked,required this.toggleLike});
 
   @override
   _AllRecipesScreenState createState() => _AllRecipesScreenState();
 }
 
 class _AllRecipesScreenState extends State<AllRecipesScreen> {
-  late List<int> likeCounts;
+ 
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
-  @override
-  void initState() {
-    super.initState();
-    // Initialize likeCounts with the initial like counts passed from HomeScreen
-    likeCounts = List.from(widget.initialLikeCounts);
-  }
 
-  // Update the like count when the like button is pressed
-  void toggleLike(int index) {
-    setState(() {
-      // Toggle the like status (increase or decrease the like count)
-      likeCounts[index]++;
-    });
-  }
+  
 
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,8 +26,9 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
           fontWeight: FontWeight.bold, 
           color: Colors.white, 
           fontSize: 20,
-        )),
-        backgroundColor: customPurple, // Color for AppBar
+        ),
+        ),
+        backgroundColor: customPurple, 
       ),
       body: widget.recipes.isEmpty
           ? const Center(child: Text('No recipes available.'))
@@ -46,11 +36,10 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
               itemCount: widget.recipes.length,
               itemBuilder: (context, index) {
                 final recipe = widget.recipes[index];
-
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0), // Gaps between items
+                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0), 
                   child: SizedBox(
-                    height: 300, // Adjust height as needed
+                    height: 300, 
                     child: Card(
                       margin: const EdgeInsets.only(top: 10),
                       shape: RoundedRectangleBorder(
@@ -60,7 +49,6 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Image with curved border and time overlay
                           Stack(
                             children: [
                               ClipRRect(
@@ -70,7 +58,7 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
                                 ),
                                 child: recipe['image'] != null
                                     ? Image.network(
-                                        recipe['image'], // Use recipe image
+                                        recipe['image'], 
                                         height: 200,
                                         width: double.infinity,
                                         fit: BoxFit.cover,
@@ -78,7 +66,7 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
                                           return Container(
                                             height: 200,
                                             width: double.infinity,
-                                            color: Colors.grey, // Placeholder color for error
+                                            color: Colors.grey, 
                                             child: const Icon(
                                               Icons.broken_image,
                                               size: 60,
@@ -90,7 +78,7 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
                                     : Container(
                                         height: 200,
                                         width: double.infinity,
-                                        color: Colors.grey, // Default placeholder color
+                                        color: Colors.grey, 
                                         child: const Icon(
                                           Icons.fastfood,
                                           size: 60,
@@ -106,8 +94,7 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: const Color.fromARGB(255, 0, 0, 0)
-                                        .withOpacity(0.6),
+                                    color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.6),
                                     borderRadius: BorderRadius.circular(5),
                                   ),
                                   child: Row(
@@ -131,7 +118,7 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
                                 bottom: 8,
                                 right: 8,
                                 child: GestureDetector(
-                                  onTap: () => toggleLike(index), // Pass index here
+                                  onTap: () => widget.toggleLike(index), // Pass index here
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 4),
@@ -142,15 +129,16 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
                                     child: Row(
                                       children: [
                                         Icon(
-                                          Icons.thumb_up, // Thumbs-up icon
+                                          Icons.thumb_up,
                                           size: 14,
-                                          color: Colors.white,
+                                          color: widget.isLiked[index]? const Color.fromARGB(255,93,167,199): Colors.white, // Change icon color based on the like state
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          '${likeCounts[index]}', // Like count
+                                          '${widget.initialLikeCounts[index]}', // Use the specific like count for this item
                                           style: const TextStyle(
-                                              fontSize: 12, color: Colors.white),
+                                              fontSize:12,
+                                              color: Colors.white),
                                         ),
                                       ],
                                     ),
