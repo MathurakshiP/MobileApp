@@ -181,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen(userData: {},)),
       );
     } on FirebaseAuthException catch (e) {
       showErrorSnackbar(e.message ?? 'Error occurred while signing in');
@@ -317,7 +317,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute(builder: (context) => const HomeScreen(userData: {})),
                   );
                 },
                 child: const Text('Do it Later'),
