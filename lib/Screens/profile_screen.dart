@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/Screens/change_password_screen.dart';
 import 'package:mobile_app/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -125,7 +126,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               leading: const Icon(Icons.lock),
               title: const Text('Change Password'),
               onTap: () {
-                // Navigate to Change Password Screen or handle the logic
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
+                ); // Navigate to Change Password Screen or handle the logic
               },
             ),
             ListTile(
