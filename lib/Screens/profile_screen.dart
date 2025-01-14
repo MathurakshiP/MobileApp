@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/Screens/RateUsScreen.dart';
+import 'package:mobile_app/Screens/change_password_screen.dart';
 import 'package:mobile_app/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -8,8 +10,6 @@ import 'package:provider/provider.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
-
-  
 
   @override
   // ignore: library_private_types_in_public_api
@@ -39,7 +39,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-
   void _logOut() {
     FirebaseAuth.instance.signOut();
     Navigator.pushReplacementNamed(context, '/');
@@ -49,11 +48,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile',style: TextStyle(
-                fontWeight: FontWeight.bold, // Make the text bold
-                color: Colors.white,
-                fontSize: 20,),
-                ),
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold, // Make the text bold
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
         backgroundColor: customPurple,
         automaticallyImplyLeading: false,
         actions: [
@@ -91,7 +93,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundImage: NetworkImage(userImage), // User's profile picture
+                    backgroundImage:
+                        NetworkImage(userImage), // User's profile picture
                   ),
                   const SizedBox(width: 16),
                   Column(
@@ -99,7 +102,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Text(
                         userName,
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -125,7 +129,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               leading: const Icon(Icons.lock),
               title: const Text('Change Password'),
               onTap: () {
-                // Navigate to Change Password Screen or handle the logic
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChangePasswordScreen()),
+                ); // Navigate to Change Password Screen or handle the logic
               },
             ),
             ListTile(
@@ -166,14 +174,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // Show Help & Support page or navigate to its screen
               },
             ),
+
             ListTile(
               leading: const Icon(Icons.rate_review),
               title: const Text('Rate Us'),
               onTap: () {
-                // Logic to redirect user to app rating page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RateUsScreen()),
+                ); // Logic to redirect user to app rating page
               },
             ),
-            const Divider(),
 
             // Dark Mode Setting
             Padding(
@@ -186,9 +197,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const Text('Dark Mode', style: TextStyle(fontSize: 18)),
                       Switch(
                         value: themeProvider.isDarkMode,
-                       onChanged: (bool value) {
-              themeProvider.toggleTheme(); // Toggle the theme when the Switch is changed
-            }, // Toggle theme
+                        onChanged: (bool value) {
+                          themeProvider
+                              .toggleTheme(); // Toggle the theme when the Switch is changed
+                        }, // Toggle theme
                       ),
                     ],
                   );
@@ -206,10 +218,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: const Text(
                     'Log Out',
                     style: TextStyle(
-                fontWeight: FontWeight.bold, // Make the text bold
-                color: Colors.white,
+                      fontWeight: FontWeight.bold, // Make the text bold
+                      color: Colors.white,
                     ),
-                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 255, 191, 0),
                   ),
@@ -230,7 +242,8 @@ class EditProfileDialog extends StatefulWidget {
   final String currentImage;
   final Function(String, String, String) onSave;
 
-  const EditProfileDialog({super.key, 
+  const EditProfileDialog({
+    super.key,
     required this.currentName,
     required this.currentEmail,
     required this.currentImage,

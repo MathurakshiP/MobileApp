@@ -17,7 +17,8 @@ import 'package:provider/provider.dart';
 import 'dart:math';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Map<String, dynamic> userData;
+  const HomeScreen({Key? key, required this.userData}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
