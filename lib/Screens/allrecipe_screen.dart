@@ -5,7 +5,7 @@ class AllRecipesScreen extends StatefulWidget {
   late List<int> initialLikeCounts; 
   late List<bool> isLiked;
   late void Function(int index) toggleLike;
-  AllRecipesScreen({required this.recipes, required this.initialLikeCounts, required this.isLiked,required this.toggleLike});
+  AllRecipesScreen({super.key, required this.recipes, required this.initialLikeCounts, required this.isLiked,required this.toggleLike});
 
   @override
   _AllRecipesScreenState createState() => _AllRecipesScreenState();
