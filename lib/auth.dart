@@ -12,6 +12,11 @@ class Auth {
   // Stream to listen to authentication state changes
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
+  // Get the current user's ID
+  String? getCurrentUserId() {
+    return _firebaseAuth.currentUser?.uid;
+  }
+
   // Sign in user with email and password
   Future<void> signInWithEmailAndPassword({
     required String email,
@@ -37,7 +42,7 @@ class Auth {
     // Update the user's display name in Firebase Authentication
     await userCredential.user!.updateDisplayName(name);
     await userCredential.user!.reload();
-    
+
     // After user is created, save additional user data to Firestore
     await _saveUserData(userCredential.user!, name);
 
@@ -48,33 +53,32 @@ class Auth {
   Future<void> _saveUserData(User user, String name) async {
     print('email');
     try {
-
-      // Save the user data to the 'users' collection
       await _firestore.collection('users').doc(user.uid).set({
         'email': user.email,
         'name': name, // Save name
         'display': name,
-        
       });
 
-      // Create 'recently_viewed' subcollection for the user with an actual document
       await _firestore
           .collection('users')
           .doc(user.uid)
           .collection('recently_viewed')
-          .doc('initial_document') // Use a real document instead of a dummy one
+          .doc('initial_document')
           .set({
         'initialized': true,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      print("User data saved and 'recently_viewed' subcollection created.");
+      if (kDebugMode) {
+        print("User data saved and 'recently_viewed' subcollection created.");
+      }
     } catch (e) {
-      print("Error saving user data: $e");
+      if (kDebugMode) {
+        print("Error saving user data: $e");
+      }
       throw Exception("Error saving user data to Firestore");
     }
   }
-
 
   // Save recently viewed recipe to the user's subcollection
   Future<void> saveRecentlyViewedRecipe(String recipeId, String title, String image) async {
@@ -82,14 +86,12 @@ class Auth {
     if (user != null) {
       final userId = user.uid;
 
-      // Reference to the 'recently_viewed' subcollection for this user
       final recentlyViewedRef = FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
           .collection('recently_viewed');
 
       try {
-        // Add or update a document with the given recipeId
         await recentlyViewedRef.doc(recipeId).set({
           'recipeId': recipeId,
           'title': title,
@@ -129,9 +131,13 @@ class Auth {
       await _firestore.collection('users').doc(user.uid).update({
         'name': name,
       });
-      print("User data updated successfully.");
+      if (kDebugMode) {
+        print("User data updated successfully.");
+      }
     } catch (e) {
-      print("Error updating user data: $e");
+      if (kDebugMode) {
+        print("Error updating user data: $e");
+      }
       throw Exception("Error updating user data in Firestore");
     }
   }
@@ -144,7 +150,6 @@ class Auth {
         await user.updatePassword(newPassword);
         await user.reload(); // Ensure the change is reflected
       } catch (e) {
-        // Handle errors (e.g., re-authentication required)
         throw Exception('Password update failed: $e');
       }
     }
