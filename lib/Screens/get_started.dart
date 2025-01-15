@@ -198,10 +198,11 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final userCredential = await Auth().createUserWithEmailAndPassword(
+        name: nameController.text.trim(),
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      await userCredential.user!.updateDisplayName(nameController.text.trim());
+      //await userCredential.user!.updateDisplayName(name);
       setState(() => isLogin = true); // Switch to Login view
       clearTextFields();
       showSuccessSnackbar('Account created successfully! Please log in.');

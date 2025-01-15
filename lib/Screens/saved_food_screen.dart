@@ -1,25 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/recipe_details_screen.dart';
 import 'package:mobile_app/providers/saved_food_provider.dart';
-import 'package:provider/provider.dart'; // Import Provider package
-// import 'package:mobile_app/providers/saved_food_provider.dart';
-// import 'package:mobile_app/screens/recipe_details_screen.dart'; // Import RecipeDetailScreen
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SavedFoodScreen extends StatelessWidget {
+class SavedFoodScreen extends StatefulWidget {
   const SavedFoodScreen({super.key});
+
+  @override
+  _SavedFoodScreenState createState() => _SavedFoodScreenState();
+}
+
+class _SavedFoodScreenState extends State<SavedFoodScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Fetch the saved recipes when the screen is loaded
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final savedFoodProvider = Provider.of<SavedFoodProvider>(context, listen: false);
+      savedFoodProvider.fetchSavedRecipes(user.uid);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final savedFoodProvider = Provider.of<SavedFoodProvider>(context);
     final savedRecipes = savedFoodProvider.savedRecipes;
     Color customPurple = const Color.fromARGB(255, 96, 26, 182);
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Saved Recipes',style: TextStyle(
-                fontWeight: FontWeight.bold, // Make the text bold
-                color: Colors.white,
-                fontSize: 20,),),
+        title: const Text(
+          'Saved Recipes',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
         backgroundColor: customPurple,
         automaticallyImplyLeading: false,
       ),
@@ -40,7 +60,7 @@ class SavedFoodScreen extends StatelessWidget {
                     icon: const Icon(Icons.favorite, color: Colors.red),
                     onPressed: () {
                       // Remove the recipe from saved list
-                      savedFoodProvider.removeRecipes(recipe);
+                      savedFoodProvider.removeRecipe(recipe);
                     },
                   ),
                   onTap: () {
