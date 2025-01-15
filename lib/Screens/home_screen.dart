@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/allrecipe_screen.dart';
@@ -15,6 +17,7 @@ import 'package:mobile_app/screens/recipe_details_screen.dart';
 import 'package:mobile_app/screens/search_results_screen.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
+import 'package:mobile_app/Screens/recently_viewed_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -45,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadRandomRecipes(); // Load random recipes on init
+    _loadRecentlyViewedRecipes();
     final random = Random();
     likeCounts = List.generate(10,(_) => random.nextInt(20) + 1); // Random like count between 1 and 100
     isLiked = List.generate(10, (_) => false); // Initial liked state
@@ -61,6 +65,34 @@ class _HomeScreenState extends State<HomeScreen>
       isLiked[index] = !isLiked[index];
       likeCounts[index] += isLiked[index] ? 1 : -1;
     });
+  }
+
+   // Fetch recently viewed recipes from Firestore
+  Future<void> _loadRecentlyViewedRecipes() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final userId = user.uid;
+
+      final recentlyViewedRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('recently_viewed')
+          .orderBy('viewedAt', descending: true)
+          .limit(10);
+
+      final querySnapshot = await recentlyViewedRef.get();
+
+      setState(() {
+        _recentlyViewed = querySnapshot.docs
+            .map((doc) => {
+                  'recipeId': doc['recipeId'],
+                  'title': doc['title'],
+                  'image': doc['image'],
+                })
+            .toList();
+      });
+    }
   }
 
   void _loadRandomRecipes() async {
@@ -667,181 +699,183 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
 
                           
-                          // Title for Recently Viewed Foods
-                          const Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start, // Align text to the left
-                              children: [
-                                Text(
-                                  'Recently Viewed Foods',
-                                  style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(  height:  10),
-                          _recentlyViewed.isEmpty
-                              ? const Center(
-                                  child: Text('No recently viewed foods'))
-                              : Padding(
-                                  padding: const EdgeInsets.only(left: 16.0), // Add padding
-                                  child: SizedBox(
-                                    height: 300, // Adjust height as needed
-                                    child: ListView.builder(
-                                      scrollDirection: Axis.horizontal, // Horizontal scrolling
-                                      itemCount: _recentlyViewed.length,
-                                      itemBuilder: (context, index) {
-                                        final recipe = _recentlyViewed[index];
+                        //   // Title for Recently Viewed Foods
+                        //   const Padding(
+                        //     padding: EdgeInsets.all(20.0),
+                        //     child: Row(
+                        //       mainAxisAlignment: MainAxisAlignment.start, // Align text to the left
+                        //       children: [
+                        //         Text(
+                        //           'Recently Viewed Foods',
+                        //           style: TextStyle(
+                        //               fontSize: 22,
+                        //               fontWeight: FontWeight.bold),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        //   const SizedBox(  height:  20),
+                        //   _recentlyViewed.isEmpty
+                        //       ? const Center(
+                        //           child: Text('No recently viewed foods'))
+                        //       : Padding(
+                        //           padding: const EdgeInsets.only(left: 16.0), // Add padding
+                        //           child: SizedBox(
+                        //             height: 300, // Adjust height as needed
+                        //             child: ListView.builder(
+                        //               scrollDirection: Axis.horizontal, // Horizontal scrolling
+                        //               itemCount: _recentlyViewed.length,
+                        //               itemBuilder: (context, index) {
+                        //                 final recipe = _recentlyViewed[index];
 
-                                        return GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>RecipeDetailScreen(recipeId: recipe['id']),
-                                              ),
-                                            );
-                                          },
-                                          child: SizedBox(
-                                            width:250, // Fixed width for the card
-                                            child: Card(
-                                              margin: const EdgeInsets.only(right: 16, bottom: 10),
-                                              child: Column(
-                                                crossAxisAlignment:CrossAxisAlignment.start,
-                                                children: [
-                                                  Stack(
-                                                    children: [
-                                                      ClipRRect(
-                                                        borderRadius:const BorderRadius.only(
-                                                          topLeft:Radius.circular(10),
-                                                          topRight:Radius.circular(10),
-                                                        ),
-                                                        child: recipe['image'] !=null
-                                                            ? Image.network(
-                                                                recipe['image'],
-                                                                height: 200,
-                                                                width: 250,
-                                                                fit: BoxFit.cover,
-                                                                errorBuilder:
-                                                                    (context,error,stackTrace) {
-                                                                  return Container(
-                                                                    height: 200,
-                                                                    width: 250,
-                                                                    color: Colors.grey,
-                                                                    child:const Icon(
-                                                                      Icons.broken_image,
-                                                                      size: 60,
-                                                                      color: Colors.white,
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              )
-                                                            : Container(
-                                                                height: 200,
-                                                                width: 250,
-                                                                color:Colors.grey,
-                                                                child:const Icon(
-                                                                  Icons.fastfood,
-                                                                  size: 60,
-                                                                  color: Colors.white,
-                                                                ),
-                                                              ),
-                                                      ),
+                        //                 return GestureDetector(
+                        //                   onTap: () {
+                        //                     Navigator.push(
+                        //                       context,
+                        //                       MaterialPageRoute(
+                        //                         builder: (context) =>RecipeDetailScreen(recipeId: recipe['id']),
+                        //                       ),
+                        //                     );
+                        //                   },
+                        //                   child: SizedBox(
+                        //                     width:300, // Fixed width for the card
+                        //                     child: Card(
+                        //                       margin: const EdgeInsets.only(right: 16, bottom: 10),
+                        //                       child: Column(
+                        //                         crossAxisAlignment:CrossAxisAlignment.start,
+                        //                         children: [
+                        //                           Stack(
+                        //                             children: [
+                        //                               ClipRRect(
+                        //                                 borderRadius:const BorderRadius.only(
+                        //                                   topLeft:Radius.circular(10),
+                        //                                   topRight:Radius.circular(10),
+                        //                                 ),
+                        //                                 child: recipe['image'] !=null
+                        //                                     ? Image.network(
+                        //                                         recipe['image'],
+                        //                                         height: 200,
+                        //                                         width: 300,
+                        //                                         fit: BoxFit.cover,
+                        //                                         errorBuilder:
+                        //                                             (context,error,stackTrace) {
+                        //                                           return Container(
+                        //                                             height: 200,
+                        //                                             width: 250,
+                        //                                             color: Colors.grey,
+                        //                                             child:const Icon(
+                        //                                               Icons.broken_image,
+                        //                                               size: 60,
+                        //                                               color: Colors.white,
+                        //                                             ),
+                        //                                           );
+                        //                                         },
+                        //                                       )
+                        //                                     : Container(
+                        //                                         height: 200,
+                        //                                         width: 250,
+                        //                                         color:Colors.grey,
+                        //                                         child:const Icon(
+                        //                                           Icons.fastfood,
+                        //                                           size: 60,
+                        //                                           color: Colors.white,
+                        //                                         ),
+                        //                                       ),
+                        //                               ),
 
-                                                      // Time overlay
-                                                      Positioned(
-                                                        top: 8,
-                                                        left: 8,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                                                          decoration:BoxDecoration(
-                                                            color: Colors.black.withOpacity(0.6),
-                                                            borderRadius:BorderRadius.circular(5),
-                                                          ),
-                                                          child: Row(
-                                                            children: [
-                                                              const Icon(
-                                                                Icons.timer,
-                                                                size: 14,
-                                                                color: Colors.white,
-                                                              ),
-                                                              const SizedBox(width: 4),
-                                                              Text(
-                                                                recipe['readyInMinutes'] !=null
-                                                                    ? '${recipe['readyInMinutes']} mins'
-                                                                    : 'N/A',
-                                                                style:const TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Colors.white,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
+                        //                               // Time overlay
+                        //                               Positioned(
+                        //                                 top: 8,
+                        //                                 left: 8,
+                        //                                 child: Container(
+                        //                                   padding:
+                        //                                       const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
+                        //                                   decoration:BoxDecoration(
+                        //                                     color: Colors.black.withOpacity(0.6),
+                        //                                     borderRadius:BorderRadius.circular(5),
+                        //                                   ),
+                        //                                   child: Row(
+                        //                                     children: [
+                        //                                       const Icon(
+                        //                                         Icons.timer,
+                        //                                         size: 14,
+                        //                                         color: Colors.white,
+                        //                                       ),
+                        //                                       const SizedBox(width: 4),
+                        //                                       Text(
+                        //                                         recipe['readyInMinutes'] !=null
+                        //                                             ? '${recipe['readyInMinutes']} mins'
+                        //                                             : 'N/A',
+                        //                                         style:const TextStyle(
+                        //                                           fontSize: 12,
+                        //                                           color: Colors.white,
+                        //                                         ),
+                        //                                       ),
+                        //                                     ],
+                        //                                   ),
+                        //                                 ),
+                        //                               ),
 
-                                                      // Like overlay
-                                                      Positioned(
-                                                        bottom: 8,
-                                                        right: 8,
-                                                        child: GestureDetector(
-                                                          onTap: () => toggleLike(index), // Toggle like
-                                                          child: Container(
-                                                            padding:const EdgeInsets.symmetric(horizontal: 8,vertical:4),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Colors.black.withOpacity( 0.6),
-                                                              borderRadius:BorderRadius.circular( 5),
-                                                            ),
-                                                            child: Row(
-                                                              children: [
-                                                                Icon(
-                                                                  Icons.thumb_up,
-                                                                  size: 14,
-                                                                  color: isLiked[index]
-                                                                      ? const Color.fromARGB(255,93,167,199)
-                                                                      : Colors.white, // Change based on state
-                                                                ),
-                                                                const SizedBox(width: 4),
-                                                                Text(
-                                                                  '${likeCounts[index]}', // Display like count
-                                                                  style: const TextStyle(
-                                                                    fontSize:12,
-                                                                    color: Colors.white,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
+                        //                               // Like overlay
+                        //                               Positioned(
+                        //                                 bottom: 8,
+                        //                                 right: 8,
+                        //                                 child: GestureDetector(
+                        //                                   onTap: () => toggleLike(index), // Toggle like
+                        //                                   child: Container(
+                        //                                     padding:const EdgeInsets.symmetric(horizontal: 8,vertical:4),
+                        //                                     decoration:
+                        //                                         BoxDecoration(
+                        //                                       color: Colors.black.withOpacity( 0.6),
+                        //                                       borderRadius:BorderRadius.circular( 5),
+                        //                                     ),
+                        //                                     child: Row(
+                        //                                       children: [
+                        //                                         Icon(
+                        //                                           Icons.thumb_up,
+                        //                                           size: 14,
+                        //                                           color: isLiked[index]
+                        //                                               ? const Color.fromARGB(255,93,167,199)
+                        //                                               : Colors.white, // Change based on state
+                        //                                         ),
+                        //                                         const SizedBox(width: 4),
+                        //                                         Text(
+                        //                                           '${likeCounts[index]}', // Display like count
+                        //                                           style: const TextStyle(
+                        //                                             fontSize:12,
+                        //                                             color: Colors.white,
+                        //                                           ),
+                        //                                         ),
+                        //                                       ],
+                        //                                     ),
+                        //                                   ),
+                        //                                 ),
+                        //                               ),
+                        //                             ],
+                        //                           ),
 
-                                                  // Recipe Title
-                                                  Padding(
-                                                    padding:const EdgeInsets.all(8.0),
-                                                    child: Text(recipe['title'] ?? 'No Title',
-                                                      style: const TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
+                        //                           // Recipe Title
+                        //                           Padding(
+                        //                             padding:const EdgeInsets.all(8.0),
+                        //                             child: Text(recipe['title'] ?? 'No Title',
+                        //                               style: const TextStyle(
+                        //                                 fontSize: 16,
+                        //                                 fontWeight:
+                        //                                     FontWeight.bold,
+                        //                               ),
+                        //                             ),
+                        //                           ),
+                        //                         ],
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 );
+                        //               },
+                        //             ),
+                        //           ),
+                        //         ),
+
+                        RecentlyViewedWidget(recentlyViewed: _recentlyViewed),
                         ],
                       ),
 

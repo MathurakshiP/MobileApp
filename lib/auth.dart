@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class Auth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -26,44 +27,113 @@ class Auth {
   Future<UserCredential> createUserWithEmailAndPassword({
     required String email,
     required String password,
+    required String name,
   }) async {
     UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
 
+    // Update the user's display name in Firebase Authentication
+    await userCredential.user!.updateDisplayName(name);
+    await userCredential.user!.reload();
+    
     // After user is created, save additional user data to Firestore
-    await _saveUserData(userCredential.user);
+    await _saveUserData(userCredential.user!, name);
 
     return userCredential;
   }
 
-  // Save user data to Firestore (called after user creation)
-  Future<void> _saveUserData(User? user) async {
-    if (user != null) {
-      // Create a document in Firestore with the user's UID
+  // Save user data to Firestore
+  Future<void> _saveUserData(User user, String name) async {
+    print('email');
+    try {
+
+      // Save the user data to the 'users' collection
       await _firestore.collection('users').doc(user.uid).set({
         'email': user.email,
-        'name': user.displayName ?? '',
+        'name': name, // Save name
+        'display': name,
+        
       });
+
+      // Create 'recently_viewed' subcollection for the user with an actual document
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('recently_viewed')
+          .doc('initial_document') // Use a real document instead of a dummy one
+          .set({
+        'initialized': true,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      print("User data saved and 'recently_viewed' subcollection created.");
+    } catch (e) {
+      print("Error saving user data: $e");
+      throw Exception("Error saving user data to Firestore");
+    }
+  }
+
+
+  // Save recently viewed recipe to the user's subcollection
+  Future<void> saveRecentlyViewedRecipe(String recipeId, String title, String image) async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+
+      // Reference to the 'recently_viewed' subcollection for this user
+      final recentlyViewedRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('recently_viewed');
+
+      try {
+        // Add or update a document with the given recipeId
+        await recentlyViewedRef.doc(recipeId).set({
+          'recipeId': recipeId,
+          'title': title,
+          'image': image,
+          'viewedAt': FieldValue.serverTimestamp(),
+        });
+        if (kDebugMode) {
+          print("Successfully saved recipe to 'recently_viewed' subcollection.");
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print("Error saving recently viewed recipe: $e");
+        }
+        throw Exception("Error saving recipe to Firestore");
+      }
+    } else {
+      if (kDebugMode) {
+        print("User is not authenticated.");
+      }
+      throw Exception("User is not authenticated");
     }
   }
 
   // Update display name in Firebase Authentication and Firestore
-  Future<void> updateDisplayName(String displayName) async {
+  Future<void> updateDisplayName(String name) async {
     final user = _firebaseAuth.currentUser;
     if (user != null) {
-      await user.updateDisplayName(displayName);
+      await user.updateDisplayName(name);
       await user.reload(); // Ensure the change is reflected
-      await _updateUserDataInFirestore(user);
+      await _updateUserDataInFirestore(user, name);
     }
   }
 
   // Update user data in Firestore
-  Future<void> _updateUserDataInFirestore(User user) async {
-    await _firestore.collection('users').doc(user.uid).update({
-      'name': user.displayName ?? '',
-    });
+  Future<void> _updateUserDataInFirestore(User user, String name) async {
+    try {
+      await _firestore.collection('users').doc(user.uid).update({
+        'name': name,
+      });
+      print("User data updated successfully.");
+    } catch (e) {
+      print("Error updating user data: $e");
+      throw Exception("Error updating user data in Firestore");
+    }
   }
 
   // Update password in Firebase Authentication

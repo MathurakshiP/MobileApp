@@ -1,6 +1,7 @@
 // lib/screens/recipe_detail_screen.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/auth.dart';
 import 'package:provider/provider.dart'; // Import Provider package
 import 'package:mobile_app/Services/api_services.dart';
 import 'package:mobile_app/providers/saved_food_provider.dart';
@@ -36,6 +37,13 @@ class RecipeDetailScreen extends StatelessWidget {
             final recipe = snapshot.data!;
             final savedFoodProvider = Provider.of<SavedFoodProvider>(context);
             final shoppingListProvider = Provider.of<ShoppingListProvider>(context);
+
+            // Save the recently viewed recipe
+            Auth().saveRecentlyViewedRecipe(
+              recipe['id'].toString(),
+              recipe['title'],
+              recipe['image']
+            );
 
             // Check if the recipe is already saved
             bool isSaved = savedFoodProvider.savedRecipes
