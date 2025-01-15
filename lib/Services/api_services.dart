@@ -118,21 +118,25 @@ class ApiService {
   
 
   // 8. Autocomplete Suggestions
-  Future<List<dynamic>> fetchAutocompleteSuggestions(String query) async {
-    if (query.isEmpty) {
-      return [];
-    }
-    final response = await http.get(
-      Uri.parse('$_baseUrl/recipes/complexSearch?query=$query&apiKey=$_apiKey'),
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return data['results'] ?? [];
-    } else {
-      throw Exception('Failed to fetch autocomplete suggestions');
-    }
+  Future<List<Map<String, dynamic>>> fetchAutocompleteSuggestions(String query) async {
+  if (query.isEmpty) {
+    return [];
   }
+  final response = await http.get(
+    Uri.parse('$_baseUrl/recipes/complexSearch?query=$query&apiKey=$_apiKey'),
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    print('API response: $data');  // Debug print
+    // Cast the response to List<Map<String, dynamic>>
+    return List<Map<String, dynamic>>.from(data['results'] ?? []);
+  } else {
+    throw Exception('Failed to fetch autocomplete suggestions');
+  }
+}
+
+
 
 
 // Add this method to fetch analyzed instructions with images

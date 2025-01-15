@@ -28,7 +28,8 @@ class _HomeScreenState extends State<HomeScreen>
   with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  List<dynamic> _suggestions = [];
+  List<Map<String, dynamic>> _suggestions = [];
+
   Timer? _debounce;
   List<dynamic> _recipes = [];
   List<dynamic> _randomRecipes = [];
@@ -53,6 +54,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _tabController.dispose();
+     _searchController.dispose();
+  _suggestions.clear();
     super.dispose();
   }
 
@@ -104,9 +107,9 @@ class _HomeScreenState extends State<HomeScreen>
 
         setState(() {
           _recipes = recipes;
-          _recentlyViewed = recipes;
+          _suggestions = [];
         });
-
+ _searchController.clear();
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -116,6 +119,8 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
         );
+       
+        
       } catch (error) {
         if (kDebugMode) {
           print('Error: $error');
@@ -131,21 +136,25 @@ class _HomeScreenState extends State<HomeScreen>
 }
 
   void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () async {
-      ApiService apiService = ApiService();
-      try {
-        var results = await apiService.fetchAutocompleteSuggestions(query);
-        setState(() {
-          _suggestions = results;
-        });
-      } catch (e) {
-        if (kDebugMode) {
-          print("Error fetching autocomplete suggestions: $e");
-        }
+  if (_debounce?.isActive ?? false) _debounce?.cancel();
+  _debounce = Timer(const Duration(milliseconds: 500), () async {
+    ApiService apiService = ApiService();
+    
+    try {
+      final results = await apiService.fetchAutocompleteSuggestions(query);
+      print('API Results: $results');  // Debug print
+      setState(() {
+        _suggestions = results;
+      });
+      print('Suggestions: $_suggestions');
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error fetching autocomplete suggestions: $e");
       }
-    });
-  }
+    }
+  });
+}
+
 
   void _onSuggestionTap(Map<String, dynamic> suggestion) {
     _recentlyViewed.insert(0, suggestion);
@@ -235,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
 
                 SizedBox(
-                  height: 1650,
+                  height: 1850,
                   child: TabBarView(
                     controller: _tabController,
                     children: [
@@ -260,31 +269,38 @@ class _HomeScreenState extends State<HomeScreen>
                                   icon: Icon(Icons.search,
                                   color: customPurple,),
                                   onPressed: _searchRecipe,
+                                  
                                 ),
                               ),
                             ),
                           ),
 
                           if (_suggestions.isNotEmpty)
-                            Positioned(
-                              top: 72,left: 16,right: 16,
-                              child: Material(
-                                color: Colors.transparent,
-                                child: SizedBox(
-                                  height: 200,
-                                  child: ListView.builder(
-                                    itemCount: _suggestions.length,
-                                    itemBuilder: (context, index) {
-                                      var suggestion =_suggestions[index]['title'] ?? '';
-                                      return ListTile(
-                                        title: Text(suggestion),
-                                        onTap: () => _onSuggestionTap(_suggestions[index]),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
+  Positioned(
+    top: 72,
+    left: 16,
+    right: 16,
+    child: Material(
+      color: Colors.transparent,
+      child: SizedBox(
+        height: 200,
+        child: ListView.builder(
+          itemCount: _suggestions.length,
+          itemBuilder: (context, index) {
+            // Access 'title' from the map at index
+            var suggestion = _suggestions[index];  // Access the whole suggestion map
+
+            return ListTile(
+              title: Text(suggestion['title'] ?? 'No Title'),  // Access the title instead of id
+  // Display the title of the suggestion
+              onTap: () => _onSuggestionTap(_suggestions[index]),  // Pass the whole map to _onSuggestionTap
+            );
+          },
+        ),
+      ),
+    ),
+  ),
+
 
                           // Latest Recipes Section 
                            Padding(
