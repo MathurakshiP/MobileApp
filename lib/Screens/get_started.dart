@@ -318,7 +318,15 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen(userData: {})),
+                    MaterialPageRoute(
+                      builder: (context) => const HomeScreen(
+                        userData: {
+                          'name': 'Guest', // Default name
+                          'email': 'guest@example.com', // Default email
+                          'preferences': {}, // Any other default values your app might need
+                        },
+                      ),
+                    ),
                   );
                 },
                 child: const Text('Do it Later'),

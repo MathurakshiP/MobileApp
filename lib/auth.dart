@@ -51,7 +51,9 @@ class Auth {
 
   // Save user data to Firestore
   Future<void> _saveUserData(User user, String name) async {
-    print('email');
+    if (kDebugMode) {
+      print('email');
+    }
     try {
       await _firestore.collection('users').doc(user.uid).set({
         'email': user.email,

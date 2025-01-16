@@ -99,35 +99,62 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _loadRandomRecipes() async {
+  setState(() {
+    _isLoading = true; // Show loading indicator
+  });
+
+  try {
+    final randomRecipes = await ApiService().fetchRandomRecipes(number: 10);
+    final recipesWithImages = randomRecipes
+        .where((recipe) => recipe['image'] != null && recipe['image'].isNotEmpty)
+        .toList();
+
+    // Add the recipes to Firestore
+    await _addRecipesToFirestore(recipesWithImages);
+
     setState(() {
-      _isLoading = true; // Show loading indicator
+      _randomRecipes = recipesWithImages;
+      _isLoading = false; // Stop loading once data is fetched
     });
+  } catch (error) {
+    setState(() {
+      _isLoading = false; // Stop loading in case of error
+    });
+    if (kDebugMode) {
+      print('Error fetching random recipes: $error');
+    }
+    // ignore: use_build_context_synchronously
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text('Failed to load random recipes. Please try again later.')),
+    );
+  }
+}
 
+Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
+  final CollectionReference recipesCollection = FirebaseFirestore.instance.collection('random_recipes');
+
+  for (var recipe in recipes) {
     try {
-      final randomRecipes = await ApiService().fetchRandomRecipes(number: 10);
-      final recipesWithImages = randomRecipes
-          .where((recipe) => recipe['image'] != null && recipe['image'].isNotEmpty)
-          .toList();
-
-      setState(() {
-        _randomRecipes = recipesWithImages;
-        _isLoading = false; // Stop loading once data is fetched
-      });
-    } catch (error) {
-      setState(() {
-        _isLoading = false; // Stop loading in case of error
+      // Add each recipe to Firestore
+      await recipesCollection.add({
+        'title': recipe['title'] ?? 'No Title',
+        'image': recipe['image'] ?? '',
+        'readyInMinutes': recipe['readyInMinutes'] ?? 'N/A',
+        'ingredients': recipe['ingredients'] ?? [],
+        'instructions': recipe['instructions'] ?? '',
+        'dateAdded': FieldValue.serverTimestamp(),
       });
       if (kDebugMode) {
-        print('Error fetching random recipes: $error');
+        print('Recipe added successfully');
       }
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Failed to load random recipes. Please try again later.')),
-      );
+    } catch (error) {
+      if (kDebugMode) {
+        print('Error adding recipe to Firestore: $error');
+      }
     }
   }
+}
 
   void _searchRecipe() async {
     final query = _searchController.text;
@@ -176,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen>
       final results = await apiService.fetchAutocompleteSuggestions(query);
       print('API Results: $results');  // Debug print
       setState(() {
-        _suggestions = results;
+        _suggestions = List<Map<String, dynamic>>.from(results);
       });
       print('Suggestions: $_suggestions');
     } catch (e) {
@@ -308,30 +335,30 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
 
                           if (_suggestions.isNotEmpty)
-  Positioned(
-    top: 72,
-    left: 16,
-    right: 16,
-    child: Material(
-      color: Colors.transparent,
-      child: SizedBox(
-        height: 200,
-        child: ListView.builder(
-          itemCount: _suggestions.length,
-          itemBuilder: (context, index) {
-            // Access 'title' from the map at index
-            var suggestion = _suggestions[index];  // Access the whole suggestion map
+                          Positioned(
+                            top: 72,
+                            left: 16,
+                            right: 16,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: SizedBox(
+                                height: 200,
+                                child: ListView.builder(
+                                  itemCount: _suggestions.length,
+                                  itemBuilder: (context, index) {
+                                    // Access 'title' from the map at index
+                                    var suggestion = _suggestions[index];  // Access the whole suggestion map
 
-            return ListTile(
-              title: Text(suggestion['title'] ?? 'No Title'),  // Access the title instead of id
-  // Display the title of the suggestion
-              onTap: () => _onSuggestionTap(_suggestions[index]),  // Pass the whole map to _onSuggestionTap
-            );
-          },
-        ),
-      ),
-    ),
-  ),
+                                    return ListTile(
+                                      title: Text(suggestion['title'] ?? 'No Title'),  // Access the title instead of id
+                          // Display the title of the suggestion
+                                      onTap: () => _onSuggestionTap(_suggestions[index]),  // Pass the whole map to _onSuggestionTap
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
 
 
                           // Latest Recipes Section 
