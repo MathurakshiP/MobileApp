@@ -4,6 +4,8 @@ import 'package:mobile_app/Screens/RateUsScreen.dart';
 import 'package:mobile_app/Screens/change_password_screen.dart';
 import 'package:mobile_app/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:mobile_app/Screens/help_support_screen.dart';
+import 'package:mobile_app/Screens/privacy_policy_screen.dart';
 
 // import 'package:provider/provider.dart';
 // import '../providers/theme_provider.dart';
@@ -164,14 +166,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               leading: const Icon(Icons.privacy_tip),
               title: const Text('Privacy Policy'),
               onTap: () {
-                // Show Privacy Policy or navigate to its screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const PrivacyPolicyScreen()),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.help),
               title: const Text('Help & Support'),
               onTap: () {
-                // Show Help & Support page or navigate to its screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const HelpSupportScreen()),
+                );
               },
             ),
 
