@@ -147,7 +147,7 @@ void hashAssign(String apiHash){
         .toList();
 
     // Add the recipes to Firestore
-    // await _addRecipesToFirestore(recipesWithImages);
+    await _addRecipesToFirestore(recipesWithImages);
 
     setState(() {
       _randomRecipes = recipesWithImages;
