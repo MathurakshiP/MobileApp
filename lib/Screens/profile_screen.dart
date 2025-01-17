@@ -139,13 +139,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.language),
-              title: const Text('Language'),
-              onTap: () {
-                // Language change logic or navigation
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.notifications),
               title: const Text('Notifications'),
               onTap: () {
