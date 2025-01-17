@@ -10,12 +10,14 @@ class RecipeListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recipes',
-        style: TextStyle(
-                fontWeight: FontWeight.bold, 
-                color: Colors.white,
-                fontSize: 30,
-              ),),
+        title: const Text(
+          'Recipes',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: recipes.isEmpty
           ? const Center(child: Text("No recipes found."))
@@ -37,23 +39,48 @@ class RecipeListScreen extends StatelessWidget {
                   },
                   child: Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0), // Gap between items
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0), // Rounded card edges
+                    ),
                     child: Column(
                       children: [
-                        recipe['image'] != null
-                            ? Image.network(
-                                recipe['image'],
-                                width: double.infinity, // Fill the width
-                                height: 250, // Set a fixed height for the image
-                                fit: BoxFit.cover, // Make sure the image covers the space
-                              )
-                            : const Icon(Icons.image, size: 80),
+                        ClipRRect(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(16.0),
+                          ), // Rounded edges for the image
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
+                            height: 180, // Fixed height
+                            child: Image.network(
+                              recipe['image'],
+                              fit: BoxFit.cover, // Maintain aspect ratio
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) => Icon(
+                                Icons.broken_image,
+                                size: 80,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             recipe['title'] ?? 'Recipe',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18, // Font size for the title
                               fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
                         ),

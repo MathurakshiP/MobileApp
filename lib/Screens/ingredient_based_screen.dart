@@ -170,7 +170,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
     });
 
     final String apiUrl =
-        'https://api.spoonacular.com/recipes/findByIngredients?ingredients=${allIngredients.join(',')}&apiKey=a2e8aeca685d4b33975aa0fec27c5fb3';
+        'https://api.spoonacular.com/recipes/findByIngredients?ingredients=${allIngredients.join(',')}&apiKey=171dca80728e4b5bb342e075d07b22c0';
     print("Fetching recipes with URL: $apiUrl");
 
     try {
