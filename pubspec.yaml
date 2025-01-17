@@ -90,7 +90,9 @@ flutter:
   - images/dinner.jpg
   - images/lunch.jpg
   - images/dessert.jpg
-  
+  - images/salad.jpg
+  - images/soup.jpg
+
   - .env
 
 

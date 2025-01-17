@@ -34,6 +34,9 @@ class _HomeScreenState extends State<HomeScreen>
   List<Map<String, dynamic>> _suggestions = [];
 
   Timer? _debounce;
+  String userName = 'User Name';
+  String hash = 'null';
+  String userid ='null';
   List<dynamic> _recipes = [];
   List<dynamic> _randomRecipes = [];
   List<dynamic> _recentlyViewed = [];
@@ -43,13 +46,14 @@ class _HomeScreenState extends State<HomeScreen>
   bool _isLoading = false;
   int _selectedIndex = 0;
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
-
+  bool isMealPlan =false;
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadRandomRecipes(); // Load random recipes on init
     _loadRecentlyViewedRecipes();
+    _connectAndStoreUser();
     final random = Random();
     likeCounts = List.generate(10,(_) => random.nextInt(20) + 1); // Random like count between 1 and 100
     isLiked = List.generate(10, (_) => false); // Initial liked state
@@ -62,6 +66,39 @@ class _HomeScreenState extends State<HomeScreen>
   _suggestions.clear();
     super.dispose();
   }
+
+ 
+Future<void> _connectAndStoreUser() async {
+ 
+  try {
+    // Replace with the actual user's details (e.g., from Firebase)
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final response = await ApiService().connectUser(user.displayName ?? 'User Name',  user.email ?? 'email@example.com');
+      // Save the username and hash in your app's database or storage
+      String apiUsername = response['username'];
+      String apiHash = response['hash'];
+      
+      userNameAssign(apiUsername);
+      hashAssign(apiHash);
+      // Now, save these values locally or send them to your app's database
+      if (kDebugMode) {
+        print('Connected User: $apiUsername, Hash: $apiHash , $userName,$hash');
+      }
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error connecting user: $e');
+    }
+  }
+}
+
+void userNameAssign(String apiUsername){
+  userName=apiUsername;
+}
+void hashAssign(String apiHash){
+  hash=apiHash;
+}
 
   void toggleLike(int index) {
     setState(() {
@@ -76,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (user != null) {
       final userId = user.uid;
-
+      userid=userId;
       final recentlyViewedRef = FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
@@ -110,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen>
         .toList();
 
     // Add the recipes to Firestore
-    await _addRecipesToFirestore(recipesWithImages);
+    // await _addRecipesToFirestore(recipesWithImages);
 
     setState(() {
       _randomRecipes = recipesWithImages;
@@ -138,6 +175,8 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
     try {
       // Add each recipe to Firestore
       await recipesCollection.add({
+        'id': recipe['id'] ?? '',
+        'dishTypes': recipe['dishTypes']??'',
         'title': recipe['title'] ?? 'No Title',
         'image': recipe['image'] ?? '',
         'readyInMinutes': recipe['readyInMinutes'] ?? 'N/A',
@@ -261,11 +300,14 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
               setState(() {
                   _isIconPressed = !_isIconPressed;
                 });
+                if (kDebugMode) {
+                  print(userName + hash);
+                }
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          MealPlanScreen(username: 'abc', templateId: '128')),
+                          MealPlannerScreen(userId: userid)),
                 ).then((_) {
                   setState(() {
                     _isIconPressed = false;
@@ -727,13 +769,13 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                   child: Row(
                                     children: [
                                       _buildClickableImage(
-                                          'Breakfast', 'images/breakfast.jpg',_recentlyViewed),
+                                          'Breakfast', 'images/breakfast.jpg',userid),
                                       _buildClickableImage(
-                                          'Lunch', 'images/lunch.jpg',_recentlyViewed),
+                                          'Lunch', 'images/lunch.jpg',userid),
                                       _buildClickableImage(
-                                          'Dinner', 'images/dinner.jpg',_recentlyViewed),
+                                          'Dinner', 'images/dinner.jpg',userid),
                                       _buildClickableImage(
-                                          'Dessert', 'images/dessert.jpg',_recentlyViewed),
+                                          'Dessert', 'images/dessert.jpg',userid),
                                     ],
                                   ),
                                 ),
@@ -972,7 +1014,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
     );
   }
 
-  Widget _buildClickableImage(String category, String imagePath,List _recentlyViewed) {
+  Widget _buildClickableImage(String category, String imagePath, String userId) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
 
@@ -982,7 +1024,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CategoryScreen(category: category,recentlyViewed: _recentlyViewed,),
+            builder: (context) => CategoryScreen(category: category, userId:userId,isMealPlan:isMealPlan),
           ),
         );
       },

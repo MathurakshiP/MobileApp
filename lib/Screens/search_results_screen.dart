@@ -30,7 +30,12 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Results for "${widget.searchQuery}"'),
+        title: Text('Search Results for "${widget.searchQuery}"',
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 20,
+          ),),
         backgroundColor: customPurple,
       ),
       body: widget.recipes.isEmpty

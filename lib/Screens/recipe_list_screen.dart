@@ -10,7 +10,12 @@ class RecipeListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Recipes"),
+        title: const Text('Recipes',
+        style: TextStyle(
+                fontWeight: FontWeight.bold, 
+                color: Colors.white,
+                fontSize: 30,
+              ),),
       ),
       body: recipes.isEmpty
           ? const Center(child: Text("No recipes found."))

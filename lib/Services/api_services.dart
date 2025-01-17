@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class ApiService {
   // Set base URL and API key directly here
   final String _baseUrl = 'https://api.spoonacular.com';
-  final String _apiKey = 'a2e8aeca685d4b33975aa0fec27c5fb3'; // Replace with your actual API key
+  final String _apiKey = '9ecee3af427949d4b5e9831e0b458576'; // Replace with your actual API key
 //         9ecee3af427949d4b5e9831e0b458576
 // a2e8aeca685d4b33975aa0fec27c5fb3
 
@@ -17,12 +17,47 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      print('recipes: $data');
       return data['results'] ?? [];
     } else {
       if (kDebugMode) {
         print('Failed to load recipes: ${response.body}');
       }
       throw Exception('Failed to fetch recipes');
+    }
+  }
+
+  Future<List<dynamic>> OneCategory(String cuisine, String type, int maxReadyTime, int number) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/recipes/complexSearch?cuisine=$cuisine&type=$type&maxReadyTime=$maxReadyTime&number=$number&apiKey=$_apiKey'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('OneCategory: $data');
+      return data['results'] ?? [];
+    } else {
+      if (kDebugMode) {
+        print('Failed to load OneCategory: ${response.body}');
+      }
+      throw Exception('Failed to fetch OneCategory');
+    }
+  }
+
+  Future<List<dynamic>> AllCategory( String type, int number) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/recipes/complexSearch?type=$type&number=$number&apiKey=$_apiKey'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('AllCategory: $data');
+      return data['results'] ?? [];
+    } else {
+      if (kDebugMode) {
+        print('Failed to load AllCategory: ${response.body}');
+      }
+      throw Exception('Failed to fetch AllCategory');
     }
   }
 
@@ -101,10 +136,39 @@ class ApiService {
     }
   }
 
-  // 6. Meal Planner (Example: Get a meal plan for a day)
-  Future<Map<String, dynamic>> fetchMealPlan() async {
+
+
+Future<Map<String, dynamic>> fetchMealPlan(String timeFrame) async {
   final response = await http.get(
-    Uri.parse('$_baseUrl/mealplanner/generate?apiKey=$_apiKey'),
+    Uri.parse('$_baseUrl/mealplanner/generate?timeFrame=$timeFrame&apiKey=$_apiKey'),
+  );
+  if (response.statusCode == 200) {
+    if (kDebugMode) {
+      print(json.decode(response.body));
+    }
+    return json.decode(response.body);
+  } else {
+    throw Exception('Failed to load meal plan');
+  }
+}
+
+Future<Map<String, dynamic>> fetchDayMealPlan(String username, String hash, String date) async {
+  final response = await http.get(
+    Uri.parse('$_baseUrl/mealplanner/$username/week/$date?hash=$hash&apiKey=$_apiKey'),
+  );
+  if (response.statusCode == 200) {
+    if (kDebugMode) {
+      print(json.decode(response.body));
+    }
+    return json.decode(response.body);
+  } else {
+    throw Exception('Failed to load meal plan');
+  }
+}
+
+Future<Map<String, dynamic>> fetchWeekMealPlan(String username, String hash, String startDate) async {
+  final response = await http.get(
+    Uri.parse('$_baseUrl/mealplanner/$username/week/$startDate?hash=$hash&apiKey=$_apiKey'),
   );
   if (response.statusCode == 200) {
     return json.decode(response.body);
@@ -112,10 +176,26 @@ class ApiService {
     throw Exception('Failed to load meal plan');
   }
 }
-
-
   
-  
+  Future<Map<String, dynamic>> connectUser(String username, String email) async {
+  final response = await http.post(
+    Uri.parse('$_baseUrl/users/connect?apiKey=$_apiKey'), // Use your API key here
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: json.encode({
+      'username': username,
+      'email': email,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    // If the connection is successful, the response will contain the username, password, and hash.
+    return json.decode(response.body);
+  } else {
+    throw Exception('Failed to connect user to Spoonacular');
+  }
+}
 
   // 8. Autocomplete Suggestions
   Future<List<Map<String, dynamic>>> fetchAutocompleteSuggestions(String query) async {
@@ -174,32 +254,8 @@ Future<List<Map<String, dynamic>>> fetchRecipeInstructions(int id) async {
   }
 }
 
-Future<Map<String, dynamic>> getMealPlans(String username, String templateId) async {
-    final url = Uri.parse('$_baseUrl/mealplanner/$username/templates/$templateId?hash=ipsum&apiKey=$_apiKey');
-    
-    final response = await http.get(url);
-    
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load meal plan');
-    }
-  }
+
   
-  Future<Map<String, dynamic>> connectUser(String username) async {
-    final url = Uri.parse('$_baseUrl/users/connect?apiKey=$_apiKey');
-    
-    final response = await http.post(url, body: json.encode({
-      'username': username,
-      'hash': 'frln13' // Ensure hash is dynamic or set
-    }));
-    
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to connect user');
-    }
-  }
 
   // 9. Favorites (Storing locally)
   List<int> favorites = [];

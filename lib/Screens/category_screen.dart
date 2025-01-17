@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/services/api_services.dart';
@@ -5,10 +6,10 @@ import 'package:mobile_app/screens/recipe_details_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   final String category;
-   final List<dynamic> recentlyViewed;
-
-  const CategoryScreen({super.key, required this.category, required this.recentlyViewed,});
-
+ final bool isMealPlan;
+  final String userId;
+  const CategoryScreen({super.key, required this.category,required this.userId, required this.isMealPlan});
+ 
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
 }
@@ -22,72 +23,102 @@ class _CategoryScreenState extends State<CategoryScreen> {
   String? _selectedCuisine;
   String? _selectedTime;
   List<String> cuisines = [
-     'Asian', 'Chinese', 
-     'Indian', 
-    'Italian', 'Japanese',  
-    'Mexican', 'Thai'
+    'Asian',
+    'Chinese',
+    'Indian',
+    'Italian',
+    'Japanese',
+    'Mexican',
+    'Thai',
   ];
 
-  List<String> times = ['Any', 'Less than 15 minutes', '15 - 30 minutes', '30 - 60 minutes', 'More than 60 minutes'];
+  List<String> times = [
+    'Max 15 minutes',
+    'Max 30 minutes',
+    'Max 60 minutes',
+    'More than 60 minutes',
+  ];
 
   @override
   void initState() {
     super.initState();
-    fetchRelatedRecipes();
+    fetchRecentlyViewed(); // Fetch recently viewed recipes
+  fetchAllRecipes(); // Fetch all recipes by default
+    fetchAllRecipes(); // Fetch all recipes by default
   }
 
-  // Fetch related recipes for the category
-  void fetchRelatedRecipes() async {
+// Firestore instance
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+// `recentlyViewed` state variable
+List<dynamic> _recentlyViewed = [];
+
+// Fetch `recentlyViewed` from Firestore for the specific user
+void fetchRecentlyViewed() async {
+  try {
+    final snapshot = await _firestore.collection('users').doc(widget.userId).get();
+    if (snapshot.exists) {
+      setState(() {
+        _recentlyViewed = snapshot.data()?['recentlyViewed'] ?? [];
+      });
+    }
+  } catch (error) {
+    if (kDebugMode) {
+      print('Error fetching recently viewed: $error');
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to load recently viewed recipes.')),
+    );
+  }
+}
+
+// Update `recentlyViewed` in Firestore
+void updateRecentlyViewed(Map<String, dynamic> recipe) async {
+  try {
+    if (!_recentlyViewed.any((item) => item['id'] == recipe['id'])) {
+      setState(() {
+        _recentlyViewed.insert(0, recipe);
+      });
+
+      await _firestore.collection('users').doc(widget.userId).update({
+        'recentlyViewed': _recentlyViewed,
+      });
+    }
+  } catch (error) {
+    if (kDebugMode) {
+      print('Error updating recently viewed: $error');
+    }
+  }
+}
+
+  String selectedCategory(String category){
+    if(category =='Breakfast') {
+      return 'breakfast';
+    } else if(category =='Lunch') {
+      return 'main course';
+    } else if(category =='Dinner') {
+      return 'main course';
+    }else if(category =='Dessert') {
+      return 'dessert';
+    } else if(category =='Salad') {
+      return 'salad';
+    }else if(category =='Soup') {
+      return 'soup';
+    }else {
+      return 'main course';
+    }
+    
+  }
+  // Fetch all recipes for the category using AllCategory API
+  void fetchAllRecipes() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final recipes = await ApiService().fetchRandomRecipes(); // Update this ID if needed
-      List<dynamic> filteredRecipes = [];
-      for (var recipe in recipes) {
-        final String lunch = "lunch";
-        final String breakfast = "breakfast";
-        final String dinner = "dinner";
-        final String dessert = "dessert";
-        
-        // Apply category-based filtering
-        if (recipe['dishTypes'] != null) {
-          if (widget.category == "Breakfast" && recipe['dishTypes'].contains(breakfast)) {
-            filteredRecipes.add(recipe);
-          } else if (widget.category == "Lunch" && recipe['dishTypes'].contains(lunch)) {
-            filteredRecipes.add(recipe);
-          } else if (widget.category == "Dinner" && recipe['dishTypes'].contains(dinner)) {
-            filteredRecipes.add(recipe);
-          } else if (widget.category == "Dessert" && recipe['dishTypes'].contains(dessert)) {
-            filteredRecipes.add(recipe);
-          }
-        }
-
-        // Apply cuisine filter
-        if (_selectedCuisine != null && _selectedCuisine != 'Any') {
-          if (!recipe['cuisine'].contains(_selectedCuisine)) {
-            continue;  // Skip recipes that don't match the selected cuisine
-          }
-        }
-
-        // Apply time filter (assuming each recipe has a 'time' field in minutes)
-        if (_selectedTime != null && _selectedTime != 'Any') {
-          int recipeTime = recipe['readyInMinutes'] ?? 0;
-          if (_selectedTime == 'Less than 15 minutes' && recipeTime <= 15) {
-            continue;
-          } else if (_selectedTime == '15 - 30 minutes' && (recipeTime > 15 && recipeTime < 30)) {
-            continue;
-          } else if (_selectedTime == '30 - 60 minutes' && (recipeTime > 30 && recipeTime > 60)) {
-            continue;
-          } else if (_selectedTime == 'More than 60 minutes' && recipeTime >= 60) {
-            continue;
-          }
-        }
-      }
-
+      final recipes = await ApiService().AllCategory(selectedCategory(widget.category), 10);
       setState(() {
-        _categoryRecipes = filteredRecipes;
+        _categoryRecipes = recipes;
         _isLoading = false;
       });
     } catch (error) {
@@ -95,7 +126,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         _isLoading = false;
       });
       if (kDebugMode) {
-        print('Error fetching recipes for category ${widget.category}: $error');
+        print('Error fetching all recipes for category ${widget.category}: $error');
       }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to load recipes. Please try again later.')),
@@ -103,153 +134,209 @@ class _CategoryScreenState extends State<CategoryScreen> {
     }
   }
 
-  // Handle filter apply button press
-  void _applyFilters() {
-    fetchRelatedRecipes();  // Re-fetch recipes with the new filters
+  // Fetch filtered recipes for the category using OneCategory API
+  void fetchFilteredRecipes() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Determine max ready time based on selected time filter
+      int maxReadyTime = 0; // Default: no limit
+      if (_selectedTime == 'Max 15 minutes') {
+        maxReadyTime = 15;
+      } else if (_selectedTime == 'Max 30 minutes') {
+        maxReadyTime = 30;
+      } else if (_selectedTime == 'Max 60 minutes') {
+        maxReadyTime = 60;
+      } else if (_selectedTime == 'More than 60 minutes') {
+        maxReadyTime = 500; // Example: Arbitrary high limit for "More than 60 minutes"
+      }
+
+      // Use selected cuisine or fallback to category
+      final cuisine = _selectedCuisine == 'Any' || _selectedCuisine == null
+          ? widget.category
+          : _selectedCuisine!;
+
+      final recipes = await ApiService().OneCategory(cuisine, selectedCategory(widget.category), maxReadyTime, 10);
+      setState(() {
+        _categoryRecipes = recipes;
+        _isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (kDebugMode) {
+        print('Error fetching filtered recipes for category ${widget.category}: $error');
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load recipes. Please try again later.')),
+      );
+    }
   }
+
+  // Apply filters and decide which API to call
+  void _applyFilters() {
+    if ((_selectedCuisine == null || _selectedCuisine == 'Any') &&
+        (_selectedTime == null || _selectedTime == 'Any')) {
+      fetchAllRecipes(); // Fetch all recipes
+    } else {
+      fetchFilteredRecipes(); // Fetch filtered recipes
+    }
+    Navigator.pop(context); // Close the filter modal
+  }
+
+  void addToMealPlanner(Map<String, dynamic> recipe)  {
+    Navigator.pop(context, recipe['title']);
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.category, style: TextStyle(
-          fontWeight: FontWeight.bold, 
-          color: Colors.white, 
-          fontSize: 20,
-        )),
+        title: Text(
+          widget.category,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+        ),
         backgroundColor: customPurple,
         actions: [
-        IconButton(
-          icon: const Icon(Icons.filter_list, color: Colors.white),
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Filter Dropdowns
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButton<String>(
-                              hint: const Text('Select Cuisine'),
-                              value: _selectedCuisine,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _selectedCuisine = newValue;
-                                });
+          IconButton(
+            icon: const Icon(Icons.filter_list, color: Colors.white),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  // Ensure that the dropdowns are updated based on the selected values
+                  return StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Filter Dropdowns
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DropdownButton<String>(
+                                    hint: const Text('Select Cuisine'),
+                                    value: _selectedCuisine,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _selectedCuisine = newValue;
+                                      });
+                                    },
+                                    items: ['Any', ...cuisines]
+                                        .map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: DropdownButton<String>(
+                                    hint: const Text('Select Time'),
+                                    value: _selectedTime,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _selectedTime = newValue;
+                                      });
+                                    },
+                                    items: times.map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
                                 
+                                _applyFilters(); // Apply the filters
                               },
-                              items: ['Any', ...cuisines].map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
+                              child: const Text('Apply Filters'),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: DropdownButton<String>(
-                              hint: const Text('Select Time'),
-                              value: _selectedTime,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _selectedTime = newValue;
-                                });
-                               
-                              },
-                              items: times.map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context); // Close the bottom sheet
-                          _applyFilters(); // Apply the filters
-                        },
-                        child: const Text('Apply Filters'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ],
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+
+          ),
+        ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                
-                // Recipe List
-                Expanded(
-                  child: _categoryRecipes.isEmpty
-                      ? Center(child: Text('No recipes available for ${widget.category}.'))
-                      : ListView.builder(
-                          itemCount: _categoryRecipes.length,
-                          itemBuilder: (context, index) {
-                            final recipe = _categoryRecipes[index];
-                            return ListTile(
-                              contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                              leading: recipe['image'] != null
-                                  ? Image.network(
-                                      recipe['image'],
-                                      height: 50,
-                                      width: 50,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Container(
-                                          height: 50,
-                                          width: 50,
-                                          color: Colors.grey,
-                                          child: const Icon(Icons.broken_image, size: 30, color: Colors.white),
-                                        );
-                                      },
-                                    )
-                                  : Container(
-                                      height: 50,
-                                      width: 50,
-                                      color: Colors.grey,
-                                      child: const Icon(Icons.fastfood, size: 30, color: Colors.white),
-                                    ),
-                              title: Text(
-                                recipe['title'] ?? 'No Title',
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  if (!widget.recentlyViewed.any((item) =>
-                                      item['id'] == recipe['id'])) {
-                                    widget.recentlyViewed.insert(0,
-                                        recipe); // Add to the start for most recent first
-                                  }
-                                });
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => RecipeDetailScreen(recipeId: recipe['id']),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
+    ? const Center(child: CircularProgressIndicator())
+    : _categoryRecipes.isEmpty
+        ? Center(child: Text('No recipes available for ${widget.category}.'))
+        : ListView.builder(
+            itemCount: _categoryRecipes.length,
+            itemBuilder: (context, index) {
+              final recipe = _categoryRecipes[index];
+              return ListTile(
+                contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                leading: recipe['image'] != null
+                    ? Image.network(
+                        recipe['image'],
+                        height: 50,
+                        width: 50,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 50,
+                            width: 50,
+                            color: Colors.grey,
+                            child: const Icon(Icons.broken_image,
+                                size: 30, color: Colors.white),
+                          );
+                        },
+                      )
+                    : Container(
+                        height: 50,
+                        width: 50,
+                        color: Colors.grey,
+                        child: const Icon(Icons.fastfood,
+                            size: 30, color: Colors.white),
+                      ),
+                title: Text(
+                  recipe['title'] ?? 'No Title',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-              ],
-            ),
+                trailing: widget.isMealPlan
+                    ? IconButton(
+                        icon: const Icon(Icons.add, color: Color.fromARGB(255, 96, 26, 182)),
+                        onPressed: () {
+                          // Add recipe to meal planner
+                          addToMealPlanner(recipe); // Implement this function to handle meal planner logic
+                        },
+                      )
+                    : null,
+                onTap: () {
+                  updateRecentlyViewed(recipe); // Update Firestore with the viewed recipe
+                  Navigator.pop(context, recipe['title']); 
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RecipeDetailScreen(recipeId: recipe['id']),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+
     );
   }
 }
