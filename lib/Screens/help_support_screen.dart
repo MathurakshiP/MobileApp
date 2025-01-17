@@ -58,7 +58,29 @@ class HelpSupportScreen extends StatelessWidget {
                 leading: Icon(Icons.update),
                 title: const Text('View Latest Updates'),
                 onTap: () {
-                  // Logic to view app updates
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('All Caught Up!'),
+                        content: Text(
+                          'Great news! You’re already using the latest version. Stay tuned for more updates to enhance your experience!',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                            child: Text(
+                              'Awesome!',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
               ),
             ],
