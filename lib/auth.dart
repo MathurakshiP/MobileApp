@@ -14,7 +14,7 @@ class Auth {
 
   // Get the current user's ID
   String? getCurrentUserId() {
-    return _firebaseAuth.currentUser?.uid;
+    return currentUser?.uid;
   }
 
   // Sign in user with email and password
@@ -22,10 +22,20 @@ class Auth {
     required String email,
     required String password,
   }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (kDebugMode) {
+        print("User signed in successfully.");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error signing in: $e");
+      }
+      throw Exception("Sign-in failed: $e");
+    }
   }
 
   // Create new user with email and password
@@ -34,33 +44,42 @@ class Auth {
     required String password,
     required String name,
   }) async {
-    UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    // Update the user's display name in Firebase Authentication
-    await userCredential.user!.updateDisplayName(name);
-    await userCredential.user!.reload();
+      // Update the user's display name in Firebase Authentication
+      await userCredential.user!.updateDisplayName(name);
+      await userCredential.user!.reload();
 
-    // After user is created, save additional user data to Firestore
-    await _saveUserData(userCredential.user!, name);
+      // Save additional user data to Firestore
+      await _saveUserData(userCredential.user!, name);
 
-    return userCredential;
+      if (kDebugMode) {
+        print("User created and data saved successfully.");
+      }
+
+      return userCredential;
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error creating user: $e");
+      }
+      throw Exception("User creation failed: $e");
+    }
   }
 
   // Save user data to Firestore
   Future<void> _saveUserData(User user, String name) async {
-    if (kDebugMode) {
-      print('email');
-    }
     try {
       await _firestore.collection('users').doc(user.uid).set({
         'email': user.email,
-        'name': name, // Save name
-        'display': name,
+        'name': name,
+        'createdAt': FieldValue.serverTimestamp(),
       });
 
+      // Initialize subcollections
       await _firestore
           .collection('users')
           .doc(user.uid)
@@ -72,58 +91,99 @@ class Auth {
       });
 
       if (kDebugMode) {
-        print("User data saved and 'recently_viewed' subcollection created.");
+        print("User data saved and subcollections initialized.");
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error saving user data: $e");
       }
-      throw Exception("Error saving user data to Firestore");
+      throw Exception("Failed to save user data to Firestore: $e");
     }
   }
 
   // Save recently viewed recipe to the user's subcollection
   Future<void> saveRecentlyViewedRecipe(String recipeId, String title, String image) async {
-    final user = _firebaseAuth.currentUser;
-    if (user != null) {
-      final userId = user.uid;
+    final user = currentUser;
+    if (user == null) {
+      throw Exception("User is not authenticated.");
+    }
 
-      final recentlyViewedRef = FirebaseFirestore.instance
+    try {
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('recently_viewed')
+          .doc(recipeId)
+          .set({
+        'recipeId': recipeId,
+        'title': title,
+        'image': image,
+        'viewedAt': FieldValue.serverTimestamp(),
+      });
+
+      if (kDebugMode) {
+        print("Recipe saved to 'recently_viewed' successfully.");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error saving recently viewed recipe: $e");
+      }
+      throw Exception("Failed to save recipe: $e");
+    }
+  }
+
+  // Fetch the shopping list after user login
+  Future<List<String>> getShoppingList() async {
+    final userId = getCurrentUserId();
+    if (userId == null) {
+      throw Exception("User is not authenticated.");
+    }
+
+    try {
+      final shoppingListSnapshot = await _firestore
           .collection('users')
           .doc(userId)
-          .collection('recently_viewed');
+          .collection('shopping_list')
+          .get();
 
-      try {
-        await recentlyViewedRef.doc(recipeId).set({
-          'recipeId': recipeId,
-          'title': title,
-          'image': image,
-          'viewedAt': FieldValue.serverTimestamp(),
-        });
-        if (kDebugMode) {
-          print("Successfully saved recipe to 'recently_viewed' subcollection.");
-        }
-      } catch (e) {
-        if (kDebugMode) {
-          print("Error saving recently viewed recipe: $e");
-        }
-        throw Exception("Error saving recipe to Firestore");
-      }
-    } else {
+      final shoppingList = shoppingListSnapshot.docs
+          .map((doc) => List<String>.from(doc['ingredients']))
+          .expand((i) => i)
+          .toList();
+
       if (kDebugMode) {
-        print("User is not authenticated.");
+        print("Fetched shopping list: $shoppingList");
       }
-      throw Exception("User is not authenticated");
+
+      return shoppingList;
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error fetching shopping list: $e");
+      }
+      throw Exception("Failed to fetch shopping list: $e");
     }
   }
 
   // Update display name in Firebase Authentication and Firestore
   Future<void> updateDisplayName(String name) async {
-    final user = _firebaseAuth.currentUser;
-    if (user != null) {
+    final user = currentUser;
+    if (user == null) {
+      throw Exception("User is not authenticated.");
+    }
+
+    try {
       await user.updateDisplayName(name);
-      await user.reload(); // Ensure the change is reflected
+      await user.reload();
       await _updateUserDataInFirestore(user, name);
+
+      if (kDebugMode) {
+        print("Display name updated successfully.");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error updating display name: $e");
+      }
+      throw Exception("Failed to update display name: $e");
     }
   }
 
@@ -133,32 +193,51 @@ class Auth {
       await _firestore.collection('users').doc(user.uid).update({
         'name': name,
       });
+
       if (kDebugMode) {
-        print("User data updated successfully.");
+        print("User data updated in Firestore.");
       }
     } catch (e) {
       if (kDebugMode) {
-        print("Error updating user data: $e");
+        print("Error updating user data in Firestore: $e");
       }
-      throw Exception("Error updating user data in Firestore");
+      throw Exception("Failed to update Firestore user data: $e");
     }
   }
 
   // Update password in Firebase Authentication
   Future<void> updatePassword(String newPassword) async {
-    final user = _firebaseAuth.currentUser;
-    if (user != null) {
-      try {
-        await user.updatePassword(newPassword);
-        await user.reload(); // Ensure the change is reflected
-      } catch (e) {
-        throw Exception('Password update failed: $e');
+    final user = currentUser;
+    if (user == null) {
+      throw Exception("User is not authenticated.");
+    }
+
+    try {
+      await user.updatePassword(newPassword);
+      await user.reload();
+      if (kDebugMode) {
+        print("Password updated successfully.");
       }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error updating password: $e");
+      }
+      throw Exception("Failed to update password: $e");
     }
   }
 
   // Sign out the user
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    try {
+      await _firebaseAuth.signOut();
+      if (kDebugMode) {
+        print("User signed out successfully.");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error signing out: $e");
+      }
+      throw Exception("Failed to sign out: $e");
+    }
   }
 }

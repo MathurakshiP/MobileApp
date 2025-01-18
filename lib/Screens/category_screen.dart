@@ -56,10 +56,15 @@ List<dynamic> _recentlyViewed = [];
 // Fetch `recentlyViewed` from Firestore for the specific user
 void fetchRecentlyViewed() async {
   try {
-    final snapshot = await _firestore.collection('users').doc(widget.userId).get();
-    if (snapshot.exists) {
+    final snapshot = await _firestore
+        .collection('users')
+        .doc(widget.userId)
+        .collection('recently_viewed')
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
       setState(() {
-        _recentlyViewed = snapshot.data()?['recentlyViewed'] ?? [];
+        _recentlyViewed = snapshot.docs.map((doc) => doc.data()).toList();
       });
     }
   } catch (error) {
@@ -72,16 +77,25 @@ void fetchRecentlyViewed() async {
   }
 }
 
-// Update `recentlyViewed` in Firestore
+// Update `recentlyViewed` in Firestore (under subcollection `recently_viewed`)
 void updateRecentlyViewed(Map<String, dynamic> recipe) async {
   try {
-    if (!_recentlyViewed.any((item) => item['id'] == recipe['id'])) {
-      setState(() {
-        _recentlyViewed.insert(0, recipe);
-      });
+    // Check if the recipe already exists in the recently viewed list
+    final docRef = _firestore
+        .collection('users')
+        .doc(widget.userId)
+        .collection('recently_viewed')
+        .doc(recipe['id']); // Using the recipe's ID as the document ID
 
-      await _firestore.collection('users').doc(widget.userId).update({
-        'recentlyViewed': _recentlyViewed,
+    final docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      // Add the recipe to Firestore if it's not already in the list
+      await docRef.set(recipe);
+
+      setState(() {
+        // Add to local list, but maintain the most recent at the top
+        _recentlyViewed.insert(0, recipe);
       });
     }
   } catch (error) {
