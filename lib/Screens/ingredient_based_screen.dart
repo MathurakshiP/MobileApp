@@ -63,14 +63,18 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
   };
 
   void _toggleIngredient(String ingredient) {
-    setState(() {
-      if (_selectedIngredients.contains(ingredient)) {
-        _selectedIngredients.remove(ingredient);
-      } else {
-        _selectedIngredients.add(ingredient);
-      }
-    });
-  }
+  setState(() {
+    if (_selectedIngredients.contains(ingredient)) {
+      _selectedIngredients.remove(ingredient);
+    } else {
+      _selectedIngredients.add(ingredient);
+    }
+
+    // Update the text field to reflect the selected ingredients
+    _ingredientController.text = _selectedIngredients.join(', ');
+  });
+}
+
 
   List<Widget> buildIngredientWidgets(List<String> ingredients) {
     return ingredients.map((ingredient) {
@@ -226,33 +230,30 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TextField(
-                      controller: _ingredientController,
-                      decoration: InputDecoration(
-                        labelText: 'Enter ingredients (comma-separated)',
-                        labelStyle: TextStyle(color: customPurple), // Placeholder text color
-                        border: const OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.search, color: customPurple), // Search icon color
-                          onPressed: fetchRecipes, // Directly fetch recipes on search icon click
-                        ),
-                      ),
-                      onChanged: (text) {
-                        setState(() {
-                          // Update the ingredients text dynamically
-                        });
-                      },
-                    ),
-                  ),
-                  // Display the selected ingredients at the top of the screen
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    child: Wrap(
-                      spacing: 4.0,
-                      children: buildIngredientWidgets([..._selectedIngredients]),
-                    ),
-                  ),
+  padding: const EdgeInsets.all(16.0),
+  child: TextField(
+    controller: _ingredientController,
+    decoration: InputDecoration(
+      labelText: 'Enter ingredients (comma-separated)',
+      labelStyle: TextStyle(color: customPurple),
+      border: const OutlineInputBorder(),
+      suffixIcon: IconButton(
+        icon: Icon(Icons.search, color: customPurple),
+        onPressed: fetchRecipes, // Trigger recipe search on click
+      ),
+    ),
+    onChanged: (text) {
+      setState(() {
+        // Update the selected ingredients based on manual input if necessary
+        _selectedIngredients
+          ..clear()
+          ..addAll(text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty));
+      });
+    },
+  ),
+),
+
+                 
                   buildCollapsibleContainer('Pantry Ingredients', pantryIngredients),
                   buildCollapsibleContainer('Vegetables & Greens', vegetables),
                   buildCollapsibleContainer('Fruits', fruits),
