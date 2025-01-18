@@ -15,6 +15,7 @@ class RecipeDetailScreen extends StatelessWidget {
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   @override
+  
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
