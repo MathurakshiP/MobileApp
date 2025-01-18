@@ -1,53 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/providers/shopping_list_provider.dart';
-//import 'package:mobile_app/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
-// import 'package:mobile_app/providers/shopping_list_provider.dart';
 
-class ShoppingListScreen extends StatelessWidget {
+class ShoppingListScreen extends StatefulWidget {
   const ShoppingListScreen({super.key});
 
   @override
+  _ShoppingListScreenState createState() => _ShoppingListScreenState();
+}
+
+class _ShoppingListScreenState extends State<ShoppingListScreen> {
+  @override
   Widget build(BuildContext context) {
-    // Access shopping list from the provider
     final shoppingListProvider = Provider.of<ShoppingListProvider>(context);
-    final shoppingList = shoppingListProvider.shoppingList;
-    Color customPurple = const Color.fromARGB(255, 96, 26, 182);
-//final themeProvider = Provider.of<ThemeProvider>(context);
+
+    if (shoppingListProvider.shoppingList.isEmpty) {
+      shoppingListProvider.loadShoppingList();
+    }
+
+    final customPurple = const Color.fromARGB(255, 96, 26, 182);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shopping List',style: TextStyle(
-                fontWeight: FontWeight.bold, // Make the text bold
-                color: Colors.white,
-                fontSize: 20,),
+        title: const Text(
+          'Shopping List',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 20,
+          ),
         ),
         backgroundColor: customPurple,
-        automaticallyImplyLeading: false, // Prevents the back arrow from appearing
-        
+        automaticallyImplyLeading: false,
       ),
-      body: shoppingList.isNotEmpty
-          ? ListView.builder(
-              itemCount: shoppingList.length,
-              itemBuilder: (context, index) {
-                final item = shoppingList[index];
-                return ListTile(
-                  title: Text(item),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      shoppingListProvider.removeItem(item);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$item removed from shopping list')),
-                      );
-                    },
-                  ),
-                );
-              },
-            )
-          : const Center(
+      body: FutureBuilder<Map<String, List<String>>>(  
+        future: shoppingListProvider.getRecipesWithIngredients(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
               child: Text('No items in your shopping list!'),
-            ),
+            );
+          }
+
+          final recipesWithIngredients = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: recipesWithIngredients.keys.length,
+            itemBuilder: (context, index) {
+              final recipeTitle = recipesWithIngredients.keys.elementAt(index);
+              final ingredients = recipesWithIngredients[recipeTitle]!;
+
+              return Card(
+                elevation: 3,
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: ExpansionTile(
+                  title: Text(
+                    recipeTitle,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  children: [
+                    ...ingredients.map((ingredient) => ListTile(
+                          title: Text(ingredient),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () async {
+                              // Removing ingredient
+                              await shoppingListProvider.removeItem(
+                                recipeTitle,
+                                item: ingredient,
+                                deleteRecipe: false,
+                              );
+
+                              // Show a confirmation SnackBar
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Removed $ingredient from $recipeTitle.'),
+                                ),
+                              );
+                            },
+                          ),
+                        )),
+                    ListTile(
+                      title: const Text(
+                        'Delete Entire Recipe',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete_forever, color: Colors.red),
+                        onPressed: () async {
+                          // Removing entire recipe
+                          await shoppingListProvider.removeItem(
+                            recipeTitle,
+                            item: recipeTitle,
+                            deleteRecipe: true,
+                          );
+
+                          // Show a confirmation SnackBar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'Removed $recipeTitle and its ingredients from shopping list.'),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

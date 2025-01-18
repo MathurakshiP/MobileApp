@@ -83,57 +83,46 @@ class RecipeDetailScreen extends StatelessWidget {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        // Extract the ingredients from the recipe and convert them to a List<String>
-                        final ingredients = recipe['extendedIngredients']?.map<String>((i) => i['original'].toString()).toList() ?? [];
+                        final recipeTitle = recipe['title'] ?? 'Unnamed Recipe'; // Use the recipe title or a fallback
+                        final ingredients = recipe['extendedIngredients']
+                                ?.map<String>((i) => i['original'].toString())
+                                .toList() ??
+                            [];
 
                         if (ingredients.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('No ingredients found to add to the shopping list.')),
+                            const SnackBar(
+                              content: Text('No ingredients found to add to the shopping list.'),
+                              duration: Duration(seconds: 2),
+                            ),
                           );
                           return;
                         }
 
-                        if (kDebugMode) {
-                          print('Adding ingredients to shopping list: $ingredients');
-                        }
                         try {
-                            // Add ingredients to the shoppingListProvider (local state management)
-                            shoppingListProvider.addItems(ingredients);
+                          // Add ingredients to the shoppingListProvider (local state management and Firestore)
+                          await shoppingListProvider.addRecipeIngredients(recipeTitle, ingredients);
 
-                            // Save the ingredients to Firestore
-                            final userId = Auth().getCurrentUserId(); // Get the current user's ID
-                            if (userId != null) {
-                              final shoppingListRef = FirebaseFirestore.instance
-                                  .collection('users') // Top-level collection
-                                  .doc(userId) // User document
-                                  .collection('shopping_list'); // Subcollection
+                          // Show success message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('$recipeTitle ingredients added to the shopping list.'),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        } catch (e) {
+                          // Handle errors
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to add $recipeTitle ingredients: $e'),
+                              duration: const Duration(seconds: 3),
+                            ),
+                          );
 
-                              // Create a new document in the 'shopping_list' subcollection
-                              await shoppingListRef.add({
-                                'ingredients': ingredients,
-                                'timestamp': FieldValue.serverTimestamp(), // For sorting or tracking
-                              });
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Ingredients added to shopping list!')),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('User is not authenticated.')),
-                              );
-                              if (kDebugMode) {
-                                print("User is not authenticated.");
-                              }
-                            }
-                          } catch (e) {
-                            // Handle Firestore errors
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Failed to add to shopping list: $e')),
-                            );
-                            if (kDebugMode) {
-                              print('Error adding to Firestore: $e');
-                            }
+                          if (kDebugMode) {
+                            print('Error adding ingredients: $e');
                           }
+                        }
                       },
                       child: const Text('Add to Shopping List'),
                     ),
