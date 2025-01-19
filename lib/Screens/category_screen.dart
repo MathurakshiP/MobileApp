@@ -43,7 +43,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   void initState() {
     super.initState();
     fetchRecentlyViewed(); // Fetch recently viewed recipes
-  fetchAllRecipes(); // Fetch all recipes by default
+    fetchAllRecipes(); // Fetch all recipes by default
     fetchAllRecipes(); // Fetch all recipes by default
   }
 
@@ -226,7 +226,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
                   return StatefulBuilder(
                     builder: (BuildContext context, StateSetter setState) {
                       return Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -251,7 +251,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
                                     }).toList(),
                                   ),
                                 ),
-                                const SizedBox(width: 16),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: DropdownButton<String>(
                                     hint: const Text('Select Time'),
@@ -271,7 +271,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(width: 8),
                             ElevatedButton(
                               onPressed: () {
                                 
