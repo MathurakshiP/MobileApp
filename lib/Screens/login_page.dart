@@ -1,882 +1,318 @@
-import 'package:flutter/material.dart';
+import 'dart:math';
 
-class LoginPage extends StatelessWidget {
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
+import 'package:mobile_app/Screens/home_screen.dart';
+import 'package:mobile_app/Screens/otp_verification_screen.dart';
+
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    return Column(
-      children: [
-        Container(
-          width: screenWidth,
-          height: screenHeight,
-          clipBehavior: Clip.antiAlias,
-          decoration: const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
-          child: Stack(
-            children: [
-              Positioned(
-                left: -135,
-                top: -230.90,
-                child: SizedBox(
-                  width: 685.90,
-                  height: 715.90,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 243.78,
-                        top: 0,
-                        child: Transform(
-                          transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-                          child: Container(
-                            width: 596.38,
-                            height: 398.84,
-                            decoration: ShapeDecoration(
-                              color: const Color(0xFFD9D9D9),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(123),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 500,
-                        top: 100,
-                        child: Transform(
-                          transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(1.4),
-                          child: ClipPath(
-                            clipper: CustomClipperPath(),
-                            child: Container(
-                              width: 510,
-                              height: 420,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  //image: NetworkImage("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.bonappetit.com%2Fgallery%2F10-most-popular-recipes-january-2022&psig=AOvVaw057jii6NBWdvYfQScAB_x8&ust=1731428434386000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCNDGm93X1IkDFQAAAAAdAAAAABAJ"),
-                                  image: AssetImage('assets/images/pic.jpg'),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 108.78,
-                top: -230.90,
-                child: Transform(
-                  transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-                  child: Container(
-                    width: 596.38,
-                    height: 398.84,
-                    decoration: ShapeDecoration(
-                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.20000000298023224),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(110),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.2,
-                top: screenHeight * 0.9,
-                child: SizedBox(
-                  width: screenWidth * 0.6,
-                  height: screenHeight * 0.05,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        child: Container(
-                          width: screenWidth * 0.6,
-                          height: screenHeight * 0.05,
-                          decoration: ShapeDecoration(
-                            color: const Color(0xCC147615),
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(width: 1, color: Colors.white),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            shadows: const [
-                              BoxShadow(
-                                color: Color.fromARGB(61, 0, 0, 0),
-                                blurRadius: 4,
-                                offset: Offset(0, 5),
-                                spreadRadius: 0,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: screenWidth * 0.18,
-                        top: screenHeight * 0.01,
-                        child: GestureDetector(
-                          onTap: () {
-                            // Navigate to Screen2 when tapped
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const Login()),
-                            );
-                          },
-                          child: const Text(
-                            'Get Started',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 255, 255, 255),
-                              fontSize: 17,
-                              fontFamily: 'Inika',
-                              fontWeight: FontWeight.w700,
-                              height: 0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  _LoginPageState createState() => _LoginPageState();
+
 }
 
-class Login extends StatelessWidget {
-  const Login({super.key});
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController(); // Phone number controller
+
+  bool isLogin = true;
+  bool isPasswordVisible = false;
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    return Column(
-      children: [
-        Container(
-          width: screenWidth,
-          height: screenHeight,
-          clipBehavior: Clip.antiAlias,
-          decoration: const BoxDecoration(color: Colors.white),
-          child: Stack(
-            children: [
-              Positioned(
-                left: -135,
-                top: -230.90,
-                child: SizedBox(
-                  width: 685.90,
-                  height: 715.90,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 243.78,
-                        top: 0,
-                        child: Transform(
-                          transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-                          child: Container(
-                            width: 596.38,
-                            height: 398.84,
-                            decoration: ShapeDecoration(
-                              color: const Color(0xFFD9D9D9),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(123),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 500,
-                        top: 100,
-                        child: Transform(
-                          transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(1.4),
-                          child: ClipPath(
-                            clipper: CustomClipperPath(),
-                            child: Container(
-                              width: 510,
-                              height: 420,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage('assets/images/pic.jpg'),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 108.78,
-                top: -230.90,
-                child: Transform(
-                  transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-                  child: Container(
-                    width: 596.38,
-                    height: 398.84,
-                    decoration: ShapeDecoration(
-                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.20000000298023224),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(110),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.1,
-                top: 361,
-                child: Container(
-                  width: screenWidth * 0.78,
-                  height: screenHeight * 0.45,
-                  decoration: ShapeDecoration(
-                    color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.30000001192092896),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(
-                        width: 1,
-                        strokeAlign: BorderSide.strokeAlignOutside,
-                        color: Colors.white,
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x3F000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 8),
-                        spreadRadius: 2,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.19,
-                top: 464,
-                child: Container(
-                  width: 218,
-                  height: 42,
-                  decoration: ShapeDecoration(
-                    color: const Color.fromARGB(220, 255, 255, 255),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(width: 1, color: Colors.white),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color.fromARGB(62, 0, 0, 0),
-                        blurRadius: 4,
-                        offset: Offset(0, 5),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.19,
-                top: 389,
-                child: Container(
-                  width: 218,
-                  height: 42,
-                  decoration: ShapeDecoration(
-                    color: Colors.white.withOpacity(0.5),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(width: 1, color: Colors.white),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x3F000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 5),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.19,
-                top: 518,
-                child: Container(
-                  width: 218,
-                  height: 42,
-                  decoration: ShapeDecoration(
-                    color: const Color.fromARGB(220, 255, 255, 255),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(width: 1, color: Colors.white),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x3F000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 5),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.19,
-                top: 389,
-                child: SizedBox(
-                  width: 109,
-                  height: 42,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        child: Container(
-                          width: 109,
-                          height: 42,
-                          decoration: ShapeDecoration(
-                            color: const Color(0xCC147615),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: screenWidth * 0.095,
-                        top: 11,
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontSize: 15,
-                            fontFamily: 'Inika',
-                            fontWeight: FontWeight.w700,
-                            height: 0,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.56,
-                top: 400,
-                child: GestureDetector(
-                  onTap: () {
-                  // Navigate to Screen2 when tapped
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignUp()),
-                    );
-                  },
-                  child: const Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontFamily: 'Inika',
-                      fontWeight: FontWeight.w700,
-                      height: 0,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.19,
-                top: 595,
-                child: SizedBox(
-                  width: 218,
-                  height: 42,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        child: Container(
-                          width: 218,
-                          height: 42,
-                          decoration: ShapeDecoration(
-                            color: const Color(0xCC147615),
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(width: 1, color: Color.fromARGB(255, 255, 255, 255)),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            shadows: const [
-                              BoxShadow(
-                                color: Color(0x3F000000),
-                                blurRadius: 4,
-                                offset: Offset(0, 5),
-                                spreadRadius: 0,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: screenWidth * 0.235,
-                        top: 08,
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontSize: 18,
-                            fontFamily: 'Inika',
-                            //fontWeight: FontWeight.w700,
-                            height: 0,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.24,
-                top: 477,
-                child: Text(
-                  'Email',
-                  style: TextStyle(
-                    color: Colors.black.withOpacity(0.41999998688697815),
-                    fontSize: 13,
-                    fontFamily: 'Inika',
-                    fontWeight: FontWeight.w700,
-                    height: 0,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.24,
-                top: 531,
-                child: Text(
-                  'Password',
-                  style: TextStyle(
-                    color: Colors.black.withOpacity(0.41999998688697815),
-                    fontSize: 13,
-                    fontFamily: 'Inika',
-                    fontWeight: FontWeight.w700,
-                    height: 0,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.55,
-                top: 569,
-                child: Text(
-                  'Forgot Password',
-                  style: TextStyle(
-                    color: Colors.black.withOpacity(0.41999998688697815),
-                    fontSize: 11,
-                    fontFamily: 'Inika',
-                    fontWeight: FontWeight.w700,
-                    height: 0,
-                  ),
-                ),
-              ),
-            ],
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null && user.emailVerified) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen(userData: {'uid': user.uid})),
+        );
+      }
+    });
+  }
+
+  Future<void> signInWithEmailAndPassword() async {
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      showErrorSnackbar('Email and Password cannot be empty');
+      return;
+    }
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      if (userCredential.user != null && userCredential.user!.emailVerified) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen(userData: {'uid': userCredential.user!.uid})),
+        );
+      } else {
+        showErrorSnackbar('Please verify your email before logging in');
+      }
+    } on FirebaseAuthException catch (e) {
+      showErrorSnackbar(e.message ?? 'Error occurred while signing in');
+    }
+  }
+
+  final Auth _auth = Auth();
+
+  Future<UserCredential> createUserWithEmailAndPassword({
+    required BuildContext context,
+    required String email,
+    required String password,
+    required String name,
+    
+  }) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final userId = userCredential.user!.uid;
+
+      await userCredential.user!.updateDisplayName(name);
+      await userCredential.user!.reload();
+      //await userCredential.user!.sendEmailVerification();
+
+      await _auth._saveUserData(userCredential.user!, name);
+
+      String otp = generateOTP(); 
+      await saveOTPToFirestore(userId, otp);
+      await sendEmail(email, otp); 
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OTPVerificationPage(
+            email: email,
+            otp: otp, userId: 'userId',
           ),
         ),
-      ],
+      );
+
+      return userCredential;
+    } catch (e) {
+      throw Exception("User creation failed: $e");
+    }
+  }
+
+  Future<void> saveOTPToFirestore(String userId, String otp) async {
+    final expirationTime = DateTime.now().add(const Duration(minutes: 5)); // OTP valid for 5 minutes
+
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'otp': otp,
+      'otpExpiration': expirationTime,
+      'otpAttempts': 0, // Reset attempts when a new OTP is generated
+    });
+  }
+
+  Future<void> sendEmail(String email, String otp) async {
+    // SMTP Server Configuration (e.g., Gmail SMTP)
+    final smtpServer = gmail('cookifyrecipes1234@gmail.com', 'ottk glee trub cgqv');
+
+    // Create the email message
+    final message = Message()
+      ..from = Address('cookifyrecipes1234@gmail.com', 'Cookify Team')
+      ..recipients.add(email) // Recipient's email
+      ..subject = 'Your OTP Code for Cookify App'
+      ..text = 'Hello,\n\nYour OTP code is: $otp\n\nPlease use this code to verify your email address. '
+              'This code is valid for 5 minutes.\n\nThanks,\nCookify Team';
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      if (kDebugMode) {
+        print('Message sent: ${sendReport.toString()}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Message not sent. Error: $e');
+      }
+      throw Exception('Failed to send email. Please try again.');
+    }
+  }
+
+  void clearTextFields() {
+    emailController.clear();
+    passwordController.clear();
+    nameController.clear();
+    phoneController.clear();
+  }
+
+  void showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message, style: const TextStyle(color: Colors.red))),
     );
   }
-}
 
-class SignUp extends StatelessWidget {
-  const SignUp({super.key});
+  void showSuccessSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message, style: const TextStyle(color: Colors.green))),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    return Column(
-      children: [
-        Container(
-          width: screenWidth,
-          height: screenHeight,
-          clipBehavior: Clip.antiAlias,
-          decoration: const BoxDecoration(color: Colors.white),
-          child: Stack(
-            children: [
-              Positioned(
-                left: -135,
-                top: -230.90,
-                child: SizedBox(
-                  width: 685.90,
-                  height: 715.90,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 243.78,
-                        top: 0,
-                        child: Transform(
-                          transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-                          child: Container(
-                            width: 596.38,
-                            height: 398.84,
-                            decoration: ShapeDecoration(
-                              color: const Color(0xFFD9D9D9),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(123),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 500,
-                        top: 100,
-                        child: Transform(
-                          transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(1.4),
-                          child: ClipPath(
-                            clipper: CustomClipperPath(),
-                            child: Container(
-                              width: 510,
-                              height: 420,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage('assets/images/pic.jpg'),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 108.78,
-                top: -230.90,
-                child: Transform(
-                  transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-                  child: Container(
-                    width: 596.38,
-                    height: 398.84,
-                    decoration: ShapeDecoration(
-                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.20000000298023224),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(110),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.1,
-                top: 361,
-                child: Container(
-                  width: screenWidth * 0.78,
-                  height: screenHeight * 0.48,
-                  decoration: ShapeDecoration(
-                    color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.30000001192092896),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(
-                        width: 1,
-                        strokeAlign: BorderSide.strokeAlignOutside,
-                        color: Colors.white,
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x3F000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 8),
-                        spreadRadius: 2,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.19,
-                top: 464,
-                child: Container(
-                  width: 218,
-                  height: 42,
-                  decoration: ShapeDecoration(
-                    color: const Color.fromARGB(220, 255, 255, 255),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(width: 1, color: Colors.white),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color.fromARGB(62, 0, 0, 0),
-                        blurRadius: 4,
-                        offset: Offset(0, 5),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.19,
-                top: 389,
-                child: Container(
-                  width: 218,
-                  height: 42,
-                  decoration: ShapeDecoration(
-                    color: Colors.white.withOpacity(0.5),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(width: 1, color: Colors.white),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x3F000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 5),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.19,
-                top: 518,
-                child: Container(
-                  width: 218,
-                  height: 42,
-                  decoration: ShapeDecoration(
-                    color: const Color.fromARGB(220, 255, 255, 255),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(width: 1, color: Colors.white),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x3F000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 5),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.19,
-                top: 572,
-                child: Container(
-                  width: 218,
-                  height: 42,
-                  decoration: ShapeDecoration(
-                    color: const Color.fromARGB(220, 255, 255, 255),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(width: 1, color: Colors.white),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x3F000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 5),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.4925,
-                top: 389,
-                child: SizedBox(
-                  width: 109,
-                  height: 42,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        child: Container(
-                          width: 109,
-                          height: 42,
-                          decoration: ShapeDecoration(
-                            color: const Color(0xCC147615),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: screenWidth * 0.08,
-                        top: 11,
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontSize: 15,
-                            fontFamily: 'Inika',
-                            //fontWeight: FontWeight.w700,
-                            height: 0,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.29,
-                top: 400,
-                child: GestureDetector(
-                  onTap: () {
-                  // Navigate to Screen2 when tapped
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Login()),
-                    );
-                  },
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 15,
-                      fontFamily: 'Inika',
-                      fontWeight: FontWeight.w700,
-                      height: 0,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 71,
-                top: 647,
-                child: SizedBox(
-                  width: 218,
-                  height: 42,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        child: Container(
-                          width: 218,
-                          height: 42,
-                          decoration: ShapeDecoration(
-                            color: const Color(0xCC147615),
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(width: 1, color: Colors.white),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            shadows: const [
-                              BoxShadow(
-                                color: Color(0x3F000000),
-                                blurRadius: 4,
-                                offset: Offset(0, 5),
-                                spreadRadius: 0,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 50,
-                        top: 8,
-                        child: GestureDetector(
-                          onTap: () {
-                          // Navigate to Screen2 when tapped
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const Login()),
-                            );
-                          },
-                          child: const Text(
-                            'Create Account',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontFamily: 'Inika',
-                              fontWeight: FontWeight.w700,
-                              height: 0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.24,
-                top: 477,
-                child: Text(
-                  'Email',
-                  style: TextStyle(
-                    color: Colors.black.withOpacity(0.41999998688697815),
-                    fontSize: 13,
-                    fontFamily: 'Inika',
-                    fontWeight: FontWeight.w700,
-                    height: 0,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.24,
-                top: 531,
-                child: Text(
-                  'Password',
-                  style: TextStyle(
-                    color: Colors.black.withOpacity(0.41999998688697815),
-                    fontSize: 13,
-                    fontFamily: 'Inika',
-                    fontWeight: FontWeight.w700,
-                    height: 0,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: screenWidth * 0.24,
-                top: 585,
-                child: Text(
-                  'Confirm Password',
-                  style: TextStyle(
-                    color: Colors.black.withOpacity(0.41999998688697815),
-                    fontSize: 13,
-                    fontFamily: 'Inika',
-                    fontWeight: FontWeight.w700,
-                    height: 0,
-                  ),
-                ),
-              ),
-            ],
-          ),
+  Widget buildTextField({
+    required String labelText,
+    required TextEditingController controller,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          labelText: labelText,
+          suffixIcon: suffixIcon,
         ),
-      ],
-    );
-  }
-}
-
-// Custom clipper for the rotated rounded rectangle
-class CustomClipperPath extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.addRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        const Radius.circular(100), // Apply the same border radius as in the original shape
       ),
     );
-    return path;
   }
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return false;
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => setState(() => isLogin = true),
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isLogin ? Colors.purple : Colors.grey,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  GestureDetector(
+                    onTap: () => setState(() => isLogin = false),
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isLogin ? Colors.grey : Colors.purple,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              if (!isLogin)
+                buildTextField(
+                  labelText: 'Name',
+                  controller: nameController,
+                ),
+              buildTextField(
+                labelText: 'Email',
+                controller: emailController,
+              ),
+              buildTextField(
+                labelText: 'Password',
+                controller: passwordController,
+                obscureText: !isPasswordVisible,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () => setState(() => isPasswordVisible = !isPasswordVisible),
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: isLogin
+                  ? signInWithEmailAndPassword
+                  : () => createUserWithEmailAndPassword(
+                          context: context,
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                          name: nameController.text.trim(),
+                        ),
+                child: Text(isLogin ? 'Login' : 'Sign Up'),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeScreen(
+                        userData: {
+                          'name': 'Guest',
+                          'email': 'guest@example.com',
+                          'preferences': {},
+                        },
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Do it Later'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  
+  String generateOTP() {
+    final random = Random();
+    String otp = '';
+    for (int i = 0; i < 6; i++) {
+      otp += random.nextInt(10).toString();
+    }
+    return otp;
+  }
+}
+
+class Auth {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> _saveUserData(User user, String name) async {
+    try {
+      await _firestore.collection('users').doc(user.uid).set({
+        'email': user.email,
+        'name': name,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('recently_viewed')
+          .doc('initial_document')
+          .set({
+        'initialized': true,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      if (kDebugMode) {
+        print("User data saved and subcollections initialized.");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error saving user data: $e");
+      }
+      throw Exception("Failed to save user data to Firestore: $e");
+    }
   }
 }
