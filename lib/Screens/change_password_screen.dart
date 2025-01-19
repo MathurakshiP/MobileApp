@@ -8,7 +8,8 @@ class ChangePasswordScreen extends StatefulWidget {
   _ChangePasswordScreenState createState() => _ChangePasswordScreenState();
 }
 
-class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+class _ChangePasswordScreenState extends State<ChangePasswordScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _currentPasswordController =
       TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
@@ -16,6 +17,36 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
+  late AnimationController _animationController;
+  late Animation<double> _buttonAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _buttonAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _animationController.reverse();
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _changePassword() async {
     if (_newPasswordController.text != _confirmPasswordController.text) {
@@ -79,37 +110,59 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
-                  TextField(
+                  _buildAnimatedTextField(
                     controller: _currentPasswordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Current Password',
-                      hintText: 'Enter your current password',
-                    ),
-                    obscureText: true,
+                    label: 'Current Password',
+                    hint: 'Enter your current password',
                   ),
-                  TextField(
+                  _buildAnimatedTextField(
                     controller: _newPasswordController,
-                    decoration: const InputDecoration(
-                      labelText: 'New Password',
-                      hintText: 'Enter a strong new password',
-                    ),
-                    obscureText: true,
+                    label: 'New Password',
+                    hint: 'Enter a strong new password',
                   ),
-                  TextField(
+                  _buildAnimatedTextField(
                     controller: _confirmPasswordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Confirm New Password',
-                      hintText: 'Re-enter your new password',
-                    ),
-                    obscureText: true,
+                    label: 'Confirm New Password',
+                    hint: 'Re-enter your new password',
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _changePassword,
-                    child: const Text('Change Password'),
+                  AnimatedBuilder(
+                    animation: _buttonAnimation,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _buttonAnimation.value,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _animationController.forward();
+                            _changePassword();
+                          },
+                          child: const Text('Change Password'),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedTextField(
+      {required TextEditingController controller,
+      required String label,
+      required String hint}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+        ),
+        obscureText: true,
       ),
     );
   }
