@@ -99,10 +99,7 @@ class GetStartedScreen extends StatelessWidget {
                     // Get Started button
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginPage()),
-                        );
+                        _navigateBasedOnAuthStatus(context);
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
@@ -131,8 +128,26 @@ class GetStartedScreen extends StatelessWidget {
       ),
     );
   }
-}
 
+  void _navigateBasedOnAuthStatus(BuildContext context) async {
+    // Check if user is logged in
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // User is logged in
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen(userData: {'uid': user.uid})),
+      );
+    } else {
+      // User is not logged in, navigate to login page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
+  }
+}
 class CustomClipperPath extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

@@ -46,18 +46,31 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
+      // Sign in with Firebase Authentication
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
 
-      if (userCredential.user != null && userCredential.user!.emailVerified) {
+      // Check if the user exists in Firestore
+      var userDoc = await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).get();
+
+      if (userDoc.exists) {
+        // If user exists in Firestore, navigate to home screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen(userData: {'uid': userCredential.user!.uid})),
         );
       } else {
-        showErrorSnackbar('Please verify your email before logging in');
+        // If email is not found in Firestore, check if the email is verified
+        if (userCredential.user != null && userCredential.user!.emailVerified) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen(userData: {'uid': userCredential.user!.uid})),
+          );
+        } else {
+          showErrorSnackbar('Please verify your email before logging in');
+        }
       }
     } on FirebaseAuthException catch (e) {
       showErrorSnackbar(e.message ?? 'Error occurred while signing in');
