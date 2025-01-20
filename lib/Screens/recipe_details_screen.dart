@@ -135,9 +135,12 @@ class RecipeDetailScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: DataTable(
                     columns: const [
-                      DataColumn(label: Text('Ingredient', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Measurement', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('Ingredient', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                      DataColumn(label: Text('Measurement', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
                     ],
+                    // Set the heading row height and data row height
+                    headingRowHeight: 40, // Adjust height for the heading
+                    dataRowHeight: 62, // Adjust height for each row
                     rows: List.generate(recipe['extendedIngredients']?.length ?? 0, (index) {
                       final ingredient = recipe['extendedIngredients'][index];
                       final nameWithMeasurement = ingredient['original'] ?? '';

@@ -91,6 +91,8 @@ class RecentlyViewedWidget extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+
+                                
                                 // Recipe Title
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),

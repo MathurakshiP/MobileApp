@@ -25,7 +25,15 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     super.dispose();
   }
 
-  void _navigateToSearchScreen() {
+  Future<void> _navigateToSearchScreen() async {
+    final selectedFood = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SearchScreen()),
+    );
+
+  if (selectedFood != null) {
+    Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
+  }
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => SearchScreen()), // Replace with your search screen
@@ -175,7 +183,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Timer? _debounce;
   List<Map<String, dynamic>> _suggestions = [];
   List<Map<String, dynamic>> _recentlyViewed = [];
-
+  bool isMealPlan=true;
   @override
   void dispose() {
     _searchController.dispose();
@@ -231,15 +239,21 @@ class _SearchScreenState extends State<SearchScreen> {
         setState(() {
           _suggestions = [];
         });
-        Navigator.push(
+        final selectedFood = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => SearchResultsScreen(
               searchQuery: query,
               recipes: results, // Pass the list of foods
+              isMealPlan: isMealPlan,
             ),
           ),
         );
+
+        if (selectedFood != null) {
+          Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
+        }
+       
       } catch (e) {
         if (kDebugMode) {
           print("Error: $e");

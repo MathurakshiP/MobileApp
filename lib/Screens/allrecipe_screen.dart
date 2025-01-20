@@ -4,8 +4,8 @@ class AllRecipesScreen extends StatefulWidget {
   final List<dynamic> recipes;
   late List<int> initialLikeCounts; 
   late List<bool> isLiked;
-  late void Function(int index) toggleLike;
-  AllRecipesScreen({super.key, required this.recipes, required this.initialLikeCounts, required this.isLiked,required this.toggleLike});
+ 
+  AllRecipesScreen({super.key, required this.recipes, required this.initialLikeCounts, required this.isLiked});
 
   @override
   _AllRecipesScreenState createState() => _AllRecipesScreenState();
@@ -16,7 +16,12 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   
-
+void toggleLike(int index) {
+    setState(() {
+      widget.isLiked[index] = !widget.isLiked[index];
+      widget.initialLikeCounts[index] += widget.isLiked[index] ? 1 : -1;
+    });
+  }
  
   @override
   Widget build(BuildContext context) {
@@ -118,7 +123,7 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
                                 bottom: 8,
                                 right: 8,
                                 child: GestureDetector(
-                                  onTap: () => widget.toggleLike(index), // Pass index here
+                                  onTap: () => toggleLike(index), // Pass index here
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 4),

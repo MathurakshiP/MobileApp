@@ -39,6 +39,9 @@ class MyApp extends StatelessWidget {
             theme: themeProvider.currentTheme, // Apply the current theme
             // home:  AnimationScreen(),
             home: GetStartedScreen(),
+            routes: {
+              '/home': (context) => HomeScreen(userData: {}),
+            },
           );
         },
       ),

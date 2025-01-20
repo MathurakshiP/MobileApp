@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
-import 'package:mobile_app/auth.dart';
+import 'package:mobile_app/Screens/login_page.dart';
 
 //import 'package:mobile_app/providers/theme_provider.dart';
 //import 'package:provider/provider.dart';
@@ -82,7 +82,7 @@ class GetStartedScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 30), // Adjust the logo's position
                     child: Image.asset(
-                      'images/cookify2.png', // Replace with your logo
+                      'images/cookifylogo.png', // Replace with your logo
                       height: 350,
                       width: 350,
                     ),
@@ -99,10 +99,7 @@ class GetStartedScreen extends StatelessWidget {
                     // Get Started button
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => LoginPage()),
-                        );
+                        _navigateBasedOnAuthStatus(context);
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
@@ -131,8 +128,26 @@ class GetStartedScreen extends StatelessWidget {
       ),
     );
   }
-}
 
+  void _navigateBasedOnAuthStatus(BuildContext context) async {
+    // Check if user is logged in
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // User is logged in
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen(userData: {'uid': user.uid})),
+      );
+    } else {
+      // User is not logged in, navigate to login page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
+  }
+}
 class CustomClipperPath extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -151,192 +166,3 @@ class CustomClipperPath extends CustomClipper<Path> {
     return false;
   }
 }
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-  bool isLogin = true;
-  bool isPasswordVisible = false;
-
-  String? errorMessage;
-
-  Future<void> signInWithEmailAndPassword() async {
-    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      showErrorSnackbar('Email and Password cannot be empty');
-      return;
-    }
-
-    try {
-      await Auth().signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen(userData: {},)),
-      );
-    } on FirebaseAuthException catch (e) {
-      showErrorSnackbar(e.message ?? 'Error occurred while signing in');
-    }
-  }
-
-  Future<void> createUserWithEmailAndPassword() async {
-    if (emailController.text.isEmpty ||
-        passwordController.text.isEmpty ||
-        nameController.text.isEmpty) {
-      showErrorSnackbar('All fields are required');
-      return;
-    }
-
-    try {
-      final userCredential = await Auth().createUserWithEmailAndPassword(
-        name: nameController.text.trim(),
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      //await userCredential.user!.updateDisplayName(name);
-      setState(() => isLogin = true); // Switch to Login view
-      clearTextFields();
-      showSuccessSnackbar('Account created successfully! Please log in.');
-    } on FirebaseAuthException catch (e) {
-      showErrorSnackbar(e.message ?? 'Error occurred while signing up');
-    }
-  }
-
-  void clearTextFields() {
-    emailController.clear();
-    passwordController.clear();
-    nameController.clear();
-  }
-
-  void showErrorSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: const TextStyle(color: Colors.red))),
-    );
-  }
-
-  void showSuccessSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: const TextStyle(color: Colors.green))),
-    );
-  }
-
-  Widget buildTextField({
-    required String labelText,
-    required TextEditingController controller,
-    bool obscureText = false,
-    Widget? suffixIcon,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          labelText: labelText,
-          suffixIcon: suffixIcon,
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () => setState(() => isLogin = true),
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: isLogin ? Colors.purple : Colors.grey,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  GestureDetector(
-                    onTap: () => setState(() => isLogin = false),
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: isLogin ? Colors.grey : Colors.purple,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              if (!isLogin)
-                buildTextField(
-                  labelText: 'Name',
-                  controller: nameController,
-                ),
-              buildTextField(
-                labelText: 'Email',
-                controller: emailController,
-              ),
-              buildTextField(
-                labelText: 'Password',
-                controller: passwordController,
-                obscureText: !isPasswordVisible,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: () =>
-                      setState(() => isPasswordVisible = !isPasswordVisible),
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: isLogin
-                    ? signInWithEmailAndPassword
-                    : createUserWithEmailAndPassword,
-                child: Text(isLogin ? 'Login' : 'Sign Up'),
-              ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomeScreen(
-                        userData: {
-                          'name': 'Guest', // Default name
-                          'email': 'guest@example.com', // Default email
-                          'preferences': {}, // Any other default values your app might need
-                        },
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Do it Later'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-  

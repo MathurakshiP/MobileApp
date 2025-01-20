@@ -77,20 +77,19 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                 return GestureDetector(
                   onTap: () {
                     final recipeId = recipe['id'];
-if (recipeId != null) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => RecipeDetailScreen(recipeId: recipeId),
-    ),
-  );
-} else {
-  print('Recipe ID is null. Cannot navigate.');
-}
-
+                    if (recipeId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecipeDetailScreen(recipeId: recipeId),
+                        ),
+                      );
+                    } else {
+                      print('Recipe ID is null. Cannot navigate.');
+                    }
                   },
                   child: Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 25),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.0),
                     ),
@@ -101,10 +100,11 @@ if (recipeId != null) {
                             ClipRRect(
                               borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(16.0),
+                                bottom: Radius.circular(16.0)
                               ),
                               child: SizedBox(
-                                width: double.infinity,
-                                height: 180,
+                                width: 200,
+                                height:150,
                                 child: Image.network(
                                   recipe['image'] ?? '',
                                   fit: BoxFit.cover,
