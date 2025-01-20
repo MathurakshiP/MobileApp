@@ -82,7 +82,7 @@ class GetStartedScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 30), // Adjust the logo's position
                     child: Image.asset(
-                      'images/cookify2.png', // Replace with your logo
+                      'images/cookifylogo.png', // Replace with your logo
                       height: 350,
                       width: 350,
                     ),

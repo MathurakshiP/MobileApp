@@ -181,13 +181,16 @@ class _LoginPageState extends State<LoginPage> {
     Widget? suffixIcon,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
       child: TextField(
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
           labelText: labelText,
           suffixIcon: suffixIcon,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
     );
@@ -201,84 +204,160 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () => setState(() => isLogin = true),
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: isLogin ? Colors.purple : Colors.grey,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  GestureDetector(
-                    onTap: () => setState(() => isLogin = false),
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: isLogin ? Colors.grey : Colors.purple,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              if (!isLogin)
-                buildTextField(
-                  labelText: 'Name',
-                  controller: nameController,
-                ),
-              buildTextField(
-                labelText: 'Email',
-                controller: emailController,
-              ),
-              buildTextField(
-                labelText: 'Password',
-                controller: passwordController,
-                obscureText: !isPasswordVisible,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: () => setState(() => isPasswordVisible = !isPasswordVisible),
+              // App Logo
+              Padding(
+                padding: const EdgeInsets.all(0.0),
+                child: Image.asset(
+                  'images/cookifylogo.png', // logo asset path
+                  height: 300,
                 ),
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: isLogin
-                  ? signInWithEmailAndPassword
-                  : () => createUserWithEmailAndPassword(
-                          context: context,
-                          email: emailController.text.trim(),
-                          password: passwordController.text.trim(),
-                          name: nameController.text.trim(),
+              const SizedBox(height: 0),
+
+              // Rounded Box Container for Login/SignUp
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 237, 221, 255),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Toggle between Login and Sign Up
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () => setState(() => isLogin = true),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: isLogin ? const Color.fromARGB(255, 96, 26, 182) : Colors.grey,
+                            ),
+                          ),
                         ),
-                child: Text(isLogin ? 'Login' : 'Sign Up'),
-              ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomeScreen(
-                        userData: {
-                          'name': 'Guest',
-                          'email': 'guest@example.com',
-                          'preferences': {},
-                        },
+                        const SizedBox(width: 30),
+                        GestureDetector(
+                          onTap: () => setState(() => isLogin = false),
+                          child: Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: isLogin ? Colors.grey :const Color.fromARGB(255, 96, 26, 182),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Fields
+                    if (!isLogin)
+                      buildTextField(
+                        labelText: 'Name',
+                        controller: nameController,
+                      ),
+                    buildTextField(
+                      labelText: 'Email',
+                      controller: emailController,
+                    ),
+                    buildTextField(
+                      labelText: 'Password',
+                      controller: passwordController,
+                      obscureText: !isPasswordVisible,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () => setState(
+                            () => isPasswordVisible = !isPasswordVisible),
                       ),
                     ),
-                  );
-                },
-                child: const Text('Do it Later'),
+                    const SizedBox(height: 0),
+
+                    // Forgot Password Button
+                    if (isLogin)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 0.0),
+                          child: TextButton(
+                            onPressed: () {
+                              if (emailController.text.isNotEmpty) {
+                                sendPasswordResetEmail(emailController.text.trim());
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Please enter your email to reset the password.'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                            child: const Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 96, 26, 182),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                    // Login/SignUp Button
+                    ElevatedButton(
+                      onPressed: isLogin
+                          ? signInWithEmailAndPassword
+                          : () => createUserWithEmailAndPassword(
+                                context: context,
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim(),
+                                name: nameController.text.trim(),
+                              ),
+                      child: Text(
+                        isLogin ? 'Login' : 'Sign Up',
+                        style: TextStyle(color: const Color.fromARGB(255, 96, 26, 182)),
+                      ),
+                    ),
+                    const SizedBox(height: 0),
+
+                    // Do it Later Button
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(
+                              userData: {
+                                'name': 'Guest',
+                                'email': 'guest@example.com',
+                                'preferences': {},
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Do it Later',
+                        style: TextStyle(color: Color.fromARGB(255, 96, 26, 182)),
+                        ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -286,7 +365,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-  
+
   String generateOTP() {
     final random = Random();
     String otp = '';
@@ -295,8 +374,26 @@ class _LoginPageState extends State<LoginPage> {
     }
     return otp;
   }
-}
 
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Password reset email sent to $email'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+}
 class Auth {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 

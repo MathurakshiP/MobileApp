@@ -76,7 +76,7 @@ flutter:
 
   assets:
 
-  - images/cookify2.png
+  - images/cookifylogo.png
   - images/burger.png
   - images/cupcake.png
   - images/ice_cream.png
