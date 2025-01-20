@@ -5,11 +5,12 @@ import 'package:mobile_app/services/api_services.dart';
 class SearchResultsScreen extends StatefulWidget {
   final String searchQuery;
   final List<dynamic> recipes;
-
-  SearchResultsScreen({
+  final bool isMealPlan;
+  const SearchResultsScreen({
     super.key,
     required this.searchQuery,
     required this.recipes,
+    required this.isMealPlan,
   });
 
   @override
@@ -26,6 +27,19 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     return details;
   }
 
+void addToMealPlanner(Map<String, dynamic> recipe)  {
+    ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('${recipe['title']} added successfully'),
+      duration: const Duration(seconds: 2), // Adjust the duration if needed
+    ),
+  );
+
+  // Delay the navigation to allow the SnackBar to show
+  Future.delayed(const Duration(seconds: 2), () {
+    Navigator.pop(context, recipe['title']);
+  });
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +68,15 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                         leading: recipe['image'] != null
                             ? Image.network(recipe['image'], width: 50, height: 50)
                             : null,
+                        trailing: widget.isMealPlan
+                            ? IconButton(
+                                icon: const Icon(Icons.add, color: Color.fromARGB(255, 96, 26, 182)),
+                                onPressed: () {
+                                  // Add recipe to meal planner
+                                  addToMealPlanner(recipe); // Implement this function to handle meal planner logic
+                                },
+                              )
+                            : null,
                         title: Text(recipe['title']),
                         subtitle: Text('Loading...'), // Display 'Loading...' until data is fetched
                       );
@@ -61,6 +84,15 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       return ListTile(
                         leading: recipe['image'] != null
                             ? Image.network(recipe['image'], width: 50, height: 50)
+                            : null,
+                        trailing: widget.isMealPlan
+                            ? IconButton(
+                                icon: const Icon(Icons.add, color: Color.fromARGB(255, 96, 26, 182)),
+                                onPressed: () {
+                                  // Add recipe to meal planner
+                                  addToMealPlanner(recipe); // Implement this function to handle meal planner logic
+                                },
+                              )
                             : null,
                         title: Text(recipe['title']),
                         subtitle: Text('Error loading data'),
@@ -72,9 +104,20 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                         leading: recipe['image'] != null
                             ? Image.network(recipe['image'], width: 50, height: 50)
                             : null,
+
+                        trailing: widget.isMealPlan
+                        ? IconButton(
+                            icon: const Icon(Icons.add, color: Color.fromARGB(255, 96, 26, 182)),
+                            onPressed: () {
+                              // Add recipe to meal planner
+                              addToMealPlanner(recipe); // Implement this function to handle meal planner logic
+                            },
+                          )
+                        : null,
                         title: Text(recipe['title']),
                         subtitle: Text('Ready in $readyInMinutes minutes'),
                         onTap: () {
+                           Navigator.pop(context, recipe['title']); 
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -87,6 +130,17 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       return ListTile(
                         leading: recipe['image'] != null
                             ? Image.network(recipe['image'], width: 50, height: 50)
+                            : null,
+                        trailing: widget.isMealPlan
+                            ? IconButton(
+                                icon: const Icon(Icons.add, color: Color.fromARGB(255, 96, 26, 182)),
+                                onPressed: () {
+                                  // Add recipe to meal planner
+                                  addToMealPlanner(recipe); // Implement this function to handle meal planner logic
+
+                                 
+                                },
+                              )
                             : null,
                         title: Text(recipe['title']),
                         subtitle: Text('No data available'),

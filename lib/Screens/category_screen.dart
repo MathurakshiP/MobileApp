@@ -219,74 +219,87 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
           IconButton(
             icon: const Icon(Icons.filter_list, color: Colors.white),
             onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  // Ensure that the dropdowns are updated based on the selected values
-                  return StatefulBuilder(
-                    builder: (BuildContext context, StateSetter setState) {
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Filter Dropdowns
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: DropdownButton<String>(
-                                    hint: const Text('Select Cuisine'),
-                                    value: _selectedCuisine,
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        _selectedCuisine = newValue;
-                                      });
-                                    },
-                                    items: ['Any', ...cuisines]
-                                        .map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: DropdownButton<String>(
-                                    hint: const Text('Select Time'),
-                                    value: _selectedTime,
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        _selectedTime = newValue;
-                                      });
-                                    },
-                                    items: times.map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                
-                                _applyFilters(); // Apply the filters
-                              },
-                              child: const Text('Apply Filters'),
-                            ),
-                          ],
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      // Ensure that the dropdowns are updated based on the selected values
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [ 
+                // Centered Dropdowns
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: DropdownButton<String>(
+                            isExpanded: true, // Ensure it takes full width
+                            isDense: true,
+                            hint: const Text('Select Cuisine'),
+                            value: _selectedCuisine,
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedCuisine = newValue;
+                              });
+                            },
+                            items: ['Any', ...cuisines]
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
                         ),
-                      );
-                    },
-                  );
-                },
-              );
-            },
+                      ),
+                      const SizedBox(width: 16), // Space between dropdowns
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: DropdownButton<String>(
+                            isExpanded: true, // Ensure it takes full width
+                            isDense: true,
+                            hint: const Text('Select Time'),
+                            value: _selectedTime,
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedTime = newValue;
+                              });
+                            },
+                            items: times.map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16), // Space above button
+                ElevatedButton(
+                  onPressed: () {
+                    _applyFilters(); // Apply the filters
+                  },
+                  child: const Text('Apply Filters'),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+},
+
 
           ),
         ],

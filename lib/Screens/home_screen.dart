@@ -147,7 +147,7 @@ void hashAssign(String apiHash){
         .toList();
 
     // Add the recipes to Firestore
-    await _addRecipesToFirestore(recipesWithImages);
+    // await _addRecipesToFirestore(recipesWithImages);
 
     setState(() {
       _randomRecipes = recipesWithImages;
@@ -209,11 +209,13 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
         });
  _searchController.clear();
         Navigator.push(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (_) => SearchResultsScreen(
               searchQuery: query,
               recipes: _recipes,
+              isMealPlan: isMealPlan,
             ),
           ),
         );
@@ -425,7 +427,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                           return AllRecipesScreen(recipes: _randomRecipes,
                                           initialLikeCounts: likeCounts,
                                           isLiked:isLiked,
-                                          toggleLike: toggleLike,);
+                                          );
                                         },
                                       ),
                                     );
