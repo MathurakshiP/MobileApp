@@ -7,8 +7,7 @@ class IngredientSearchScreen extends StatefulWidget {
   const IngredientSearchScreen({super.key});
 
   @override
-  _IngredientSearchScreenState createState() =>
-      _IngredientSearchScreenState();
+  _IngredientSearchScreenState createState() => _IngredientSearchScreenState();
 }
 
 class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
@@ -16,6 +15,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
   final Set<String> _selectedIngredients = {}; // For selected ingredients
   List<dynamic> _recipes = [];
   bool _isLoading = false;
+  List<String> _filteredSuggestions =
+      []; // Holds filtered autocomplete suggestions
 
   // Custom colors
   final Color customPurple = const Color.fromARGB(255, 96, 26, 182);
@@ -23,34 +24,106 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
 
   // Ingredient sets
   final List<String> pantryIngredients = [
-    'Butter', 'Egg', 'Garlic', 'Milk', 'Onion',
-    'Sugar', 'Flour', 'Olive Oil', 'Garlic Powder', 'White Rice',
-    'Vinegar', 'Salt', 'Honey', 'Cinnamon', 'Nutmeg'
+    'Butter',
+    'Egg',
+    'Garlic',
+    'Milk',
+    'Onion',
+    'Sugar',
+    'Flour',
+    'Olive Oil',
+    'Garlic Powder',
+    'White Rice',
+    'Vinegar',
+    'Salt',
+    'Honey',
+    'Cinnamon',
+    'Nutmeg'
   ];
   final List<String> vegetables = [
-    'Tomato', 'Cheese', 'Chicken', 'Lemon', 'Pepper',
-    'Spinach', 'Carrot', 'Broccoli', 'Cabbage', 'Zucchini',
-    'Cauliflower', 'Potato', 'Cucumber', 'Radish', 'Peas'
+    'Tomato',
+    'Cheese',
+    'Chicken',
+    'Lemon',
+    'Pepper',
+    'Spinach',
+    'Carrot',
+    'Broccoli',
+    'Cabbage',
+    'Zucchini',
+    'Cauliflower',
+    'Potato',
+    'Cucumber',
+    'Radish',
+    'Peas'
   ];
   final List<String> fruits = [
-    'Apple', 'Banana', 'Orange', 'Strawberry', 'Blueberry',
-    'Pineapple', 'Grapes', 'Watermelon', 'Mango', 'Peach',
-    'Cherry', 'Pear', 'Kiwi', 'Lime', 'Plum'
+    'Apple',
+    'Banana',
+    'Orange',
+    'Strawberry',
+    'Blueberry',
+    'Pineapple',
+    'Grapes',
+    'Watermelon',
+    'Mango',
+    'Peach',
+    'Cherry',
+    'Pear',
+    'Kiwi',
+    'Lime',
+    'Plum'
   ];
   final List<String> dairyProducts = [
-    'Milk', 'Cheese', 'Yogurt', 'Butter', 'Cream',
-    'Paneer', 'Ghee', 'Curd', 'Whipped Cream', 'Buttermilk',
-    'Kefir', 'Sour Cream', 'Condensed Milk', 'Goat Cheese', 'Mozzarella'
+    'Milk',
+    'Cheese',
+    'Yogurt',
+    'Butter',
+    'Cream',
+    'Paneer',
+    'Ghee',
+    'Curd',
+    'Whipped Cream',
+    'Buttermilk',
+    'Kefir',
+    'Sour Cream',
+    'Condensed Milk',
+    'Goat Cheese',
+    'Mozzarella'
   ];
   final List<String> grains = [
-    'Rice', 'Wheat', 'Oats', 'Barley', 'Corn', 'Quinoa',
-    'Buckwheat', 'Millet', 'Rye', 'Sorghum', 'Bulgur',
-    'Couscous', 'Wild Rice', 'Teff', 'Amaranth'
+    'Rice',
+    'Wheat',
+    'Oats',
+    'Barley',
+    'Corn',
+    'Quinoa',
+    'Buckwheat',
+    'Millet',
+    'Rye',
+    'Sorghum',
+    'Bulgur',
+    'Couscous',
+    'Wild Rice',
+    'Teff',
+    'Amaranth'
   ];
   final List<String> spicesHerbs = [
-    'Basil', 'Coriander', 'Cumin', 'Turmeric', 'Black Pepper',
-    'Paprika', 'Parsley', 'Thyme', 'Rosemary', 'Oregano',
-    'Saffron', 'Ginger', 'Nutmeg', 'Cloves', 'Dill'
+    'Basil',
+    'Coriander',
+    'Cumin',
+    'Turmeric',
+    'Black Pepper',
+    'Paprika',
+    'Parsley',
+    'Thyme',
+    'Rosemary',
+    'Oregano',
+    'Saffron',
+    'Ginger',
+    'Nutmeg',
+    'Cloves',
+    'Dill'
   ];
 
   final Map<String, bool> isExpanded = {
@@ -63,18 +136,17 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
   };
 
   void _toggleIngredient(String ingredient) {
-  setState(() {
-    if (_selectedIngredients.contains(ingredient)) {
-      _selectedIngredients.remove(ingredient);
-    } else {
-      _selectedIngredients.add(ingredient);
-    }
+    setState(() {
+      if (_selectedIngredients.contains(ingredient)) {
+        _selectedIngredients.remove(ingredient);
+      } else {
+        _selectedIngredients.add(ingredient);
+      }
 
-    // Update the text field to reflect the selected ingredients
-    _ingredientController.text = _selectedIngredients.join(', ');
-  });
-}
-
+      // Update the text field to reflect the selected ingredients
+      _ingredientController.text = _selectedIngredients.join(', ');
+    });
+  }
 
   List<Widget> buildIngredientWidgets(List<String> ingredients) {
     return ingredients.map((ingredient) {
@@ -95,6 +167,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
     }).toList();
   }
 
+  // Correctly define the buildCollapsibleContainer method here
   Widget buildCollapsibleContainer(String title, List<String> ingredients) {
     final bool expanded = isExpanded[title] ?? false;
 
@@ -153,6 +226,29 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
     );
   }
 
+  void _updateSuggestions(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        _filteredSuggestions = [];
+      });
+      return;
+    }
+    final allIngredients = pantryIngredients +
+        vegetables +
+        fruits +
+        dairyProducts +
+        grains +
+        spicesHerbs;
+
+    setState(() {
+      _filteredSuggestions = allIngredients
+          .where((ingredient) =>
+              ingredient.toLowerCase().startsWith(query.toLowerCase()) &&
+              !_selectedIngredients.contains(ingredient))
+          .toList();
+    });
+  }
+
   // Function to fetch recipes from the API
   Future<void> fetchRecipes() async {
     // Get typed ingredients from the text field
@@ -161,7 +257,10 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
         : [];
 
     // Merge typed ingredients with selected ingredients
-    List<String> allIngredients = [...typedIngredients, ..._selectedIngredients];
+    List<String> allIngredients = [
+      ...typedIngredients,
+      ..._selectedIngredients
+    ];
 
     if (allIngredients.isEmpty) {
       print("No ingredients selected or typed");
@@ -174,7 +273,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
     });
 
     final String apiUrl =
-        'https://api.spoonacular.com/recipes/findByIngredients?ingredients=${allIngredients.join(',')}&apiKey=d4c56c9b18204389b1cb841224e22618';
+        'https://api.spoonacular.com/recipes/findByIngredients?ingredients=${allIngredients.join(',')}&apiKey=171dca80728e4b5bb342e075d07b22c0';
     print("Fetching recipes with URL: $apiUrl");
 
     try {
@@ -230,31 +329,78 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-  padding: const EdgeInsets.all(16.0),
-  child: TextField(
-    controller: _ingredientController,
-    decoration: InputDecoration(
-      labelText: 'Enter ingredients (comma-separated)',
-      labelStyle: TextStyle(color: customPurple),
-      border: const OutlineInputBorder(),
-      suffixIcon: IconButton(
-        icon: Icon(Icons.search, color: customPurple),
-        onPressed: fetchRecipes, // Trigger recipe search on click
-      ),
-    ),
-    onChanged: (text) {
-      setState(() {
-        // Update the selected ingredients based on manual input if necessary
-        _selectedIngredients
-          ..clear()
-          ..addAll(text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty));
-      });
-    },
-  ),
-),
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextField(
+                      controller: _ingredientController,
+                      decoration: InputDecoration(
+                        labelText: 'Enter ingredients (comma-separated)',
+                        labelStyle: TextStyle(color: customPurple),
+                        border: const OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.search, color: customPurple),
+                          onPressed: fetchRecipes,
+                        ),
+                      ),
+                      onChanged: (value) {
+                        // Get the last part of the input (after the last comma)
+                        final typedInput = value.split(',').last.trim();
+                        // Synchronize the text field with the selected ingredients
+                        final List<String> typedIngredients =
+                            value.split(',').map((e) => e.trim()).toList();
+                        setState(() {
+                           // Clear selected ingredients if text is empty
+    if (value.isEmpty) {
+      _selectedIngredients.clear();
+    }
+                          // Update suggestions
+                          _updateSuggestions(typedInput);
+                        });
+                      },
+                    ),
+                  ),
+                  // Suggestions List
+                  if (_filteredSuggestions.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _filteredSuggestions.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            child: ListTile(
+                              title: Text(_filteredSuggestions[index]),
+                              onTap: () {
+                                setState(() {
+                                  // Add the selected ingredient
+                                  if (!_selectedIngredients
+                                      .contains(_filteredSuggestions[index])) {
+                                    _selectedIngredients
+                                        .add(_filteredSuggestions[index]);
+                                  }
 
-                 
-                  buildCollapsibleContainer('Pantry Ingredients', pantryIngredients),
+                                  // Clear the text field after selection
+                                  _ingredientController.text =
+                                      _selectedIngredients.join(', ');
+
+                                  // Clear the filtered suggestions
+                                  _filteredSuggestions.clear();
+
+                                  // Move the cursor to the end of the text field after updating
+                                  _ingredientController.selection =
+                                      TextSelection.fromPosition(TextPosition(
+                                          offset: _ingredientController
+                                              .text.length));
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  const Divider(),
+                  buildCollapsibleContainer(
+                      'Pantry Ingredients', pantryIngredients),
                   buildCollapsibleContainer('Vegetables & Greens', vegetables),
                   buildCollapsibleContainer('Fruits', fruits),
                   buildCollapsibleContainer('Dairy Products', dairyProducts),
