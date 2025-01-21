@@ -30,14 +30,14 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
 void addToMealPlanner(Map<String, dynamic> recipe)  {
     ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text('${recipe['title']} added successfully'),
+      content: Text('$recipe added successfully'),
       duration: const Duration(seconds: 2), // Adjust the duration if needed
     ),
   );
-
+ 
   // Delay the navigation to allow the SnackBar to show
   Future.delayed(const Duration(seconds: 2), () {
-    Navigator.pop(context, recipe['title']);
+    Navigator.pop(context, recipe);
   });
 }
   @override
@@ -117,7 +117,7 @@ void addToMealPlanner(Map<String, dynamic> recipe)  {
                         title: Text(recipe['title']),
                         subtitle: Text('Ready in $readyInMinutes minutes'),
                         onTap: () {
-                           Navigator.pop(context, recipe['title']); 
+                           Navigator.pop(context, recipe); 
                           Navigator.push(
                             context,
                             MaterialPageRoute(

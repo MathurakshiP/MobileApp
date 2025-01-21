@@ -34,10 +34,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   if (selectedFood != null) {
     Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
   }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SearchScreen()), // Replace with your search screen
-    );
+    
   }
 
 void _navigateToCategoryScreen(String category) async {

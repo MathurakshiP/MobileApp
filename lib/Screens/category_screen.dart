@@ -202,7 +202,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
   }
 
   void addToMealPlanner(Map<String, dynamic> recipe)  {
-    Navigator.pop(context, recipe['title']);
+    Navigator.pop(context, recipe);
 }
 
 
@@ -342,7 +342,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 trailing: widget.isMealPlan
-                    ? IconButton(
+                    ? IconButton( 
                         icon: const Icon(Icons.add, color: Color.fromARGB(255, 96, 26, 182)),
                         onPressed: () {
                           // Add recipe to meal planner
@@ -352,7 +352,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
                     : null,
                 onTap: () {
                   updateRecentlyViewed(recipe); // Update Firestore with the viewed recipe
-                  Navigator.pop(context, recipe['title']); 
+                  Navigator.pop(context, recipe); 
                   Navigator.push(
                     context,
                     MaterialPageRoute(

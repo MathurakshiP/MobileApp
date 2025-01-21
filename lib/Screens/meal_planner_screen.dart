@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/addFoodScreen.dart';
+import 'package:mobile_app/Screens/recipe_details_screen.dart';
 
 class MealPlannerScreen extends StatefulWidget {
   final String userId;
@@ -11,7 +13,7 @@ class MealPlannerScreen extends StatefulWidget {
 }
 
 class _MealPlannerScreenState extends State<MealPlannerScreen> {
-  final Map<String, List<String>> mealPlan = {
+  final Map<String, List<dynamic>> mealPlan = {
     "Monday": [],
     "Tuesday": [],
     "Wednesday": [],
@@ -22,7 +24,9 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
   };
   bool isMealPlan =true;
   List<String> selectedDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
+  final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
+  bool isEditing = false;
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +39,17 @@ final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
             fontSize: 20,
           ),
         ),
+        actions: [
+          // Edit button to toggle edit mode
+          IconButton(
+            icon: Icon(isEditing ? Icons.check : Icons.edit),
+            onPressed: () {
+              setState(() {
+                isEditing = !isEditing;
+              });
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -86,7 +101,7 @@ final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
 
             // Meal plan list for selected days
             ...selectedDays.map((day) {
-              List<String> foods = mealPlan[day]!;
+              List<dynamic> foods = mealPlan[day]!;
 
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -97,7 +112,7 @@ final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          day,
+                          day, 
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
@@ -119,12 +134,57 @@ final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
                       ],
                     ),
                     ...foods.map((food) => Padding(
-                          padding: const EdgeInsets.only(left: 16.0, top: 4.0),
-                          child: Text(
-                            food,
-                            style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                        padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            // Navigate to the RecipeDetailsScreen when the food is tapped
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RecipeDetailScreen(recipeId: food['id']),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Display the food image
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0), // Rounded corners for the image
+                                child: Image.network(
+                                  food['image'], // URL for the food image
+                                  height: 50,
+                                  width: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.broken_image, size: 50, color: Colors.grey);
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12), // Spacing between the image and text
+                              // Display the food name
+                              Expanded(
+                                child: Text(
+                                  food['title'], // Name of the food
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                ),
+                              ),
+
+                              if (isEditing)
+                                IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () {
+                                    setState(() {
+                                      mealPlan[day]!.remove(food);
+                                    });
+                                  },
+                                ),
+                            ],
                           ),
-                        )),
+                        ),
+                      )),
+
+
                     const Divider(),
                   ],
                 ),
