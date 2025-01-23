@@ -18,6 +18,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
   bool isMealPlan=true;
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -31,28 +32,27 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       MaterialPageRoute(builder: (context) => SearchScreen()),
     );
 
-  if (selectedFood != null) {
-    Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
-  }
-    
+    if (selectedFood != null) {
+      Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
+    }
   }
 
-void _navigateToCategoryScreen(String category) async {
-  final selectedFood = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => CategoryScreen(
-        category: category,
-        userId: widget.userId,
-        isMealPlan: isMealPlan,
+  void _navigateToCategoryScreen(String category) async {
+    final selectedFood = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategoryScreen(
+          category: category,
+          userId: widget.userId,
+          isMealPlan: isMealPlan,
+        ),
       ),
-    ),
-  );
+    );
 
-  if (selectedFood != null) {
-    Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
+    if (selectedFood != null) {
+      Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

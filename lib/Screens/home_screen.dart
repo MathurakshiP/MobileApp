@@ -29,10 +29,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
   with SingleTickerProviderStateMixin {
+
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _suggestions = [];
-
   Timer? _debounce;
   String userName = 'User Name';
   String hash = 'null';
@@ -331,8 +331,8 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          SingleChildScrollView(
-            child: Column(
+          
+             Column(
               children: [
                 // Tab Navigation for Explore Recipe and What's in Your Kitchen
                 TabBar(
@@ -346,12 +346,13 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                   indicatorColor: customPurple,
                 ),
 
-                SizedBox(
-                  height: 1850,
+                Expanded(
+                  
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      Column(
+                      SingleChildScrollView(
+                      child:Column(
                         children: [
                           //search recipe
                           Padding(
@@ -790,14 +791,14 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                         RecentlyViewedWidget(recentlyViewed: _recentlyViewed),
                         ],
                       ),
-
+                      ),
                       const IngredientSearchScreen(),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
+          
 
           const SavedFoodScreen(),
           // ShoppingListScreen with passed shoppingList
