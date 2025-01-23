@@ -14,8 +14,8 @@ class RecipeListScreen extends StatefulWidget {
 class _RecipeListScreenState extends State<RecipeListScreen> {
   List<dynamic> recipes = [];
   final String _baseUrl = 'https://api.spoonacular.com';
-  final String _apiKey = 'd4c56c9b18204389b1cb841224e22618';
-
+  final String _apiKey = '9ecee3af427949d4b5e9831e0b458576';
+  bool isMealPlan=false;
   @override
   void initState() {
     super.initState();
@@ -81,7 +81,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RecipeDetailScreen(recipeId: recipeId),
+                          builder: (context) => RecipeDetailScreen(recipeId: recipeId,isMealPlan:isMealPlan),
                         ),
                       );
                     } else {

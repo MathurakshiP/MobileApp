@@ -35,11 +35,25 @@ void addToMealPlanner(Map<String, dynamic> recipe)  {
     ),
   );
  
+ 
   // Delay the navigation to allow the SnackBar to show
   Future.delayed(const Duration(seconds: 2), () {
     Navigator.pop(context, recipe);
   });
 }
+
+void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
+    final selectedFood = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:widget.isMealPlan),
+      ),
+    );
+
+    if (selectedFood != null) {
+      Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,6 +94,8 @@ void addToMealPlanner(Map<String, dynamic> recipe)  {
                         title: Text(recipe['title']),
                         subtitle: Text('Loading...'), // Display 'Loading...' until data is fetched
                       );
+
+
                     } else if (snapshot.hasError) {
                       return ListTile(
                         leading: recipe['image'] != null
@@ -97,6 +113,8 @@ void addToMealPlanner(Map<String, dynamic> recipe)  {
                         title: Text(recipe['title']),
                         subtitle: Text('Error loading data'),
                       );
+
+
                     } else if (snapshot.hasData) {
                       final recipeDetails = snapshot.data;
                       final readyInMinutes = recipeDetails?['readyInMinutes'] ?? 'No time info';
@@ -117,13 +135,8 @@ void addToMealPlanner(Map<String, dynamic> recipe)  {
                         title: Text(recipe['title']),
                         subtitle: Text('Ready in $readyInMinutes minutes'),
                         onTap: () {
-                           Navigator.pop(context, recipe); 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => RecipeDetailScreen(recipeId: recipeId),
-                            ),
-                          );
+                           
+                          navigateToReceipeDetails(recipe);
                         },
                       );
                     } else {

@@ -10,8 +10,8 @@ import 'package:mobile_app/providers/shopping_list_provider.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
   final int recipeId;
-
-  RecipeDetailScreen({super.key, required this.recipeId});
+  final bool isMealPlan;
+  RecipeDetailScreen({super.key, required this.recipeId,required this.isMealPlan});
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   @override
@@ -62,7 +62,31 @@ class RecipeDetailScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(recipe['title'], style: const TextStyle(fontSize: 24)),
                 const SizedBox(height: 8),
-                Text('Cooking Time: ${recipe['readyInMinutes']} minutes'),
+                Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Cooking Time: ${recipe['readyInMinutes']} minutes',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  if(isMealPlan)
+                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      
+                      if (isMealPlan) 
+                        IconButton(
+                          icon: Icon(Icons.add, color: customPurple),
+                          onPressed: () {
+                            Navigator.pop(context, recipe); 
+                          },
+                        ),
+                    ],
+                  ),
+
+                ],
+              ),
+
                 const SizedBox(height: 16),
                 // Buttons for saving the recipe and adding ingredients to the shopping list
                 Row(

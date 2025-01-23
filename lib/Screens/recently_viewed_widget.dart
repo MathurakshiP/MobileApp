@@ -5,7 +5,7 @@ class RecentlyViewedWidget extends StatelessWidget {
   final List<dynamic> recentlyViewed;
 
   RecentlyViewedWidget({super.key, required this.recentlyViewed});
-
+  bool isMealPlan=false;
   @override
   Widget build(BuildContext context) {
     
@@ -39,7 +39,7 @@ class RecentlyViewedWidget extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  RecipeDetailScreen(recipeId: recipe['id']),
+                                  RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan),
                             ),
                           );
                         },

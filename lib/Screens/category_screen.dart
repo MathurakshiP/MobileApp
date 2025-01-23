@@ -205,7 +205,18 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
     Navigator.pop(context, recipe);
 }
 
+void _navigateToReceipeDetails(Map<String, dynamic> recipe) async {
+    final selectedFood = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:widget.isMealPlan),
+      ),
+    );
 
+    if (selectedFood != null) {
+      Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -352,13 +363,8 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
                     : null,
                 onTap: () {
                   updateRecentlyViewed(recipe); // Update Firestore with the viewed recipe
-                  Navigator.pop(context, recipe); 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => RecipeDetailScreen(recipeId: recipe['id']),
-                    ),
-                  );
+                  
+                  _navigateToReceipeDetails(recipe);
                 },
               );
             },

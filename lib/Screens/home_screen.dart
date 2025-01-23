@@ -207,7 +207,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
           _recipes = recipes;
           _suggestions = [];
         });
- _searchController.clear();
+        _searchController.clear();
         Navigator.push(
           // ignore: use_build_context_synchronously
           context,
@@ -261,7 +261,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => RecipeDetailScreen(recipeId: suggestion['id'])),
+          builder: (context) => RecipeDetailScreen(recipeId: suggestion['id'],isMealPlan:isMealPlan)),
     );
     _searchController.clear();
     setState(() {
@@ -395,8 +395,18 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                     var suggestion = _suggestions[index];  // Access the whole suggestion map
 
                                     return ListTile(
-                                      title: Text(suggestion['title'] ?? 'No Title'),  // Access the title instead of id
-                          // Display the title of the suggestion
+                                      leading: Icon(
+                                          Icons.local_dining, // Use any icon you prefer
+                                          color: customPurple, // Customize the color of the icon
+                                        ),
+                                        title: Text(
+                                          suggestion['title'] ?? 'No Title', // Access the title instead of id
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                       onTap: () => _onSuggestionTap(_suggestions[index]),  // Pass the whole map to _onSuggestionTap
                                     );
                                   },
@@ -407,189 +417,216 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
 
 
                           // Latest Recipes Section 
-                           Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Our Latest Recipes',
-                                  style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                
-                                // Add the "See All" button
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) {
-                                          return AllRecipesScreen(recipes: _randomRecipes,
-                                          initialLikeCounts: likeCounts,
-                                          isLiked:isLiked,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  child: Text('See All',
-                                    style: TextStyle(
-                                      color: customPurple, // Set the text color to customPurple
-                                    ),
+                            Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Our Latest Recipes',
+                                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          _isLoading? const CircularProgressIndicator() 
-                              : Padding(
-                                  padding: const EdgeInsets.only(left: 16.0), 
-                                  child: SizedBox(
-                                    height: 300, 
-                                    child: ListView.builder(
-                                      scrollDirection: Axis.horizontal, 
-                                      itemCount: _randomRecipes.length, 
-                                      itemBuilder: (context, index) {
-                                        final recipe = _randomRecipes[index];
-                                        return GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              if (!_recentlyViewed.any((item) =>item['id'] == recipe['id'])) {
-                                                _recentlyViewed.insert(0,recipe); 
-                                              }
-                                            });
-                                            // Navigate to the recipe details screen
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>RecipeDetailScreen(recipeId: recipe['id']),
-                                              ),
+                                  // Add the "See All" button
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) {
+                                            return AllRecipesScreen(
+                                              recipes: _randomRecipes,
+                                              initialLikeCounts: likeCounts,
+                                              isLiked: isLiked,
                                             );
                                           },
-                                          child: SizedBox(
-                                            width:250, 
-                                            child: Card(
-                                              margin: const EdgeInsets.only(right: 16, bottom: 10),
-                                              child: Column(
-                                                crossAxisAlignment:CrossAxisAlignment.start,
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      'See All',
+                                      style: TextStyle(color: customPurple), // Set the text color to customPurple
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: SizedBox(
+                              height: 300,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: _isLoading ? 5 : _randomRecipes.length, // Show placeholders while loading
+                                itemBuilder: (context, index) {
+                                  if (_isLoading) {
+                                    // Placeholder Card while loading
+                                    return SizedBox(
+                                      width: 250,
+                                      child: Card(
+                                        margin: const EdgeInsets.only(right: 16, bottom: 10),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              height: 200,
+                                              width: 250,
+                                              color: Colors.grey.shade300, // Light grey background
+                                              child: const Icon(
+                                                Icons.fastfood, // Placeholder icon
+                                                size: 60,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                height: 16,
+                                                width: 150,
+                                                color: Colors.grey.shade300, // Simulate a loading bar for title
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    // Actual Recipe Card when data is loaded
+                                    final recipe = _randomRecipes[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          if (!_recentlyViewed.any((item) => item['id'] == recipe['id'])) {
+                                            _recentlyViewed.insert(0, recipe);
+                                          }
+                                        });
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan),
+                                          ),
+                                        );
+                                      },
+                                      child: SizedBox(
+                                        width: 250,
+                                        child: Card(
+                                          margin: const EdgeInsets.only(right: 16, bottom: 10),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Stack(
                                                 children: [
-                                                  Stack(
-                                                    children: [
-                                                      ClipRRect(
-                                                        borderRadius:const BorderRadius.only(
-                                                          topLeft:Radius.circular(10),
-                                                          topRight:Radius.circular(10),
-                                                        ),
-                                                        child: recipe['image'] !=null? Image.network(
-                                                                recipe['image'],
+                                                  ClipRRect(
+                                                    borderRadius: const BorderRadius.only(
+                                                      topLeft: Radius.circular(10),
+                                                      topRight: Radius.circular(10),
+                                                    ),
+                                                    child: recipe['image'] != null
+                                                        ? Image.network(
+                                                            recipe['image'],
+                                                            height: 200,
+                                                            width: 250,
+                                                            fit: BoxFit.cover,
+                                                            errorBuilder: (context, error, stackTrace) {
+                                                              return Container(
                                                                 height: 200,
                                                                 width: 250,
-                                                                fit: BoxFit.cover,
-                                                                errorBuilder:
-                                                                    (context,error,stackTrace) {
-                                                                  return Container(
-                                                                    height: 200,
-                                                                    width: 250,
-                                                                    color: Colors.grey, 
-                                                                    child: const Icon(Icons.broken_image,
-                                                                        size:60,
-                                                                        color: Colors.white),
-                                                                  );
-                                                                },
-                                                              )
-                                                            : Container(
-                                                                height: 200,
-                                                                width: 250,
-                                                                color: Colors.grey, 
-                                                                child: const Icon(Icons.fastfood,
-                                                                    size: 60,
-                                                                    color: Colors.white),
-                                                              ),
-                                                      ),
-
-                                                      // Time overlay in the top-left corner
-                                                      Positioned(
-                                                        top: 8,
-                                                        left: 8,
-                                                        child: Container(
-                                                          padding:const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                                                          decoration:BoxDecoration(
-                                                            color: const Color.fromARGB(255,0,0,0).withOpacity(0.6),
-                                                            borderRadius:BorderRadius.circular(5),
+                                                                color: Colors.grey,
+                                                                child: const Icon(Icons.broken_image,
+                                                                    size: 60, color: Colors.white),
+                                                              );
+                                                            },
+                                                          )
+                                                        : Container(
+                                                            height: 200,
+                                                            width: 250,
+                                                            color: Colors.grey,
+                                                            child: const Icon(Icons.fastfood,
+                                                                size: 60, color: Colors.white),
                                                           ),
-                                                          child: Row(
-                                                            children: [
-                                                              const Icon(
-                                                                  Icons.timer,
-                                                                  size: 14,
-                                                                  color: Colors.white),
-                                                              const SizedBox(width: 4),
-                                                              Text(
-                                                                recipe['readyInMinutes'] !=null
-                                                                    ? '${recipe['readyInMinutes']} mins'
-                                                                    : 'N/A',
-                                                                style: const TextStyle(
-                                                                    fontSize:12,
-                                                                    color: Colors.white),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-
-                                                      Positioned(
-                                                        bottom: 8,
-                                                        right: 8,
-                                                        child: GestureDetector(
-                                                          onTap: () => toggleLike(index), 
-                                                          child: Container(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(horizontal:8,vertical:4),
-                                                            decoration:
-                                                                BoxDecoration(color: Colors.black.withOpacity(0.6), // Keep background color unchanged
-                                                              borderRadius:BorderRadius.circular(5),
-                                                            ),
-                                                            child: Row(
-                                                              children: [
-                                                                Icon(
-                                                                  Icons.thumb_up,
-                                                                  size: 14,
-                                                                  color: isLiked[index]? const Color.fromARGB(255,93,167,199): Colors.white, // Change icon color based on the like state
-                                                                ),
-                                                                const SizedBox(width: 4),
-                                                                Text(
-                                                                  '${likeCounts[index]}', 
-                                                                  style: const TextStyle(
-                                                                      fontSize:12,
-                                                                      color: Colors.white),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
                                                   ),
-                                                  // Recipe Title
-                                                  Padding(
-                                                    padding:const EdgeInsets.all(8.0),
-                                                    child: Text(recipe['title'] ??'No Title', // Fallback for missing title
-                                                      style: const TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:FontWeight.bold),
+                                                  // Time overlay in the top-left corner
+                                                  Positioned(
+                                                    top: 8,
+                                                    left: 8,
+                                                    child: Container(
+                                                      padding: const EdgeInsets.symmetric(
+                                                          horizontal: 8, vertical: 4),
+                                                      decoration: BoxDecoration(
+                                                        color: const Color.fromARGB(255, 0, 0, 0)
+                                                            .withOpacity(0.6),
+                                                        borderRadius: BorderRadius.circular(5),
+                                                      ),
+                                                      child: Row(
+                                                        children: [
+                                                          const Icon(Icons.timer,
+                                                              size: 14, color: Colors.white),
+                                                          const SizedBox(width: 4),
+                                                          Text(
+                                                            recipe['readyInMinutes'] != null
+                                                                ? '${recipe['readyInMinutes']} mins'
+                                                                : 'N/A',
+                                                            style: const TextStyle(
+                                                                fontSize: 12, color: Colors.white),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  // Like Button
+                                                  Positioned(
+                                                    bottom: 8,
+                                                    right: 8,
+                                                    child: GestureDetector(
+                                                      onTap: () => toggleLike(index),
+                                                      child: Container(
+                                                        padding: const EdgeInsets.symmetric(
+                                                            horizontal: 8, vertical: 4),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.black.withOpacity(0.6),
+                                                          borderRadius: BorderRadius.circular(5),
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(
+                                                              Icons.thumb_up,
+                                                              size: 14,
+                                                              color: isLiked[index]
+                                                                  ? const Color.fromARGB(255, 93, 167, 199)
+                                                                  : Colors.white,
+                                                            ),
+                                                            const SizedBox(width: 4),
+                                                            Text(
+                                                              '${likeCounts[index]}',
+                                                              style: const TextStyle(
+                                                                  fontSize: 12, color: Colors.white),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
+                                              // Recipe Title
+                                              Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  recipe['title'] ?? 'No Title', // Fallback for missing title
+                                                  style: const TextStyle(
+                                                      fontSize: 16, fontWeight: FontWeight.bold),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
 
                           // Inside the Column in the body of your HomeScreen
                           Padding(
@@ -598,100 +635,95 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  'Today\'s Recipe', 
-                                  style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold),
+                                  'Today\'s Recipe',
+                                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                                 ),
-                                const SizedBox(height:20), // Add some space between the title and the recipe
-                                _isLoading
-                                    ? const CircularProgressIndicator() // Show loading indicator while fetching data
+                                const SizedBox(height: 20), // Add space between the title and recipe
+                                _randomRecipes.isEmpty // Check if recipes are still loading or unavailable
+                                    ? Container(
+                                        height: 300, // Placeholder height
+                                        width: 400, // Placeholder width
+                                        color: Colors.grey.shade300, // Background color for the placeholder
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.fastfood, // Placeholder icon
+                                            size: 60,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      )
                                     : GestureDetector(
                                         onTap: () {
                                           // Add the clicked recipe to recentlyViewed, avoiding duplicates
                                           setState(() {
-                                            if (!_recentlyViewed.any((item) =>item['id'] ==_randomRecipes[9]['id'])) {
-                                              _recentlyViewed.insert(0,_randomRecipes[9]); // Add to the start for most recent first
+                                            if (!_recentlyViewed.any((item) => item['id'] == _randomRecipes[9]['id'])) {
+                                              _recentlyViewed.insert(0, _randomRecipes[9]); // Add to the start
                                             }
                                           });
                                           // Navigate to the recipe details screen
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  RecipeDetailScreen(recipeId:_randomRecipes[9]['id']),
+                                              builder: (context) => RecipeDetailScreen(recipeId: _randomRecipes[9]['id'],isMealPlan:isMealPlan),
                                             ),
                                           );
                                         },
                                         child: SizedBox(
-                                          height:300, // Adjust height as needed
+                                          height: 300, // Adjust height as needed
                                           width: 400,
                                           child: Card(
-                                            margin:const EdgeInsets.only(top: 10),
+                                            margin: const EdgeInsets.only(top: 10),
                                             child: Column(
-                                              crossAxisAlignment:CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Stack(
                                                   children: [
                                                     ClipRRect(
-                                                      borderRadius:const BorderRadius.only(
-                                                        topLeft:Radius.circular(10),
-                                                        topRight:Radius.circular(10),
+                                                      borderRadius: const BorderRadius.only(
+                                                        topLeft: Radius.circular(10),
+                                                        topRight: Radius.circular(10),
                                                       ),
-                                                      child: _randomRecipes.isNotEmpty && _randomRecipes[9]['image'] !=null
-                                                          ? Image.network(_randomRecipes[9]['image'], // Use the first recipe image
+                                                      child: _randomRecipes[9]['image'] != null
+                                                          ? Image.network(
+                                                              _randomRecipes[9]['image'],
                                                               height: 200,
                                                               width: 400,
                                                               fit: BoxFit.cover,
-                                                              errorBuilder:
-                                                                  (context,error,stackTrace) {
+                                                              errorBuilder: (context, error, stackTrace) {
                                                                 return Container(
                                                                   height: 200,
                                                                   width: 400,
-                                                                  color: Colors.grey, // Placeholder color for error
-                                                                  child: const Icon(Icons.broken_image,
-                                                                      size: 60,
-                                                                      color: Colors.white),
+                                                                  color: Colors.grey,
+                                                                  child: const Icon(Icons.broken_image, size: 60, color: Colors.white),
                                                                 );
                                                               },
                                                             )
                                                           : Container(
                                                               height: 200,
                                                               width: 400,
-                                                              color: Colors.grey, // Default placeholder color
-                                                              child: const Icon(
-                                                                  Icons.fastfood,
-                                                                  size: 60,
-                                                                  color: Colors.white),
+                                                              color: Colors.grey,
+                                                              child: const Icon(Icons.fastfood, size: 60, color: Colors.white),
                                                             ),
                                                     ),
-                                                    // Time overlay in the top-left corner
+                                                    // Time overlay
                                                     Positioned(
                                                       top: 8,
                                                       left: 8,
                                                       child: Container(
-                                                        padding:
-                                                            const EdgeInsets.symmetric(
-                                                                horizontal: 8,
-                                                                vertical: 4),
-                                                        decoration:BoxDecoration(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                        decoration: BoxDecoration(
                                                           color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.6),
-                                                          borderRadius:BorderRadius.circular(5),
+                                                          borderRadius: BorderRadius.circular(5),
                                                         ),
                                                         child: Row(
                                                           children: [
-                                                            const Icon(
-                                                                Icons.timer,
-                                                                size: 14,
-                                                                color: Colors.white),
+                                                            const Icon(Icons.timer, size: 14, color: Colors.white),
                                                             const SizedBox(width: 4),
                                                             Text(
-                                                              _randomRecipes.isNotEmpty &&_randomRecipes[0]['readyInMinutes'] !=null
+                                                              _randomRecipes[0]['readyInMinutes'] != null
                                                                   ? '${_randomRecipes[0]['readyInMinutes']} mins'
                                                                   : 'N/A',
-                                                              style: const TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Colors.white),
+                                                              style: const TextStyle(fontSize: 12, color: Colors.white),
                                                             ),
                                                           ],
                                                         ),
@@ -702,27 +734,26 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                                       bottom: 8,
                                                       right: 8,
                                                       child: GestureDetector(
-                                                        onTap: () => toggleLike(9), // Use index for "Today's Recipe" (0 in this case)
+                                                        onTap: () => toggleLike(9),
                                                         child: Container(
-                                                          padding:const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                                                          decoration:BoxDecoration(
-                                                            color: Colors.black.withOpacity( 0.6),
-                                                            borderRadius:BorderRadius.circular(5),
+                                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.black.withOpacity(0.6),
+                                                            borderRadius: BorderRadius.circular(5),
                                                           ),
                                                           child: Row(
                                                             children: [
                                                               Icon(
-                                                                Icons.thumb_up, // Thumbs-up icon
+                                                                Icons.thumb_up,
                                                                 size: 14,
-                                                                color: isLiked[9]? const Color.fromARGB(255,93,167,199)
+                                                                color: isLiked[9]
+                                                                    ? const Color.fromARGB(255, 93, 167, 199)
                                                                     : Colors.white,
                                                               ),
                                                               const SizedBox(width: 4),
                                                               Text(
-                                                                '${likeCounts[9]}', // Like count for "Today's Recipe"
-                                                                style: const TextStyle(
-                                                                    fontSize:12,
-                                                                    color: Colors.white),
+                                                                '${likeCounts[9]}',
+                                                                style: const TextStyle(fontSize: 12, color: Colors.white),
                                                               ),
                                                             ],
                                                           ),
@@ -733,12 +764,10 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                                 ),
                                                 // Recipe Title
                                                 Padding(
-                                                  padding:const EdgeInsets.all(8.0),
-                                                  child: Text(_randomRecipes.isNotEmpty? _randomRecipes[9]['title'] ??'No Title'
-                                                        : 'No Recipe Available',
-                                                    style: const TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:FontWeight.bold),
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    _randomRecipes[9]['title'] ?? 'No Title',
+                                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                                   ),
                                                 ),
                                               ],
@@ -746,9 +775,10 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
+                              ],
+                            ),
+                          ),
+
 
                           // Quick Links For You Section
                           Padding(
