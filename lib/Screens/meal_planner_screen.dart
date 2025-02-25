@@ -298,7 +298,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => SignUpReminderPage(),
+                                      builder: (context) => PremiumPage(),
                                     ),
                                   );
                                 },
