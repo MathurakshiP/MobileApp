@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'Recipe App',
             theme: themeProvider.currentTheme, // Apply the current theme
-            // home:  AnimationScreen(),
-            home: GetStartedScreen(),
+            home:  AnimationScreen(),
+            // home: GetStartedScreen(),
             routes: {
               '/home': (context) => HomeScreen(userData: {}),
             },
