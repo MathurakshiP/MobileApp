@@ -93,6 +93,7 @@ flutter:
   - images/dessert.jpg
   - images/salad.jpg
   - images/soup.jpg
+  - images/getstartedScreen.png
 
   - .env
 

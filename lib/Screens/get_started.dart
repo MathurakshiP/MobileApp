@@ -35,18 +35,18 @@ class GetStartedScreen extends StatelessWidget {
           //   ),
           // ),
           Positioned(
-            top: 0,
-            left: -250,
+            top: 10,
+            left: -50,
             child: Transform(
               transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0),
               child: ClipPath(
                 clipper: CustomClipperPath(),
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 2.2,
-                  height: 1000,
+                  width: MediaQuery.of(context).size.width * 1.2,
+                  height: MediaQuery.of(context).size.height * 1.2,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('images/egg4.png'),
+                      image: AssetImage('images/getstartedScreen.png'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -104,7 +104,7 @@ class GetStartedScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 40),
-                        backgroundColor:const Color.fromARGB(255, 96, 26, 182),
+                        backgroundColor:const Color.fromARGB(255, 255, 255, 255),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
@@ -112,7 +112,7 @@ class GetStartedScreen extends StatelessWidget {
                       child: const Text(
                         'Get Started',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: const Color.fromARGB(255, 96, 26, 182),
                           fontSize: 20,
                           fontFamily: 'Inika',
                           fontWeight: FontWeight.w900,

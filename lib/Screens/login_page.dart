@@ -14,14 +14,13 @@ class LoginPage extends StatefulWidget {
 
   @override
   _LoginPageState createState() => _LoginPageState();
-
 }
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController(); // Phone number controller
+  final TextEditingController phoneController = TextEditingController();
 
   bool isLogin = true;
   bool isPasswordVisible = false;
@@ -46,23 +45,19 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      // Sign in with Firebase Authentication
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
 
-      // Check if the user exists in Firestore
       var userDoc = await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).get();
 
       if (userDoc.exists) {
-        // If user exists in Firestore, navigate to home screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen(userData: {'uid': userCredential.user!.uid})),
         );
       } else {
-        // If email is not found in Firestore, check if the email is verified
         if (userCredential.user != null && userCredential.user!.emailVerified) {
           Navigator.pushReplacement(
             context,
@@ -84,7 +79,6 @@ class _LoginPageState extends State<LoginPage> {
     required String email,
     required String password,
     required String name,
-    
   }) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -96,7 +90,6 @@ class _LoginPageState extends State<LoginPage> {
 
       await userCredential.user!.updateDisplayName(name);
       await userCredential.user!.reload();
-      //await userCredential.user!.sendEmailVerification();
 
       await _auth._saveUserData(userCredential.user!, name);
 
@@ -121,23 +114,21 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> saveOTPToFirestore(String userId, String otp) async {
-    final expirationTime = DateTime.now().add(const Duration(minutes: 5)); // OTP valid for 5 minutes
+    final expirationTime = DateTime.now().add(const Duration(minutes: 5));
 
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
       'otp': otp,
       'otpExpiration': expirationTime,
-      'otpAttempts': 0, // Reset attempts when a new OTP is generated
+      'otpAttempts': 0,
     });
   }
 
   Future<void> sendEmail(String email, String otp) async {
-    // SMTP Server Configuration (e.g., Gmail SMTP)
     final smtpServer = gmail('cookifyrecipes1234@gmail.com', 'ottk glee trub cgqv');
 
-    // Create the email message
     final message = Message()
       ..from = Address('cookifyrecipes1234@gmail.com', 'Cookify Team')
-      ..recipients.add(email) // Recipient's email
+      ..recipients.add(email)
       ..subject = 'Your OTP Code for Cookify App'
       ..text = 'Hello,\n\nYour OTP code is: $otp\n\nPlease use this code to verify your email address. '
               'This code is valid for 5 minutes.\n\nThanks,\nCookify Team';
@@ -179,6 +170,7 @@ class _LoginPageState extends State<LoginPage> {
     required TextEditingController controller,
     bool obscureText = false,
     Widget? suffixIcon,
+    IconData? prefixIcon,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
@@ -187,10 +179,13 @@ class _LoginPageState extends State<LoginPage> {
         obscureText: obscureText,
         decoration: InputDecoration(
           labelText: labelText,
+          prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: Colors.purple) : null,
           suffixIcon: suffixIcon,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          filled: true,
+          fillColor: Colors.white,
         ),
       ),
     );
@@ -199,167 +194,186 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // App Logo
-              Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: Image.asset(
-                  'images/cookifylogo.png', // logo asset path
-                  height: 300,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.purple.shade100, const Color.fromARGB(255, 253, 208, 166)],
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // App Logo
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Image.asset(
+                    'images/cookifylogo.png',
+                    height: 250,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 0),
+                const SizedBox(height: 0),
 
-              // Rounded Box Container for Login/SignUp
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 237, 221, 255),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    // Toggle between Login and Sign Up
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () => setState(() => isLogin = true),
-                          child: Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: isLogin ? const Color.fromARGB(255, 96, 26, 182) : Colors.grey,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 30),
-                        GestureDetector(
-                          onTap: () => setState(() => isLogin = false),
-                          child: Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: isLogin ? Colors.grey :const Color.fromARGB(255, 96, 26, 182),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Fields
-                    if (!isLogin)
-                      buildTextField(
-                        labelText: 'Name',
-                        controller: nameController,
+                // Rounded Box Container for Login/SignUp
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
                       ),
-                    buildTextField(
-                      labelText: 'Email',
-                      controller: emailController,
-                    ),
-                    buildTextField(
-                      labelText: 'Password',
-                      controller: passwordController,
-                      obscureText: !isPasswordVisible,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () => setState(
-                            () => isPasswordVisible = !isPasswordVisible),
-                      ),
-                    ),
-                    const SizedBox(height: 0),
-
-                    // Forgot Password Button
-                    if (isLogin)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 0.0),
-                          child: TextButton(
-                            onPressed: () {
-                              if (emailController.text.isNotEmpty) {
-                                sendPasswordResetEmail(emailController.text.trim());
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Please enter your email to reset the password.'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            },
-                            child: const Text(
-                              'Forgot Password?',
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // Toggle between Login and Sign Up
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () => setState(() => isLogin = true),
+                            child: Text(
+                              'Login',
                               style: TextStyle(
-                                color: Color.fromARGB(255, 96, 26, 182),
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: isLogin ? Colors.purple : Colors.grey,
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                    // Login/SignUp Button
-                    ElevatedButton(
-                      onPressed: isLogin
-                          ? signInWithEmailAndPassword
-                          : () => createUserWithEmailAndPassword(
-                                context: context,
-                                email: emailController.text.trim(),
-                                password: passwordController.text.trim(),
-                                name: nameController.text.trim(),
+                          const SizedBox(width: 30),
+                          GestureDetector(
+                            onTap: () => setState(() => isLogin = false),
+                            child: Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: isLogin ? Colors.grey : Colors.purple,
                               ),
-                      child: Text(
-                        isLogin ? 'Login' : 'Sign Up',
-                        style: TextStyle(color: const Color.fromARGB(255, 96, 26, 182)),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 0),
+                      const SizedBox(height: 20),
 
-                    // Do it Later Button
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomeScreen(
-                              userData: {
-                                'name': 'Guest',
-                                'email': 'guest@example.com',
-                                'preferences': {},
+                      // Fields
+                      if (!isLogin)
+                        buildTextField(
+                          labelText: 'Name',
+                          controller: nameController,
+                          prefixIcon: Icons.person, // Name icon
+                        ),
+                      buildTextField(
+                        labelText: 'Email',
+                        controller: emailController,
+                        prefixIcon: Icons.email, // Email icon
+                      ),
+                      buildTextField(
+                        labelText: 'Password',
+                        controller: passwordController,
+                        obscureText: !isPasswordVisible,
+                        prefixIcon: Icons.lock, // Password icon
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () => setState(
+                              () => isPasswordVisible = !isPasswordVisible),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Forgot Password Button
+                      if (isLogin)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: TextButton(
+                              onPressed: () {
+                                if (emailController.text.isNotEmpty) {
+                                  sendPasswordResetEmail(emailController.text.trim());
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Please enter your email to reset the password.'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
                               },
+                              child: const Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  color: Colors.purple,
+                                ),
+                              ),
                             ),
                           ),
-                        );
-                      },
-                      child: const Text(
-                        'Do it Later',
-                        style: TextStyle(color: Color.fromARGB(255, 96, 26, 182)),
                         ),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      // Login/SignUp Button
+                      ElevatedButton(
+                        onPressed: isLogin
+                            ? signInWithEmailAndPassword
+                            : () => createUserWithEmailAndPassword(
+                                  context: context,
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim(),
+                                  name: nameController.text.trim(),
+                                ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple,
+                          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          isLogin ? 'Login' : 'Sign Up',
+                          style: const TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Do it Later Button
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomeScreen(
+                                userData: {
+                                  'name': 'Guest',
+                                  'email': 'guest@example.com',
+                                  'preferences': {},
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Do it Later',
+                          style: TextStyle(color: Colors.purple),
+                          ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -394,6 +408,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 }
+
 class Auth {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
