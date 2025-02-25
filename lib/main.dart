@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/animation_screen.dart';
 import 'package:mobile_app/Screens/get_started.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
+import 'package:mobile_app/Screens/login_page.dart';
+import 'package:mobile_app/Screens/signUpReminderScreen.dart';
 
 import 'package:mobile_app/providers/shopping_list_provider.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +43,8 @@ class MyApp extends StatelessWidget {
             // home: GetStartedScreen(),
             routes: {
               '/home': (context) => HomeScreen(userData: {}),
+              '/signupReminder' : (context) => SignUpReminderPage(),
+              '/signup' : (context) => LoginPage(),
             },
           );
         },

@@ -94,6 +94,7 @@ flutter:
   - images/salad.jpg
   - images/soup.jpg
   - images/getstartedScreen.png
+  - images/GetStarted_Screen.png
 
   - .env
 

@@ -35,18 +35,18 @@ class GetStartedScreen extends StatelessWidget {
           //   ),
           // ),
           Positioned(
-            top: 10,
-            left: -50,
+            top: 0,
+            left: -30,
             child: Transform(
               transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0),
               child: ClipPath(
                 clipper: CustomClipperPath(),
                 child: Container(
                   width: MediaQuery.of(context).size.width * 1.2,
-                  height: MediaQuery.of(context).size.height * 1.2,
+                  height: MediaQuery.of(context).size.height * 1.4,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('images/getstartedScreen.png'),
+                      image: AssetImage('images/GetStarted_Screen.png'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -80,11 +80,11 @@ class GetStartedScreen extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 30), // Adjust the logo's position
+                    padding: const EdgeInsets.only(top: 10), // Adjust the logo's position
                     child: Image.asset(
                       'images/cookifylogo.png', // Replace with your logo
-                      height: 350,
-                      width: 350,
+                      height: 300,
+                      width: 300,
                     ),
                   ),
                 ),

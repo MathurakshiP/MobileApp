@@ -98,6 +98,13 @@ class RecipeDetailScreen extends StatelessWidget {
                         color: isSaved ? Colors.red : Colors.grey,
                       ),
                       onPressed: () {
+
+                        final user = Auth().currentUser; // Check logged-in user
+                        if (user == null) {
+                          // Navigate to SignUpReminder screen if guest user
+                          Navigator.pushNamed(context, '/signupReminder');
+                          return;
+                        }
                         // Toggle saved state
                         if (isSaved) {
                           savedFoodProvider.removeRecipe(recipe);
@@ -108,6 +115,14 @@ class RecipeDetailScreen extends StatelessWidget {
                     ),
                     ElevatedButton(
                       onPressed: () async {
+
+                        final user = Auth().currentUser; // Check logged-in user
+                        if (user == null) {
+                          // Navigate to SignUpReminder screen if guest user
+                          Navigator.pushNamed(context, '/signupReminder');
+                          return;
+                        }
+                        
                         final recipeTitle = recipe['title'] ?? 'Unnamed Recipe'; // Use the recipe title or a fallback
                         final ingredients = recipe['extendedIngredients']
                                 ?.map<String>((i) => i['original'].toString())
