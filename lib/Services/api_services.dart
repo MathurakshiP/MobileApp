@@ -28,7 +28,7 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> OneCategory(String cuisine, String type, int maxReadyTime, int number) async {
+  Future<List<dynamic>> onecategory(String cuisine, String type, int maxReadyTime, int number) async {
     final response = await http.get(
       Uri.parse('$_baseUrl/recipes/complexSearch?cuisine=$cuisine&type=$type&maxReadyTime=$maxReadyTime&number=$number&apiKey=$_apiKey'),
     );
@@ -45,7 +45,7 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> AllCategory( String type, int number) async {
+  Future<List<dynamic>> allcategory( String type, int number) async {
     final response = await http.get(
       Uri.parse('$_baseUrl/recipes/complexSearch?type=$type&number=$number&apiKey=$_apiKey'),
     );

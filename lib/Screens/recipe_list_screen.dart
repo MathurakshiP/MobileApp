@@ -10,7 +10,7 @@ class RecipeListScreen extends StatefulWidget {
   @override
   _RecipeListScreenState createState() => _RecipeListScreenState();
 }
-
+ 
 class _RecipeListScreenState extends State<RecipeListScreen> {
   List<dynamic> recipes = [];
   final String _baseUrl = 'https://api.spoonacular.com';
@@ -89,9 +89,9 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                     }
                   },
                   child: Card(
-                    margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 25),
+                    margin: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       children: [
@@ -99,12 +99,12 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                           children: [
                             ClipRRect(
                               borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(16.0),
-                                bottom: Radius.circular(16.0)
+                                top: Radius.circular(12.0),
+                                bottom: Radius.circular(12.0)
                               ),
                               child: SizedBox(
-                                width: 200,
-                                height:150,
+                                width: double.infinity,
+                                height:200,
                                 child: Image.network(
                                   recipe['image'] ?? '',
                                   fit: BoxFit.cover,
@@ -118,7 +118,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                                       const Center(
                                     child: Icon(
                                       Icons.broken_image,
-                                      size: 80,
+                                      size: 60,
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -188,7 +188,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                           child: Text(
                             recipe['title'] ?? 'Recipe',
                             style: const TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),

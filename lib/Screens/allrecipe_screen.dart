@@ -44,7 +44,7 @@ void toggleLike(int index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0), 
                   child: SizedBox(
-                    height: 300, 
+                    height: 280, 
                     child: Card(
                       margin: const EdgeInsets.only(top: 10),
                       shape: RoundedRectangleBorder(
@@ -108,9 +108,12 @@ void toggleLike(int index) {
                                           size: 14, color: Colors.white),
                                       const SizedBox(width: 4),
                                       Text(
-                                        recipe['readyInMinutes'] != null
-                                            ? '${recipe['readyInMinutes']} mins'
-                                            : 'N/A',
+                                        recipe['preparationMinutes'] != null &&
+                                              recipe['preparationMinutes'] > 0
+                                          ? '${recipe['preparationMinutes']} mins'
+                                          : recipe['readyInMinutes'] != null
+                                              ? '${recipe['readyInMinutes']} mins'
+                                              : 'N/A',
                                         style: const TextStyle(
                                             fontSize: 12, color: Colors.white),
                                       ),

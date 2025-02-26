@@ -31,16 +31,20 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   }
 
 void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
-    final selectedFood = await Navigator.push(
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan),
       ),
     );
-
-    if (selectedFood != null) {
-      Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
+    if (result != null) {
+      final selectedFood = result['recipe']; // Get the selected food
+      final selectedCategory = result['category']; // Get the selected category
+      if (selectedFood != null) {
+        Navigator.pop(context,{'food':selectedFood, 'category':selectedCategory} ); // Pass the selected food back to MealPlannerScreen
+      }
     }
+    
   }
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();

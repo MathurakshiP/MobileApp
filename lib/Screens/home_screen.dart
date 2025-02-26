@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen>
   List<dynamic> _recentlyViewed = [];
   late List<int> likeCounts;
   late List<bool> isLiked;
-  bool _isIconPressed = false; 
+  bool _isIconPressed = false;  
   bool _isLoading = false;
   int _selectedIndex = 0;
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
@@ -563,7 +563,10 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                                               size: 14, color: Colors.white),
                                                           const SizedBox(width: 4),
                                                           Text(
-                                                            recipe['readyInMinutes'] != null
+                                                            recipe['preparationMinutes'] != null &&
+                                                                recipe['preparationMinutes'] > 0
+                                                            ? '${recipe['preparationMinutes']} mins'
+                                                            : recipe['readyInMinutes'] != null
                                                                 ? '${recipe['readyInMinutes']} mins'
                                                                 : 'N/A',
                                                             style: const TextStyle(
@@ -720,9 +723,12 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                                             const Icon(Icons.timer, size: 14, color: Colors.white),
                                                             const SizedBox(width: 4),
                                                             Text(
-                                                              _randomRecipes[0]['readyInMinutes'] != null
-                                                                  ? '${_randomRecipes[0]['readyInMinutes']} mins'
-                                                                  : 'N/A',
+                                                                  _randomRecipes[0]['preparationMinutes'] != null &&
+                                                                      _randomRecipes[0]['preparationMinutes'] > 0
+                                                                  ? '${_randomRecipes[0]['preparationMinutes']} mins'
+                                                                  : _randomRecipes[0]['readyInMinutes'] != null
+                                                                      ? '${_randomRecipes[0]['readyInMinutes']} mins'
+                                                                      : 'N/A',
                                                               style: const TextStyle(fontSize: 12, color: Colors.white),
                                                             ),
                                                           ],

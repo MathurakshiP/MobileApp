@@ -130,7 +130,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
     });
 
     try {
-      final recipes = await ApiService().AllCategory(selectedCategory(widget.category), 10);
+      final recipes = await ApiService().allcategory(selectedCategory(widget.category), 20);
       setState(() {
         _categoryRecipes = recipes;
         _isLoading = false;
@@ -172,7 +172,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
           ? widget.category
           : _selectedCuisine!;
 
-      final recipes = await ApiService().OneCategory(cuisine, selectedCategory(widget.category), maxReadyTime, 10);
+      final recipes = await ApiService().onecategory(cuisine, selectedCategory(widget.category), maxReadyTime, 10);
       setState(() {
         _categoryRecipes = recipes;
         _isLoading = false;
