@@ -18,17 +18,45 @@ class MealPlannerScreen extends StatefulWidget {
 
 class _MealPlannerScreenState extends State<MealPlannerScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Map<String, List<dynamic>> mealPlan = {
-    "Monday": [],
-    "Tuesday": [],
-    "Wednesday": [],
-    "Thursday": [],
-    "Friday": [],
-    "Saturday": [],
-    "Sunday": [],
+  Map<String, Map<String, List<dynamic>>> mealPlan = {
+    "Monday": {
+    "Breakfast": [],
+    "Lunch": [],
+    "Dinner": [], "Salad":[],"Soup":[],"Dessert":[],
+  },
+  "Tuesday": {
+    "Breakfast": [],
+    "Lunch": [],
+    "Dinner": [],"Salad":[],"Soup":[],"Dessert":[],
+  },
+  "Wednesday": {
+    "Breakfast": [],
+    "Lunch": [],
+    "Dinner": [],"Salad":[],"Soup":[],"Dessert":[],
+  },
+  "Thursday": {
+    "Breakfast": [],
+    "Lunch": [],
+    "Dinner": [],"Salad":[],"Soup":[],"Dessert":[],
+  },
+  "Friday": {
+    "Breakfast": [],
+    "Lunch": [],
+    "Dinner": [],"Salad":[],"Soup":[],"Dessert":[],
+  },
+  "Saturday": {
+    "Breakfast": [],
+    "Lunch": [],
+    "Dinner": [],"Salad":[],"Soup":[],"Dessert":[],
+  },
+  "Sunday": {
+    "Breakfast": [],
+    "Lunch": [],
+    "Dinner": [],"Salad":[],"Soup":[],"Dessert":[],
+  },
   };
 
-  List<String> correctOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  List<String> correctOrder = ["M", "T", "W", "T", "F", "S", "S"];
   bool isMealPlan = true;
   List<String> selectedDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
@@ -48,94 +76,116 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
       ..sort((a, b) => correctOrder.indexOf(a.substring(0, 3)).compareTo(correctOrder.indexOf(b.substring(0, 3))));
   }
 
-  /// Load meal plan from Firebase
-  void _loadMealPlan() async {
-    try {
-      DocumentSnapshot weeklyPlanDoc = await _firestore
+  // Load meal plan from Firebase
+void _loadMealPlan() async {
+  try {
+    DocumentSnapshot weeklyPlanDoc = await _firestore
+        .collection('users')
+        .doc(widget.userId)
+        .collection('mealPlanner')
+        .doc('weeklyPlan')
+        .get();
+
+    if (weeklyPlanDoc.exists) {
+      Map<String, dynamic> data = weeklyPlanDoc.data() as Map<String, dynamic>;
+      setState(() {
+        mealPlan = {
+          for (var key in data.keys) 
+            key: {
+              "Breakfast": List<Map<String, dynamic>>.from(data[key]["Breakfast"] ?? []),
+              "Lunch": List<Map<String, dynamic>>.from(data[key]["Lunch"] ?? []),
+              "Dinner": List<Map<String, dynamic>>.from(data[key]["Dinner"] ?? []),
+              "Salad": List<Map<String, dynamic>>.from(data[key]["Salad"] ?? []),
+              "Soup": List<Map<String, dynamic>>.from(data[key]["Soup"] ?? []),
+              "Dessert": List<Map<String, dynamic>>.from(data[key]["Dessert"] ?? []),
+            }
+        };
+      });
+    }
+
+    // Load daily meal plans
+    for (String day in mealPlan.keys) {
+      QuerySnapshot dailyMeals = await _firestore
           .collection('users')
           .doc(widget.userId)
           .collection('mealPlanner')
           .doc('weeklyPlan')
+          .collection(day)
           .get();
 
-      if (weeklyPlanDoc.exists) {
-        Map<String, dynamic> data = weeklyPlanDoc.data() as Map<String, dynamic>;
-        setState(() {
-          mealPlan = {
-            for (var key in data.keys) key: List<Map<String, dynamic>>.from(data[key])
-          };
-        });
-      }
+      setState(() {
+        mealPlan[day] = {
+          "Breakfast": [],
+          "Lunch": [],
+          "Dinner": [],"Salad":[],"Soup":[],"Dessert":[],
+        };
 
-      // Load daily meal plans
-      for (String day in mealPlan.keys) {
-        QuerySnapshot dailyMeals = await _firestore
-            .collection('users')
-            .doc(widget.userId)
-            .collection('mealPlanner')
-            .doc('weeklyPlan')
-            .collection(day)
-            .get();
-
-        setState(() {
-          mealPlan[day] = dailyMeals.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-        });
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error loading meal plan: $e');
-      }
+        for (var meal in dailyMeals.docs) {
+          Map<String, dynamic> mealData = meal.data() as Map<String, dynamic>;
+          if (mealData['category'] != null && mealData['category'] != '') {
+            mealPlan[day]?[mealData['category']]?.add(mealData);
+          }
+        }
+      });
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error loading meal plan: $e');
     }
   }
+}
 
-  /// Save meal plan to Firebase
-  void _saveMealPlan() async {
-    try {
-      // Save weekly plan
-      await _firestore
+// Save meal plan to Firebase
+void _saveMealPlan() async {
+  try {
+    // Save weekly plan
+    await _firestore
+        .collection('users')
+        .doc(widget.userId)
+        .collection('mealPlanner')
+        .doc('weeklyPlan')
+        .set(mealPlan);
+
+    // Save daily meal plans
+    for (String day in mealPlan.keys) {
+      CollectionReference dailyCollection = _firestore
           .collection('users')
           .doc(widget.userId)
           .collection('mealPlanner')
           .doc('weeklyPlan')
-          .set(mealPlan);
+          .collection(day);
 
-      // Save daily meal plans
-      for (String day in mealPlan.keys) {
-        CollectionReference dailyCollection = _firestore
-            .collection('users')
-            .doc(widget.userId)
-            .collection('mealPlanner')
-            .doc('weeklyPlan')
-            .collection(day);
+      // Clear existing meals for the day
+      QuerySnapshot existingMeals = await dailyCollection.get();
+      for (QueryDocumentSnapshot doc in existingMeals.docs) {
+        await doc.reference.delete();
+      }
 
-        // Clear existing meals for the day
-        QuerySnapshot existingMeals = await dailyCollection.get();
-        for (QueryDocumentSnapshot doc in existingMeals.docs) {
-          await doc.reference.delete();
-        }
-
-        // Add updated meals for the day
-        for (Map<String, dynamic> meal in mealPlan[day]!) {
+      // Add updated meals for the day, categorized by Breakfast, Lunch, Dinner
+      for (String category in ["Breakfast", "Lunch", "Dinner","Salad","Soup","Dessert"]) {
+        for (Map<String, dynamic> meal in mealPlan[day]?[category] ?? []) {
           await dailyCollection.add(meal);
         }
       }
-    } catch (e) {
-      print('Error saving meal plan: $e');
     }
+  } catch (e) {
+    print('Error saving meal plan: $e');
   }
+}
+
 
   /// Add a meal to the plan and save
-  void _addMeal(String day, Map<String, dynamic> food) {
+  void _addMeal(String day, Map<String, dynamic> food,String category) {
     setState(() {
-      mealPlan[day]!.add(food);
+      mealPlan[day]![category]!.add(food);
     });
     _saveMealPlan();
   }
 
   /// Remove a meal from the plan and save
-  void _removeMeal(String day, Map<String, dynamic> food) {
+  void _removeMeal(String day, Map<String, dynamic> food,String category) {
     setState(() {
-      mealPlan[day]!.remove(food);
+      mealPlan[day]![category]!.remove(food);
     });
     _saveMealPlan();
   }
@@ -321,89 +371,133 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
             ),
 
             // Meal plan list for selected days
-            ...selectedDays.map((day) {
-              List<dynamic> foods = mealPlan[day]!;
+            
+...selectedDays.map((day) {
+  // Get the categories under the selected day
+  Map<String, List<dynamic>> categories = mealPlan[day]!;
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Day header row with "Add" button
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              day,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddFoodScreen(userId: widget.userId),
+                  ),
+                );
+                if (result != null) {
+                  final selectedFood = result['food']; // Get the selected food
+                  final selectedCategory = result['category']; // Get the selected category
+                  if (selectedFood != null && selectedCategory != null) {
+                    _addMeal(day, selectedFood, selectedCategory); // Add meal with both food and category
+                  }
+                }
+              },
+            ),
+          ],
+        ),
+        
+        // Iterate over categories (Breakfast, Lunch, Dinner)
+        ...categories.keys.map((category) {
+          List<dynamic> foods = categories[category]!;
+
+          // Only display the category if it has food
+          if (foods.isNotEmpty) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Category Header (Breakfast, Lunch, Dinner) with indentation
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16.0), // Indentation from the left
+                      child: Text(
+                        category, // Category name (Breakfast, Lunch, Dinner)
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
+                // Food items under each category
+                ...foods.map((food) => Padding(
+                  padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      // Navigate to the RecipeDetailsScreen when the food is tapped
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecipeDetailScreen(
+                            recipeId: food['id'], 
+                            isMealPlan: isMealPlan,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          day,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        // Display the food image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0), // Rounded corners for the image
+                          child: Image.network(
+                            food['image'], // URL for the food image
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.broken_image, size: 50, color: Colors.grey);
+                            },
+                          ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () async {
-                            final newFood = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddFoodScreen(userId: widget.userId),
-                              ),
-                            );
-                            if (newFood != null) {
-                              _addMeal(day, newFood);
-                            }
-                          },
+                        const SizedBox(width: 12), // Spacing between the image and text
+                        // Display the food name
+                        Expanded(
+                          child: Text(
+                            food['title'], // Name of the food
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
                         ),
+                        if (isEditing)
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              _removeMeal(day, food, category);
+                            },
+                          ),
                       ],
                     ),
-                    ...foods.map((food) => Padding(
-                      padding: const EdgeInsets.only(left: 16.0, top: 8.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          // Navigate to the RecipeDetailsScreen when the food is tapped
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => RecipeDetailScreen(recipeId: food['id'], isMealPlan: isMealPlan),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Display the food image
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0), // Rounded corners for the image
-                              child: Image.network(
-                                food['image'], // URL for the food image
-                                height: 50,
-                                width: 50,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.broken_image, size: 50, color: Colors.grey);
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 12), // Spacing between the image and text
-                            // Display the food name
-                            Expanded(
-                              child: Text(
-                                food['title'], // Name of the food
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                            if (isEditing)
-                              IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  _removeMeal(day, food);
-                                },
-                              ),
-                          ],
-                        ),
-                      ),
-                    )),
-                    const Divider(),
-                  ],
-                ),
-              );
-            }).toList(),
+                  ),
+                )),
+                const Divider(),
+              ],
+            );
+          } else {
+            return SizedBox.shrink(); // Do not display an empty category
+          }
+        }).toList(),
+      ],
+    ),
+  );
+}).toList(),
+
+
+
           ],
         ),
       ),

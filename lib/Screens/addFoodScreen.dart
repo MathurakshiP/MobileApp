@@ -124,7 +124,7 @@ void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
     );
 
     if (selectedFood != null) {
-      Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
+      Navigator.pop(context, {'food':selectedFood, 'category':category}); // Pass the selected food back to MealPlannerScreen
     }
   }
 
