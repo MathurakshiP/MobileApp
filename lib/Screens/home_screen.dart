@@ -8,6 +8,7 @@ import 'package:mobile_app/Screens/allrecipe_screen.dart';
 import 'package:mobile_app/Screens/category_screen.dart';
 import 'package:mobile_app/Screens/ingredient_based_screen.dart';
 import 'package:mobile_app/Screens/meal_planner_screen.dart';
+import 'package:mobile_app/Screens/signUpReminderScreen.dart';
 import 'package:mobile_app/providers/theme_provider.dart';
 import 'package:mobile_app/screens/saved_food_screen.dart';
 import 'package:mobile_app/screens/shopping_list_screen.dart';
@@ -295,27 +296,46 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.calendar_today,
-                color: _isIconPressed
-                    ? customPurple: Colors.white), // Change color based on state
+            icon: Icon(
+              Icons.calendar_today,
+              color: Colors.white,
+            ),
             onPressed: () {
               setState(() {
-                  _isIconPressed = !_isIconPressed;
-                });
-                if (kDebugMode) {
-                  print(userName + hash);
-                }
+                _isIconPressed = !_isIconPressed;
+              });
+
+              if (kDebugMode) {
+                print(userName + hash);
+              }
+
+              // Check if userId is guest
+              if (userid == 'null') {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          MealPlannerScreen(userId: userid)),
-                ).then((_) {
+                    builder: (context) => SignUpReminderPage(),
+                  ),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MealPlannerScreen(userId: userid),
+                  ),
+                );
+              }
+
+              // Reset icon state when coming back
+              Navigator.popUntil(context, (route) {
+                if (route.isFirst) {
                   setState(() {
                     _isIconPressed = false;
                   });
-                });
-              },
+                }
+                return true;
+              });
+            },
           ),
         ],
       );
