@@ -29,7 +29,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     'Italian',
     'Japanese',
     'Mexican',
-    'Thai',
+    
   ];
 
   List<String> times = [
@@ -148,58 +148,82 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
     }
   }
 
-  // Fetch filtered recipes for the category using OneCategory API
-  void fetchFilteredRecipes() async {
+void fetchFilteredRecipesByCuisine() async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    // Use selected cuisine or fallback to category
+    final cuisine = _selectedCuisine == 'Any' || _selectedCuisine == null
+        ? widget.category
+        : _selectedCuisine!;
+
+    final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 20);
     setState(() {
-      _isLoading = true;
+      _categoryRecipes = recipes;
+      _isLoading = false;
     });
-
-    try {
-      // Determine max ready time based on selected time filter
-      int maxReadyTime = 0; // Default: no limit
-      if (_selectedTime == 'Max 15 minutes') {
-        maxReadyTime = 15;
-      } else if (_selectedTime == 'Max 30 minutes') {
-        maxReadyTime = 30;
-      } else if (_selectedTime == 'Max 60 minutes') {
-        maxReadyTime = 60;
-      } else if (_selectedTime == 'More than 60 minutes') {
-        maxReadyTime = 500; // Example: Arbitrary high limit for "More than 60 minutes"
-      }
-
-      // Use selected cuisine or fallback to category
-      final cuisine = _selectedCuisine == 'Any' || _selectedCuisine == null
-          ? widget.category
-          : _selectedCuisine!;
-
-      final recipes = await ApiService().onecategory(cuisine, selectedCategory(widget.category), maxReadyTime, 10);
-      setState(() {
-        _categoryRecipes = recipes;
-        _isLoading = false;
-      });
-    } catch (error) {
-      setState(() {
-        _isLoading = false;
-      });
-      if (kDebugMode) {
-        print('Error fetching filtered recipes for category ${widget.category}: $error');
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load recipes. Please try again later.')),
-      );
+  } catch (error) {
+    setState(() {
+      _isLoading = false;
+    });
+    if (kDebugMode) {
+      print('Error fetching cuisine-based recipes for category ${widget.category}: $error');
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to load recipes. Please try again later.')),
+    );
   }
+}
 
-  // Apply filters and decide which API to call
-  void _applyFilters() {
-    if ((_selectedCuisine == null || _selectedCuisine == 'Any') &&
-        (_selectedTime == null || _selectedTime == 'Any')) {
-      fetchAllRecipes(); // Fetch all recipes
-    } else {
-      fetchFilteredRecipes(); // Fetch filtered recipes
+void fetchFilteredRecipesByTime() async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    // Determine max ready time based on selected time filter
+    int maxReadyTime = 0; // Default: no limit
+    if (_selectedTime == 'Max 15 minutes') {
+      maxReadyTime = 15;
+    } else if (_selectedTime == 'Max 30 minutes') {
+      maxReadyTime = 30;
+    } else if (_selectedTime == 'Max 60 minutes') {
+      maxReadyTime = 60;
+    } else if (_selectedTime == 'More than 60 minutes') {
+      maxReadyTime = 500; // Arbitrary high limit for "More than 60 minutes"
     }
-    Navigator.pop(context); // Close the filter modal
+
+    final recipes = await ApiService().timecategory( selectedCategory(widget.category), maxReadyTime, 20);
+    setState(() {
+      _categoryRecipes = recipes;
+      _isLoading = false;
+    });
+  } catch (error) {
+    setState(() {
+      _isLoading = false;
+    });
+    if (kDebugMode) {
+      print('Error fetching time-based recipes for category ${widget.category}: $error');
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to load recipes. Please try again later.')),
+    );
   }
+}
+
+// Apply filters separately
+void _applyFilters() {
+   if (_selectedCuisine != null && _selectedCuisine != 'Any') {
+    fetchFilteredRecipesByCuisine(); // Apply only cuisine filter
+  } else if (_selectedTime != null && _selectedTime != 'Any') {
+    fetchFilteredRecipesByTime(); // Apply only time filter
+  } else {
+    fetchAllRecipes(); // No filters selected, fetch all recipes
+  }
+}
+
 
   void addToMealPlanner(Map<String, dynamic> recipe)  {
     Navigator.pop(context, recipe);
@@ -217,6 +241,103 @@ void _navigateToReceipeDetails(Map<String, dynamic> recipe) async {
       Navigator.pop(context, selectedFood); // Pass the selected food back to MealPlannerScreen
     }
   }
+
+  void _showCuisineFilter(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Select Cuisine',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                DropdownButton<String>(
+                  isExpanded: true,
+                  hint: const Text('Select Cuisine'),
+                  value: _selectedCuisine,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedCuisine = newValue;
+                    });
+                  },
+                  items: ['Any', ...cuisines].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    _applyFilters();
+                    Navigator.pop(context); // Close modal
+                  },
+                  child: const Text('Apply Filters'),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+void _showTimeFilter(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Select Time',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                DropdownButton<String>(
+                  isExpanded: true,
+                  hint: const Text('Select Time'),
+                  value: _selectedTime,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedTime = newValue;
+                    });
+                  },
+                  items: times.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    _applyFilters();
+                    Navigator.pop(context); // Close modal
+                  },
+                  child: const Text('Apply Filters'),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -228,91 +349,44 @@ void _navigateToReceipeDetails(Map<String, dynamic> recipe) async {
         backgroundColor: customPurple,
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list, color: Colors.white),
+            icon: const Icon(Icons.more_vert, color: Colors.white), // Changed to three-dot vertical icon
             onPressed: () {
-  showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      // Ensure that the dropdowns are updated based on the selected values
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [ 
-                // Centered Dropdowns
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: DropdownButton<String>(
-                            isExpanded: true, // Ensure it takes full width
-                            isDense: true,
-                            hint: const Text('Select Cuisine'),
-                            value: _selectedCuisine,
-                            onChanged: (newValue) {
-                              setState(() {
-                                _selectedCuisine = newValue;
-                              });
-                            },
-                            items: ['Any', ...cuisines]
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                          ),
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.restaurant),
+                              title: const Text('Filter by Cuisine'),
+                              onTap: () {
+                                Navigator.pop(context); // Close current modal
+                                _showCuisineFilter(context);
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.access_time),
+                              title: const Text('Filter by Time'),
+                              onTap: () {
+                                Navigator.pop(context); // Close current modal
+                                _showTimeFilter(context);
+                              },
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 16), // Space between dropdowns
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: DropdownButton<String>(
-                            isExpanded: true, // Ensure it takes full width
-                            isDense: true,
-                            hint: const Text('Select Time'),
-                            value: _selectedTime,
-                            onChanged: (newValue) {
-                              setState(() {
-                                _selectedTime = newValue;
-                              });
-                            },
-                            items: times.map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16), // Space above button
-                ElevatedButton(
-                  onPressed: () {
-                    _applyFilters(); // Apply the filters
-                  },
-                  child: const Text('Apply Filters'),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-},
-
-
+                      );
+                    },
+                  );
+                },
+              );
+            },
           ),
+
         ],
       ),
       body: _isLoading

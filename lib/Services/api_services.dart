@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
   // Set base URL and API key directly here
   final String _baseUrl = 'https://api.spoonacular.com';
-  final String _apiKey = '9ecee3af427949d4b5e9831e0b458576'; // Replace with your actual API key
+  final String _apiKey = 'a2e8aeca685d4b33975aa0fec27c5fb3'; // Replace with your actual API key
 //         9ecee3af427949d4b5e9831e0b458576
 // a2e8aeca685d4b33975aa0fec27c5fb3
 // 171dca80728e4b5bb342e075d07b22c0
@@ -28,9 +29,25 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> onecategory(String cuisine, String type, int maxReadyTime, int number) async {
+  Future<List<dynamic>> cuisinecategory(String cuisine, String type, int number) async {
     final response = await http.get(
-      Uri.parse('$_baseUrl/recipes/complexSearch?cuisine=$cuisine&type=$type&maxReadyTime=$maxReadyTime&number=$number&apiKey=$_apiKey'),
+      Uri.parse('$_baseUrl/recipes/complexSearch?cuisine=$cuisine&type=$type&number=$number&apiKey=$_apiKey'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('OneCategory: $data');
+      return data['results'] ?? [];
+    } else {
+      if (kDebugMode) {
+        print('Failed to load OneCategory: ${response.body}');
+      }
+      throw Exception('Failed to fetch OneCategory');
+    }
+  }
+  Future<List<dynamic>> timecategory( String type, int maxReadyTime, int number) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/recipes/complexSearch?type=$type&maxReadyTime=$maxReadyTime&number=$number&apiKey=$_apiKey'),
     );
 
     if (response.statusCode == 200) {
@@ -52,8 +69,12 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print('AllCategory: $data');
-      return data['results'] ?? [];
+      List<dynamic> results = data['results'] ?? [];
+      // Shuffle the results
+      results.shuffle(Random());
+
+      print('AllCategory (Shuffled): $results');
+      return results;
     } else {
       if (kDebugMode) {
         print('Failed to load AllCategory: ${response.body}');
