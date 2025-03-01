@@ -8,178 +8,147 @@ class PrivacyPolicyScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Privacy Policy'),
+        backgroundColor: const Color(0xFF6200EE), // Material Design Purple
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
-              // Introduction
-              Text(
-                'Introduction',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              _SectionCard(
+                title: 'Introduction',
+                content:
+                    'Welcome to Cookify, your go-to app for discovering and sharing recipes. We value your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and safeguard your information when you use the Cookify app.',
               ),
-              SizedBox(height: 8),
-              Text(
-                'This Privacy Policy explains how we handle your personal data collected through our mobile app.',
+              _SectionCard(
+                title: 'Data Collection',
+                content:
+                    'Cookify collects the following types of information to enhance your experience:\n\n'
+                  '- Personal Information: When you create a profile, we collect personal details such as your name, email address, and preferences.\n'
+                  '- Usage Data: We collect information about your app usage, including search queries, recipes viewed, and interaction with features.\n'
+                  '- Device Information: We collect data about the device you use, such as its model, operating system, and unique device identifiers.',
               ),
-              SizedBox(height: 16),
-
-              // Data Collection
-              Text(
-                'Data Collection',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              _SectionCard(
+                title: 'Use of Data',
+                content:
+                    'We use your data for the following purposes:\n\n'
+                '- Personalizing Your Experience: We use the data to recommend recipes based on your preferences and past activity.\n'
+                '- Improving the App: Your data helps us improve app functionality, fix bugs, and add new features.\n'
+                '- Notifications: We send push notifications to inform you about new recipes, app updates, and promotions.\n'
+                '- Communication: To send you information related to your account, such as password recovery and customer support.',
               ),
-              SizedBox(height: 8),
-              Text(
-                'We collect personal information, usage data, and device information through forms, cookies, and third-party services.',
+              _SectionCard(
+                title: 'Data Sharing',
+                content:
+                    'We implement reasonable security measures to protect your data. However, no system is 100% secure, and we cannot guarantee the absolute security of your information.',
               ),
-              SizedBox(height: 16),
-
-              // Use of Data
-              Text(
-                'Use of Data',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              _SectionCard(
+                title: 'Data Security',
+                content:
+                    'We do not share your personal data with third parties except in the following cases:\n\n'
+                '- Service Providers: We may share your information with third-party vendors who help us operate the app, such as analytics services or cloud storage providers.\n'
+                '- Legal Obligations: We may disclose your data if required by law or to protect our rights, such as in cases of legal disputes or fraud prevention.\n'
+                '- Business Transfers: If Cookify is acquired or merged with another company, your information may be transferred to the new owners.',
               ),
-              SizedBox(height: 8),
-              Text(
-                'The data we collect is used to improve our services, personalize user experience, and send notifications.',
+              _SectionCard(
+                title: 'User Rights',
+                content:
+                    'You have the right to:\n'
+                '- Access: Request a copy of the data we hold about you.\n'
+                '- Rectify: Update or correct inaccurate information.\n'
+                '- Delete: Request the deletion of your data from our systems.\n'
+                '- Withdraw Consent: If you have consented to data collection, you can withdraw it at any time.\n'
+                'To exercise these rights, you can contact us through the app or at cookifyrecipes1234@gmail.com.',
               ),
-              SizedBox(height: 16),
-
-              // Data Sharing
-              Text(
-                'Data Sharing',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              _SectionCard(
+                title: 'Third-Party Services',
+                content:
+                    'Cookify may use third-party services for analytics, advertisements, and payment processing. These services have their own privacy policies, and we encourage you to review them. We are not responsible for their practices.',
               ),
-              SizedBox(height: 8),
-              Text(
-                'We may share your data with service providers, affiliates, and advertisers under certain conditions such as legal obligations or mergers.',
+              _SectionCard(
+                title: 'Data Retention',
+                content:
+                    'We retain your data for as long as necessary to provide our services and comply with legal obligations.',
               ),
-              SizedBox(height: 16),
-
-              // Data Security
-              Text(
-                'Data Security',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              _SectionCard(
+                title: 'Changes to the Privacy Policy',
+                content:
+                    'We will notify you of any changes to this policy through app notifications or email. The changes will be effective from the date mentioned.',
               ),
-              SizedBox(height: 8),
-              Text(
-                'We take measures to protect your data, but acknowledge that no system is 100% secure.',
+              _SectionCard(
+                title: 'Contact Information',
+                content:
+                    'For privacy-related concerns, contact us at cookifyrecipes1234@gmail.com.',
               ),
-              SizedBox(height: 16),
-
-              // User Rights
-              Text(
-                'User Rights',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              _SectionCard(
+                title: 'International Data Transfers',
+                content:
+                    'We may transfer your data across borders with appropriate safeguards in place.',
               ),
-              SizedBox(height: 8),
-              Text(
-                'You have the right to access, correct, and delete your data. Contact us or use account settings to exercise these rights.',
-              ),
-              SizedBox(height: 16),
-
-              // Cookies and Tracking Technologies
-              Text(
-                'Cookies and Tracking Technologies',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'We use cookies and similar technologies for analytics and advertising purposes.',
-              ),
-              SizedBox(height: 16),
-
-              // Third-Party Services
-              Text(
-                'Third-Party Services',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'We use third-party services for analytics and payment processing, which handle user data according to their policies.',
-              ),
-              SizedBox(height: 16),
-
-              // Data Retention
-              Text(
-                'Data Retention',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'We retain your data for as long as necessary to provide our services and comply with legal obligations.',
-              ),
-              SizedBox(height: 16),
-
-              // Changes to the Privacy Policy
-              Text(
-                'Changes to the Privacy Policy',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'We will notify you of any changes to this policy through app notifications or email. The changes will be effective from the date mentioned.',
-              ),
-              SizedBox(height: 16),
-
-              // Contact Information
-              Text(
-                'Contact Information',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'For privacy-related concerns, contact us at support@example.com or call us at +1 234 567 890.',
-              ),
-              SizedBox(height: 16),
-
-              // Children’s Privacy
-              Text(
-                'Children’s Privacy',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Our app is not intended for children under the age of 13. We do not knowingly collect data from children without parental consent.',
-              ),
-              SizedBox(height: 16),
-
-              // Legal Basis for Processing Data
-              Text(
-                'Legal Basis for Processing Data',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'We process your data based on consent, contractual necessity, and legal obligations.',
-              ),
-              SizedBox(height: 16),
-
-              // International Data Transfers
-              Text(
-                'International Data Transfers',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'We may transfer your data across borders with appropriate safeguards in place.',
-              ),
-              SizedBox(height: 16),
-
-              // User Consent
-              Text(
-                'User Consent',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'By using our app, you consent to this Privacy Policy. You can withdraw consent at any time through account settings.',
+              _SectionCard(
+                title: 'User Consent',
+                content:
+                    'By using our app, you consent to this Privacy Policy. You can withdraw consent at any time through account settings.',
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  final String title;
+  final String content;
+
+  const _SectionCard({
+    required this.title,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.shield_outlined,
+                  color: Color(0xFF6200EE),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF6200EE),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              content,
+              style: const TextStyle(
+                fontSize: 16,
+                height: 1.5,
+                color: Colors.black87,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -3,26 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/RateUsScreen.dart';
 import 'package:mobile_app/Screens/change_password_screen.dart';
 import 'package:mobile_app/providers/theme_provider.dart';
+import 'package:mobile_app/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_app/Screens/help_support_screen.dart';
 import 'package:mobile_app/Screens/privacy_policy_screen.dart';
+import 'package:mobile_app/Screens/notification_screen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-// import 'package:provider/provider.dart';
-// import '../providers/theme_provider.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String userName = 'User Name';
   String userEmail = 'username@example.com';
-  String userImage = 'https://via.placeholder.com/150'; // Placeholder image
-  bool isDarkMode = false;
+  String? userImage;
+  bool hasUnseenNotifications = true;
+  final ImagePicker _picker = ImagePicker(); // Image Picker instance
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   @override
@@ -35,15 +36,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       setState(() {
-        userName = user.displayName ?? 'User Name'; // Fetch user's name
-        userEmail = user.email ?? 'username@example.com'; // Fetch user's email
+        userName = user.displayName ?? 'User Name';
+        userEmail = user.email ?? 'username@example.com';
       });
     }
   }
 
-  void _logOut() {
-    FirebaseAuth.instance.signOut();
-    Navigator.pushReplacementNamed(context, '/');
+  // Function to pick an image
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        userImage = pickedFile.path; // Update image immediately
+      });
+    }
+  }
+
+  // Function to show options for selecting image
+  void _showImagePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take Photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -53,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text(
           'Profile',
           style: TextStyle(
-            fontWeight: FontWeight.bold, // Make the text bold
+            fontWeight: FontWeight.bold,
             color: Colors.white,
             fontSize: 20,
           ),
@@ -64,18 +101,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              // Navigate to edit profile page or open a dialog for editing
               showDialog(
                 context: context,
                 builder: (context) => EditProfileDialog(
                   currentName: userName,
                   currentEmail: userEmail,
-                  currentImage: userImage,
-                  onSave: (name, email, imageUrl) {
+                  onSave: (name, email) {
                     setState(() {
                       userName = name;
                       userEmail = email;
-                      userImage = imageUrl;
                     });
                   },
                 ),
@@ -88,15 +122,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Header Section
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage:
-                        NetworkImage(userImage), // User's profile picture
+                  GestureDetector(
+                    onTap: _showImagePicker,
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundImage: userImage != null
+                          ? FileImage(File(userImage!)) as ImageProvider
+                          : const NetworkImage('https://via.placeholder.com/150'),
+                      child: userImage == null
+                          ? const Icon(Icons.camera_alt, size: 30, color: Colors.white70)
+                          : null,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Column(
@@ -118,8 +158,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const Divider(),
-
-            // Account Settings Section
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
@@ -135,19 +173,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => ChangePasswordScreen()),
-                ); // Navigate to Change Password Screen or handle the logic
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.notifications),
               title: const Text('Notifications'),
-              onTap: () {
-                // Navigate to Notifications settings or handle notifications settings
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NotificationScreen()),
+                );
+                setState(() {
+                  hasUnseenNotifications = false;
+                });
               },
             ),
             const Divider(),
-
-            // App Settings Section
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
@@ -166,71 +209,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.help),
-              title: const Text('Help & Support'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const HelpSupportScreen()),
-                );
-              },
-            ),
-
-            ListTile(
-              leading: const Icon(Icons.rate_review),
-              title: const Text('Rate Us'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RateUsScreen()),
-                ); // Logic to redirect user to app rating page
-              },
-            ),
-
-            // Dark Mode Setting
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Consumer<ThemeProvider>(
-                builder: (context, themeProvider, child) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Dark Mode', style: TextStyle(fontSize: 18)),
-                      Switch(
-                        value: themeProvider.isDarkMode,
-                        onChanged: (bool value) {
-                          themeProvider
-                              .toggleTheme(); // Toggle the theme when the Switch is changed
-                        }, // Toggle theme
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-
-            // Log Out Button
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: ElevatedButton.icon(
-                  onPressed: _logOut,
-                  icon: const Icon(Icons.logout),
-                  label: const Text(
-                    'Log Out',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold, // Make the text bold
-                      color: Colors.white,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 255, 191, 0),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -238,38 +216,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-// Profile Editing Dialog
+// Profile Editing Dialog (without image selection)
 class EditProfileDialog extends StatefulWidget {
   final String currentName;
   final String currentEmail;
-  final String currentImage;
-  final Function(String, String, String) onSave;
+  final Function(String, String) onSave;
 
   const EditProfileDialog({
     super.key,
     required this.currentName,
     required this.currentEmail,
-    required this.currentImage,
     required this.onSave,
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _EditProfileDialogState createState() => _EditProfileDialogState();
 }
 
 class _EditProfileDialogState extends State<EditProfileDialog> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  // ignore: prefer_final_fields
-  TextEditingController _imageController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _nameController.text = widget.currentName;
     _emailController.text = widget.currentEmail;
-    _imageController.text = widget.currentImage;
   }
 
   @override
@@ -287,10 +259,6 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             controller: _emailController,
             decoration: const InputDecoration(labelText: 'Email'),
           ),
-          TextField(
-            controller: _imageController,
-            decoration: const InputDecoration(labelText: 'Image URL'),
-          ),
         ],
       ),
       actions: [
@@ -299,7 +267,6 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             widget.onSave(
               _nameController.text,
               _emailController.text,
-              _imageController.text,
             );
             Navigator.of(context).pop();
           },
