@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/RateUsScreen.dart';
@@ -32,13 +33,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadUserData();
   }
 
-  void _loadUserData() {
+  void _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      setState(() {
-        userName = user.displayName ?? 'User Name';
-        userEmail = user.email ?? 'username@example.com';
-      });
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          userName = userDoc['name'] ?? 'User Name';
+          userEmail = userDoc['email'] ?? 'username@example.com';
+          userImage = userDoc['image'] ?? 'https://via.placeholder.com/150';
+        });
+      }
     }
   }
 
@@ -106,10 +115,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 builder: (context) => EditProfileDialog(
                   currentName: userName,
                   currentEmail: userEmail,
-                  onSave: (name, email) {
+                  currentImage: userImage ?? 'https://via.placeholder.com/150',
+                  onSave: (newName, newEmail, newImage) {
                     setState(() {
-                      userName = name;
-                      userEmail = email;
+                      userName = newName;
+                      userEmail = newEmail;
+                      userImage = newImage;
                     });
                   },
                 ),
@@ -216,16 +227,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-// Profile Editing Dialog (without image selection)
+/// Edit Profile Dialog
 class EditProfileDialog extends StatefulWidget {
   final String currentName;
   final String currentEmail;
-  final Function(String, String) onSave;
+  final String currentImage;
+  final Function(String, String, String) onSave;
 
-  const EditProfileDialog({
-    super.key,
+  EditProfileDialog({
     required this.currentName,
     required this.currentEmail,
+    required this.currentImage,
     required this.onSave,
   });
 
@@ -234,8 +246,9 @@ class EditProfileDialog extends StatefulWidget {
 }
 
 class _EditProfileDialogState extends State<EditProfileDialog> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  String? _imagePath;
 
   @override
   void initState() {
@@ -244,39 +257,71 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     _emailController.text = widget.currentEmail;
   }
 
+  /// Pick an image from gallery
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imagePath = pickedFile.path;
+      });
+    }
+  }
+
+  /// Save edited details to Firestore
+  void _saveProfile() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'image': _imagePath ?? widget.currentImage, // Use old image if not changed
+      });
+
+      widget.onSave(
+        _nameController.text,
+        _emailController.text,
+        _imagePath ?? widget.currentImage,
+      );
+
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit Profile'),
+      title: Text("Edit Profile"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          GestureDetector(
+            onTap: _pickImage,
+            child: CircleAvatar(
+              radius: 40,
+              backgroundImage: _imagePath != null
+                  ? FileImage(File(_imagePath!)) // Load selected image
+                  : NetworkImage(widget.currentImage) as ImageProvider, // Load existing image
+            ),
+          ),
+          SizedBox(height: 10),
           TextField(
             controller: _nameController,
-            decoration: const InputDecoration(labelText: 'Name'),
+            decoration: InputDecoration(labelText: "Name"),
           ),
           TextField(
             controller: _emailController,
-            decoration: const InputDecoration(labelText: 'Email'),
+            decoration: InputDecoration(labelText: "Email"),
           ),
         ],
       ),
       actions: [
         TextButton(
-          onPressed: () {
-            widget.onSave(
-              _nameController.text,
-              _emailController.text,
-            );
-            Navigator.of(context).pop();
-          },
-          child: const Text('Save'),
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text("Cancel"),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Cancel'),
+          onPressed: _saveProfile,
+          child: Text("Save"),
         ),
       ],
     );
