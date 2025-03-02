@@ -51,6 +51,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _logOut() {
+    FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, '/');
+  }
+
   // Function to pick an image
   Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
@@ -219,6 +224,94 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       builder: (context) => const PrivacyPolicyScreen()),
                 );
               },
+            ),
+             ListTile(
+              leading: const Icon(Icons.help),
+              title: const Text('Help & Support'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const HelpSupportScreen()),
+                );
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.rate_review),
+              title: const Text('Rate Us'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RateUsScreen()),
+                ); // Logic to redirect user to app rating page
+              },
+            ),
+
+            // Dark Mode Setting with Modern UI
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Consumer<ThemeProvider>(
+                builder: (context, themeProvider, child) {
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Dark Mode',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                    trailing: Switch.adaptive(
+                      value: themeProvider.isDarkMode,
+                      activeColor: Colors.white,
+                      activeTrackColor: Colors.black,
+                      inactiveThumbColor: Colors.grey.shade300,
+                      inactiveTrackColor: Colors.grey.shade600,
+                      onChanged: (bool value) {
+                        themeProvider.toggleTheme();
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            // Log Out Button with Gradient Styling
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: SizedBox(
+                  width: double.infinity, // Full-width button
+                  child: ElevatedButton(
+                    onPressed: _logOut,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      backgroundColor: customPurple, // Fallback color
+                    ),
+                    child: ShaderMask(
+                      shaderCallback: (bounds) => LinearGradient(
+                        colors: [Color.fromARGB(255, 255, 255, 255), Color.fromARGB(255, 255, 255, 255)],
+                      ).createShader(bounds),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.logout, color: Colors.white),
+                          SizedBox(width: 8),
+                          Text(
+                            'Log Out',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.white, // Keeps text visible with gradient
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
