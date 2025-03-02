@@ -80,21 +80,26 @@ void fetchRecentlyViewed() async {
 // Update `recentlyViewed` in Firestore (under subcollection `recently_viewed`)
 void updateRecentlyViewed(Map<String, dynamic> recipe) async {
   try {
-    // Check if the recipe already exists in the recently viewed list
+    // Check if ID exists and is valid
+    if (recipe['id'] == null) {
+      throw Exception("Recipe ID is null!");
+    }
+
+    // Convert ID to String for Firestore
+    String recipeId = recipe['id'].toString();
+
     final docRef = _firestore
         .collection('users')
         .doc(widget.userId)
         .collection('recently_viewed')
-        .doc(recipe['id']); // Using the recipe's ID as the document ID
+        .doc(recipeId);
 
     final docSnapshot = await docRef.get();
 
     if (!docSnapshot.exists) {
-      // Add the recipe to Firestore if it's not already in the list
       await docRef.set(recipe);
 
       setState(() {
-        // Add to local list, but maintain the most recent at the top
         _recentlyViewed.insert(0, recipe);
       });
     }
@@ -102,8 +107,14 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
     if (kDebugMode) {
       print('Error updating recently viewed: $error');
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to update recently viewed: $error')),
+    );
   }
 }
+
+
+
 
   String selectedCategory(String category){
     if(category =='Breakfast') {
@@ -436,6 +447,10 @@ void _showTimeFilter(BuildContext context) {
                       )
                     : null,
                 onTap: () {
+                  if (kDebugMode) {
+                    print("Recipe data: $recipe");
+                  }
+
                   updateRecentlyViewed(recipe); // Update Firestore with the viewed recipe
                   
                   _navigateToReceipeDetails(recipe);
@@ -444,6 +459,8 @@ void _showTimeFilter(BuildContext context) {
             },
           ),
 
+    
+    
     );
   }
 }

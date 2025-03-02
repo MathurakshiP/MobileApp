@@ -40,7 +40,7 @@ void addToMealPlanner(Map<String, dynamic> recipe)  {
   Future.delayed(const Duration(seconds: 2), () {
     Navigator.pop(context, recipe);
   });
-}
+} 
 
 void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
     final selectedFood = await Navigator.push(

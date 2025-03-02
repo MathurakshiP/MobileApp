@@ -68,6 +68,11 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+@override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadRecentlyViewedRecipes();
+  }
  
 Future<void> _connectAndStoreUser() async {
  
@@ -110,11 +115,13 @@ void hashAssign(String apiHash){
 
    // Fetch recently viewed recipes from Firestore
   Future<void> _loadRecentlyViewedRecipes() async {
-    final user = FirebaseAuth.instance.currentUser;
+  final user = FirebaseAuth.instance.currentUser;
 
-    if (user != null) {
-      final userId = user.uid;
-      userid=userId;
+  if (user != null) {
+    final userId = user.uid;
+    userid = userId;
+
+    try {
       final recentlyViewedRef = FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
@@ -126,15 +133,64 @@ void hashAssign(String apiHash){
 
       setState(() {
         _recentlyViewed = querySnapshot.docs
-            .map((doc) => {
-                  'recipeId': doc['recipeId'],
-                  'title': doc['title'],
-                  'image': doc['image'],
-                })
+            .map((doc) {
+              // Safely handle missing or null fields from Firestore
+              final recipeId = doc['recipeId'] ?? '';
+              final title = doc['title'] ?? 'No Title';
+              final image = doc['image'] ?? '';  // Use a default empty string if 'image' is null
+
+              return {
+                'recipeId': recipeId,
+                'title': title,
+                'image': image,
+              };
+            })
             .toList();
       });
+
+      // Print the loaded recently viewed recipes for debugging or displaying in the UI
+      _printRecentlyViewedRecipes();
+      
+    } catch (e) {
+      // Handle any errors that might occur during the Firebase call
+      print("Error loading recently viewed recipes: $e");
     }
   }
+}
+
+void _printRecentlyViewedRecipes() {
+  if (_recentlyViewed.isNotEmpty) {
+    print("Recently Viewed Recipes:");
+    for (var recipe in _recentlyViewed) {
+      print('Recipe ID: ${recipe['recipeId']}');
+      print('Title: ${recipe['title']}');
+      print('Image: ${recipe['image']}');
+      print('-----------------------');
+    }
+  } else {
+    print('No recently viewed recipes available.');
+  }
+}
+
+
+
+
+Future<List<Map<String, dynamic>>> fetchRecentlyViewedRecipes(String userId) async {
+  try {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users') // Assuming each user has a recently viewed list
+        .doc(userId)
+        .collection('recentlyViewed')
+        .orderBy('timestamp', descending: true) // Order by most recently viewed
+        .limit(10) // Limit the number of items fetched
+        .get();
+
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  } catch (e) {
+    print("Error fetching recently viewed recipes: $e");
+    return [];
+  }
+}
 
   void _loadRandomRecipes() async {
   setState(() {
@@ -904,7 +960,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
 
     return GestureDetector(
       onTap: () {
-        // Navigate to the category screen
+       
         Navigator.push(
           context,
           MaterialPageRoute(

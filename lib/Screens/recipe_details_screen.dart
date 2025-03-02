@@ -1,6 +1,6 @@
 // lib/screens/recipe_detail_screen.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart'; 
 import 'package:flutter/material.dart';
 import 'package:mobile_app/auth.dart';
 import 'package:provider/provider.dart'; // Import Provider package
@@ -18,7 +18,7 @@ Future<String?> _showCategorySelectionDialog(BuildContext context) async {
   String? selectedCategory;
 
   return await showDialog<String>(
-    context: context,
+    context: context, 
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
@@ -206,6 +206,7 @@ Future<String?> _showCategorySelectionDialog(BuildContext context) async {
         ),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
+        
         future: ApiService().fetchRecipeDetails(recipeId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
