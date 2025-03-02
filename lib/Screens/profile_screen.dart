@@ -31,6 +31,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _loadUserData();
+    _loadUnseenNotifications();
+  }
+
+  void _loadUnseenNotifications() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      QuerySnapshot notificationsSnapshot = await FirebaseFirestore.instance
+          .collection('notifications')
+          .where('userId', isEqualTo: user.uid)
+          .where('seen', isEqualTo: false) // Only unseen notifications
+          .get();
+
+      setState(() {
+        hasUnseenNotifications = notificationsSnapshot.docs.isNotEmpty;
+      });
+    }
   }
 
   void _loadUserData() async {
@@ -193,14 +209,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.notifications),
+              leading: Stack(
+                children: [
+                  const Icon(Icons.notifications),
+                  if (hasUnseenNotifications)
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '!', // Or show count of unseen notifications
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               title: const Text('Notifications'),
               onTap: () async {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => NotificationScreen()),
+                    builder: (context) => NotificationScreen(userId: FirebaseAuth.instance.currentUser!.uid),
+                  ),
                 );
+                // Reset unseen notifications after returning from NotificationScreen
+                FirebaseFirestore.instance
+                    .collection('notifications')
+                    .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                    .where('seen', isEqualTo: false)
+                    .get()
+                    .then((querySnapshot) {
+                  for (var doc in querySnapshot.docs) {
+                    doc.reference.update({'seen': true});
+                  }
+                });
+
                 setState(() {
                   hasUnseenNotifications = false;
                 });

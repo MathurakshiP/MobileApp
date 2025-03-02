@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
-  const PrivacyPolicyScreen({Key? key}) : super(key: key);
+  const PrivacyPolicyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Privacy Policy'),
-        backgroundColor: const Color(0xFF6200EE), // Material Design Purple
+        backgroundColor: const Color.fromARGB(255, 96, 26, 182), // Material Design Purple
         elevation: 0,
       ),
       body: LayoutBuilder(

@@ -1,38 +1,71 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({super.key});
+  final String userId; // Add userId to fetch user-specific notifications
+
+  const NotificationScreen({super.key, required this.userId});
 
   @override
   _NotificationScreenState createState() => _NotificationScreenState();
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  List<String> notifications = [
-    'New recipe added!',
-    'Discount on ingredients!',
-    'New update available!'
-  ];
-  int unreadCount = 3;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<Map<String, dynamic>> notifications = [];
 
   @override
   void initState() {
     super.initState();
-    // Simulate marking notifications as read when the screen is opened
+    _fetchNotifications();
+  }
+
+  // Fetch notifications from Firestore
+  void _fetchNotifications() async {
+    QuerySnapshot snapshot = await _firestore
+        .collection('users')
+        .doc(widget.userId)
+        .collection('notifications')
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    setState(() {
+      notifications = snapshot.docs
+          .map((doc) => {
+                'id': doc.id,
+                'message': doc['message'],
+                'unread': doc['unread'],
+              })
+          .toList();
+    });
+
+    // Mark all as read
     _markNotificationsAsRead();
   }
 
   void _markNotificationsAsRead() {
-    setState(() {
-      unreadCount = 0; // Reset unread count after notifications are seen
-    });
+    for (var notification in notifications) {
+      _firestore
+          .collection('users')
+          .doc(widget.userId)
+          .collection('notifications')
+          .doc(notification['id'])
+          .update({'unread': false});
+    }
   }
 
-  // Method to delete a notification from the list
-  void _deleteNotification(int index) {
+  void _deleteNotification(int index) async {
+    String docId = notifications[index]['id'];
+
+    await _firestore
+        .collection('users')
+        .doc(widget.userId)
+        .collection('notifications')
+        .doc(docId)
+        .delete();
+
     setState(() {
-      notifications.removeAt(index);  // Remove the notification from the list
-      unreadCount = notifications.length;  // Update the unread count
+      notifications.removeAt(index);
     });
   }
 
@@ -51,12 +84,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
             return Card(
               margin: const EdgeInsets.symmetric(vertical: 8.0),
               child: ListTile(
-                leading: const Icon(Icons.notifications),
-                title: Text(notifications[index]),
+                leading: Icon(
+                  Icons.notifications,
+                  color: notifications[index]['unread'] ? Colors.red : Colors.grey,
+                ),
+                title: Text(notifications[index]['message']),
                 trailing: IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
-                    // Show a confirmation dialog before deleting
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -65,7 +100,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         actions: [
                           TextButton(
                             onPressed: () {
-                              // Delete the notification
                               _deleteNotification(index);
                               Navigator.of(context).pop();
                             },
@@ -73,7 +107,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ),
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop(); // Close the dialog
+                              Navigator.of(context).pop();
                             },
                             child: const Text('No'),
                           ),

@@ -197,7 +197,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
           await doc.reference.delete();
         }
 
-        // Add updated meals for the day, categorized by Breakfast, Lunch, Dinner, etc.
+        // Add updated meals for the day
         for (String category in ["Breakfast", "Lunch", "Dinner", "Salad", "Soup", "Dessert"]) {
           for (Map<String, dynamic> meal in mealPlan[day]?[category] ?? []) {
             String mealId = "${DateTime.now().millisecondsSinceEpoch}";
@@ -206,13 +206,23 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                 .set({
                   'mealId': mealId,
                   'category': category,
-                  'name': meal['name'],
-                  'ingredients': meal['ingredients'],
-                  'recipe': meal['recipe'],
+                  'name': meal['title'],
                 });
           }
         }
       }
+
+      // Add notification to Firestore
+      await _firestore
+          .collection('users')
+          .doc(widget.userId)
+          .collection('notifications')
+          .add({
+            'message': 'Your meal plan for $currentWeekRange has been saved!',
+            'timestamp': FieldValue.serverTimestamp(),
+            'unread': true,
+          });
+
     } catch (e) {
       print('Error saving meal plan: $e');
     }
