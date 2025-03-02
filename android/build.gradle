@@ -5,8 +5,8 @@ buildscript {
     }
     dependencies {
         // Ensure you are using a compatible version of the Android Gradle plugin
-        classpath 'com.android.tools.build:gradle:8.1.0'  // Adjust this version if needed
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21'  // Update if using Kotlin
+        classpath 'com.android.tools.build:gradle:8.8.0'  // Adjust this version if needed
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.10'  // Update if using Kotlin
     }
 }
 plugins {

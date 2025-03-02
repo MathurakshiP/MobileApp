@@ -5,7 +5,6 @@ import 'package:mobile_app/Screens/addFoodScreen.dart';
 import 'package:mobile_app/Screens/premiumPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_app/Screens/recipe_details_screen.dart';
-import 'package:mobile_app/Screens/signUpReminderScreen.dart';
 
 class MealPlannerScreen extends StatefulWidget {
   final String userId;
