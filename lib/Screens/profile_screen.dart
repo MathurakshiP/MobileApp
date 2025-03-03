@@ -31,6 +31,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _loadUserData();
+    _loadUnseenNotifications();
+  }
+
+  void _loadUnseenNotifications() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      QuerySnapshot notificationsSnapshot = await FirebaseFirestore.instance
+          .collection('notifications')
+          .where('userId', isEqualTo: user.uid)
+          .where('seen', isEqualTo: false) // Only unseen notifications
+          .get();
+
+      setState(() {
+        hasUnseenNotifications = notificationsSnapshot.docs.isNotEmpty;
+      });
+    }
   }
 
   void _loadUserData() async {
@@ -193,17 +209,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.notifications),
+              leading: Stack(
+                children: [
+                  const Icon(Icons.notifications),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('notifications')
+                        .where('unread', isEqualTo: true) // Listening to only unread notifications
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                        return Positioned(
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              snapshot.data!.docs.length.toString(), // Show count of unread notifications
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink(); // Hide red mark if no unread notifications
+                    },
+                  ),
+                ],
+              ),
               title: const Text('Notifications'),
               onTap: () async {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => NotificationScreen()),
+                    builder: (context) => NotificationScreen(userId: FirebaseAuth.instance.currentUser!.uid),
+                  ),
                 );
-                setState(() {
-                  hasUnseenNotifications = false;
-                });
+
+                // Mark all notifications as read after viewing
+                QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection('notifications')
+                    .where('unread', isEqualTo: true)
+                    .get();
+
+                for (var doc in querySnapshot.docs) {
+                  await doc.reference.update({'unread': false});
+                }
               },
             ),
             const Divider(),

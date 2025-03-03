@@ -1,0 +1,1 @@
+C:\Users\imara\Documents\GitHub\MobileApp\build\app\intermediates\cxx\RelWithDebInfo\564v155n\obj\arm64-v8a
