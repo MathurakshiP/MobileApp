@@ -27,6 +27,11 @@ class HelpSupportScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Help & Support'),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
