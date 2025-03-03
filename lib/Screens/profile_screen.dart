@@ -335,22 +335,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-// Dark Mode Setting with Modern UI
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Consumer<ThemeProvider>(
-                builder: (context, themeProvider, child) {
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text(
-                      'Community Talk',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    
-                  );
-                },
-              ),
-            ),
 
             // Log Out Button with Gradient Styling
             Padding(

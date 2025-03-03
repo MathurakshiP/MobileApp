@@ -16,6 +16,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   TextEditingController _messageController = TextEditingController();
   String? _userName;
   String? _userProfilePicUrl;
+  Color customPurple = const Color.fromARGB(255, 96, 26, 182);
   final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
   @override
   void initState() {
@@ -90,95 +91,111 @@ Widget build(BuildContext context) {
         "Our Community",
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
       ),
-      backgroundColor: Colors.transparent, // Transparent AppBar
+      backgroundColor:customPurple, // Transparent AppBar
       elevation: 0, // Remove shadow
     ),
     body: Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.deepPurple.shade400, Colors.blue.shade300], // Gradient colors
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
+      
       child: Column(
         children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: false, // Ensures messages appear in the correct order
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final messageData = messages[index];
-                final String message = messageData['message']!;
-                final String sender = messageData['sender']!;
-                final Timestamp timestamp = messageData['timestamp'];
-                final DateTime dateTime = timestamp.toDate();
-                final String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
+         Expanded(
+  child: ListView.builder(
+    reverse: false, // Ensures messages appear in the correct order
+    itemCount: messages.length,
+    itemBuilder: (context, index) {
+      final messageData = messages[index];
+      final String message = messageData['message']!;
+      final String sender = messageData['sender']!;
+      final Timestamp timestamp = messageData['timestamp'];
+      final DateTime dateTime = timestamp.toDate();
+      final String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
 
-                bool isCurrentUser = sender == _userName;
-                bool showDateHeader = index == 0 ||
-                  DateFormat('yyyy-MM-dd').format(messages[index - 1]['timestamp'].toDate()) != formattedDate;
+      bool isCurrentUser = sender == _userName;
+      bool showDateHeader = index == 0 ||
+        DateFormat('yyyy-MM-dd').format(messages[index - 1]['timestamp'].toDate()) != formattedDate;
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (showDateHeader)
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 6),
-                        margin: EdgeInsets.only(top: 10, bottom: 4),
+      // Determine if this message is the last message from the sender
+      bool isLastMessageFromSender = index == messages.length - 1 ||
+          messages[index + 1]['sender'] != sender;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (showDateHeader)
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 6),
+              margin: EdgeInsets.only(top: 10, bottom: 4),
+              child: Text(
+                formattedDate,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+          Align(
+            alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 4, horizontal: 40),
+              decoration: BoxDecoration(
+                color: isCurrentUser ? selectedPurple : const Color.fromARGB(255, 210, 196, 209),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: IntrinsicWidth(
+                child: Container(
+                  constraints: BoxConstraints(
+                    minWidth: 100,
+                    maxWidth: MediaQuery.of(context).size.width * 0.7,
+                  ),
+                  padding: EdgeInsets.all(2),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Only show the sender's name if it's not the current user
+                      if (!isCurrentUser)
+                        Text(
+                          sender,
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
+                      SizedBox(height: 8),
+                      Text(
+                        message,
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                        softWrap: true,
+                      ),
+                      SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.bottomRight,
                         child: Text(
-                          formattedDate,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                          DateFormat.jm().format(dateTime),
+                          style: TextStyle(fontSize: 12, color: Colors.black),
                         ),
                       ),
-                    Align(
-                      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: isCurrentUser ? selectedPurple : const Color.fromARGB(255, 210, 196, 209),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        child: IntrinsicWidth(
-                          child: Container(
-                            constraints: BoxConstraints(
-                              minWidth: 100,
-                              maxWidth: MediaQuery.of(context).size.width * 0.7,
-                            ),
-                            padding: EdgeInsets.all(2),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  sender,
-                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  message,
-                                  style: TextStyle(fontSize: 16, color: Colors.black),
-                                  softWrap: true,
-                                ),
-                                SizedBox(height: 4),
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: Text(
-                                    DateFormat.jm().format(dateTime),
-                                    style: TextStyle(fontSize: 12, color: Colors.black),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
+          // Show profile picture at the bottom-left of the message container if it's the last message from the sender
+          if (!isCurrentUser && isLastMessageFromSender)
+            Padding(
+              padding: const EdgeInsets.only(right: 370.0, top: 4.0), // Padding for bottom-left positioning
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor: customPurple, // Default color if no profile pic is available
+                child: Text(
+                  sender[0].toUpperCase(), // First letter of the username
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+        ],
+      );
+    },
+  ),
+),
+
+
+
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 8, 30),
             child: Row(
@@ -188,9 +205,9 @@ Widget build(BuildContext context) {
                     controller: _messageController,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.8),
+                      fillColor: const Color.fromARGB(255, 210, 196, 209).withOpacity(0.8),
                       hintText: 'Type a message...',
-                      hintStyle: TextStyle(color: Colors.grey),
+                      hintStyle: TextStyle(color: Colors.white),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
@@ -199,7 +216,7 @@ Widget build(BuildContext context) {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: Colors.white),
+                  icon: Icon(Icons.send, color: customPurple),
                   onPressed: _sendMessage,
                 ),
               ],

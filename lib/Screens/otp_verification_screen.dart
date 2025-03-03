@@ -145,7 +145,7 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Verify OTP')),
+      appBar: AppBar(title: const Text('Verify OTP',style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),)),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
