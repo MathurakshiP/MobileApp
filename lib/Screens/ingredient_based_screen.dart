@@ -451,7 +451,7 @@ void goToPantryScreen() {
                   buildCollapsibleContainer('Vegetables & Greens', vegetables,'images/veg.jpg'),
                   buildCollapsibleContainer('Fruits', fruits,'images/fruit.jpeg'),
                   buildCollapsibleContainer('Dairy Products', dairyProducts,'images/dairy.webp'),
-                  buildCollapsibleContainer('Grains', grains,'images/grain.jpg'),
+                  buildCollapsibleContainer('Grains', grains,'images/grains.png'),
                   buildCollapsibleContainer('Spices & Herbs', spicesHerbs,'images/spices.jpg'),
                 ],
               ),
