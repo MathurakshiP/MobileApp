@@ -5,6 +5,7 @@ import 'package:mobile_app/Screens/addFoodScreen.dart';
 import 'package:mobile_app/Screens/premiumPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_app/Screens/recipe_details_screen.dart';
+import 'package:mobile_app/Services/notification_service.dart';
 
 class MealPlannerScreen extends StatefulWidget {
   final String userId;
@@ -204,6 +205,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
         String formattedDate = DateFormat("yyyy-MM-dd").format(mealDate);
         String dayOfWeek = DateFormat("EEEE").format(mealDate); // Get day name
 
+        final NotificationService _notificationService = NotificationService();
         // Add updated meals for the day
         for (String category in ["Breakfast", "Lunch", "Dinner", "Salad", "Soup", "Dessert"]) {
           for (Map<String, dynamic> meal in mealPlan[day]?[category] ?? []) {
@@ -227,8 +229,12 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                     'message': 'Your $category meal plan for $formattedDate ($dayOfWeek): $mealName is saved!',
                     'timestamp': FieldValue.serverTimestamp(),
                     'unread': true,
+                    'category': category,
                   });
             }
+
+            await _notificationService.saveNotification(widget.userId, category, formattedDate, mealName);
+
           }
         }
       }
@@ -251,7 +257,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
 
     return startDate.add(Duration(days: dayDifference));
   }
-  
+
   /// Add a meal to the plan and save
   void _addMeal(String day, Map<String, dynamic> food,String category) {
     setState(() {

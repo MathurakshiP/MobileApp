@@ -2,11 +2,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/animation_screen.dart';
-import 'package:mobile_app/Screens/get_started.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
 import 'package:mobile_app/Screens/login_page.dart';
 import 'package:mobile_app/Screens/signUpReminderScreen.dart';
-
+import 'package:mobile_app/Services/notification_service.dart';
 import 'package:mobile_app/providers/shopping_list_provider.dart';
 import 'package:provider/provider.dart';
 import 'providers/saved_food_provider.dart';
@@ -19,6 +18,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
+  
+  NotificationService().initializeNotifications();
 }
 
 class MyApp extends StatelessWidget {

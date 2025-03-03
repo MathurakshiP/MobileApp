@@ -444,7 +444,6 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                               ),
                             ),
                           ),
-
                           Container(
                             height: _suggestions.isNotEmpty ? 200 : 0,
                             child: Stack(
@@ -471,9 +470,9 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                               ),
                                               title: Text(
                                                 suggestion['title'] ?? 'No Title', // Access the title instead of id
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 16,
-                                                  color: Colors.black87,
+                                                  color: isDarkMode? Colors.white : Colors.black87,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                               ),

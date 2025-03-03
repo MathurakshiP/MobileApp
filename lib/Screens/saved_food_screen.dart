@@ -12,12 +12,17 @@ class SavedFoodScreen extends StatefulWidget {
 }
 
 class _SavedFoodScreenState extends State<SavedFoodScreen> {
+<<<<<<< HEAD
   bool isMealPlan=false; bool isSearch=false;
+=======
+  bool isMealPlan = false;
+  
+>>>>>>> bacb681154d86f10a5e655bdb2dd4dcfda991b9a
   @override
   void initState() {
     super.initState();
 
-    // Fetch the saved recipes when the screen is loaded
+    // Fetch the saved recipes when the screen is loaded if the user is logged in
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final savedFoodProvider = Provider.of<SavedFoodProvider>(context, listen: false);
@@ -31,6 +36,29 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
     final savedRecipes = savedFoodProvider.savedRecipes;
     Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
+    final user = FirebaseAuth.instance.currentUser;
+    // If user is null (guest), display the message 'No saved foods yet'
+    if (user == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Saved Recipes',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          ),
+          backgroundColor: customPurple,
+          automaticallyImplyLeading: false,
+        ),
+        body: const Center(
+          child: Text('No saved foods yet!'),
+        ),
+      );
+    }
+
+    // If the user is logged in, display saved recipes
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -70,7 +98,11 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+<<<<<<< HEAD
                         builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan,isSearch:isSearch),
+=======
+                        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'], isMealPlan: isMealPlan),
+>>>>>>> bacb681154d86f10a5e655bdb2dd4dcfda991b9a
                       ),
                     );
                   },

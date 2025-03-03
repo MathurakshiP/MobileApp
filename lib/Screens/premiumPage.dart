@@ -61,10 +61,10 @@ class PremiumPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildBenefitRow(Icons.check_circle, 'Customized Meal Plans'),
-                    _buildBenefitRow(Icons.check_circle, 'Access Premium Recipes'),
-                    _buildBenefitRow(Icons.check_circle, 'Personalized Coaching'),
-                    _buildBenefitRow(Icons.check_circle, 'Ad-Free Experience'),
+                    _buildBenefitRow(context, Icons.check_circle, 'Customized Meal Plans'),
+                    _buildBenefitRow(context, Icons.check_circle, 'Access Premium Recipes'),
+                    _buildBenefitRow(context, Icons.check_circle, 'Personalized Coaching'),
+                    _buildBenefitRow(context, Icons.check_circle, 'Ad-Free Experience'),
                   ],
                 ),
               ),
@@ -149,7 +149,9 @@ class PremiumPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBenefitRow(IconData icon, String text) {
+  Widget _buildBenefitRow(BuildContext context, IconData icon, String text) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -158,9 +160,9 @@ class PremiumPage extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              color: Colors.black87,
+              color: isDarkMode? Colors.white : Colors.black87,
             ),
           ),
         ],

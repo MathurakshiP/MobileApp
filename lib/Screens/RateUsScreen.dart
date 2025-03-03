@@ -80,7 +80,7 @@ class _RateUsScreenState extends State<RateUsScreen> {
           'Rate Us',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),

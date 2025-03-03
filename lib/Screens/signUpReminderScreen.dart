@@ -55,10 +55,10 @@ class SignUpReminderPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildFeatureRow(Icons.favorite_border, 'Save Your Favorite Recipes'),
-                    _buildFeatureRow(Icons.shopping_cart_outlined, 'Build Your Shopping List'),
-                    _buildFeatureRow(Icons.calendar_today_outlined, 'Plan Your Weekly Meals'),
-                    _buildFeatureRow(Icons.shield_outlined, 'Access Securely Anywhere'),
+                    _buildFeatureRow(context, Icons.favorite_border, 'Save Your Favorite Recipes'),
+                    _buildFeatureRow(context, Icons.shopping_cart_outlined, 'Build Your Shopping List'),
+                    _buildFeatureRow(context, Icons.calendar_today_outlined, 'Plan Your Weekly Meals'),
+                    _buildFeatureRow(context, Icons.shield_outlined, 'Access Securely Anywhere'),
                   ],
                 ),
               ),
@@ -106,7 +106,9 @@ class SignUpReminderPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureRow(IconData icon, String text) {
+  Widget _buildFeatureRow(BuildContext context, IconData icon, String text) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -116,9 +118,9 @@ class SignUpReminderPage extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
-                color: Colors.black87,
+                color: isDarkMode? Colors.white : Colors.black87,
               ),
             ),
           ),
