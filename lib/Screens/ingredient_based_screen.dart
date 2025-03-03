@@ -54,11 +54,37 @@ final List<String> pantryIngredients = [
   'Maple Syrup',
   'Rice Vinegar',
 ];
+final List<String> nonVegItems = [
+  'Chicken',
+  'Beef',
+  'Pork',
+  'Lamb',
+  'Turkey',
+  'Duck',
+  'Goat',
+  'Rabbit',
+  'Quail',
+  'Venison',
+  'Salmon',
+  'Tuna',
+  'Shrimp',
+  'Lobster',
+  'Crab',
+  'Oysters',
+  'Mussels',
+  'Clams',
+  'Squid',
+  'Octopus',
+  'Anchovies',
+  'Sardines',
+  'Mackerel',
+  'Ham',
+  'Bacon',
+];
 
 final List<String> vegetables = [
   'Tomato',
   'Cheese',
-  'Chicken',
   'Lemon',
   'Pepper',
   'Spinach',
@@ -197,6 +223,7 @@ final List<String> spicesHerbs = [
 
   final Map<String, bool> isExpanded = {
     'Pantry Ingredients': false,
+    'Non Veg':false,
     'Vegetables & Greens': false,
     'Fruits': false,
     'Dairy Products': false,
@@ -448,6 +475,7 @@ void goToPantryScreen() {
 
                   
                   buildCollapsibleContainer('Pantry Ingredients', pantryIngredients,'images/pantry.jpg.webp'),
+                  buildCollapsibleContainer('Non Veg', nonVegItems,'images/nonveg.jpg'),
                   buildCollapsibleContainer('Vegetables & Greens', vegetables,'images/veg.jpg'),
                   buildCollapsibleContainer('Fruits', fruits,'images/fruit.jpeg'),
                   buildCollapsibleContainer('Dairy Products', dairyProducts,'images/dairy.webp'),

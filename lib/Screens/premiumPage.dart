@@ -110,8 +110,7 @@ class PremiumPage extends StatelessWidget {
             const Spacer(),
             ElevatedButton(
               onPressed: () {
-                // Handle subscription logic
-                Navigator.pop(context); // Navigate back after purchase
+                
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 30),

@@ -11,7 +11,8 @@ import 'package:mobile_app/providers/shopping_list_provider.dart';
 class RecipeDetailScreen extends StatelessWidget {
   final int recipeId;
   final bool isMealPlan;
-  RecipeDetailScreen({super.key, required this.recipeId,required this.isMealPlan});
+  final bool isSearch;
+  RecipeDetailScreen({super.key, required this.recipeId,required this.isMealPlan,required this.isSearch});
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
   Future<String?> _showCategorySelectionDialog(BuildContext context) async {
@@ -250,7 +251,7 @@ class RecipeDetailScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       
-                      if (isMealPlan) 
+                      if (isMealPlan && isSearch) 
                         IconButton(
                           icon: Icon(Icons.add, color: customPurple),
                           onPressed: () async {

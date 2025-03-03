@@ -104,6 +104,7 @@ flutter:
   - images/pantry.jpg.webp
   - images/spices.jpg
   - images/veg.jpg
+  - images/nonveg.jpg
 
   - .env
 

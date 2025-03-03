@@ -304,7 +304,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => RecipeDetailScreen(recipeId: suggestion['id'],isMealPlan:isMealPlan)),
+          builder: (context) => RecipeDetailScreen(recipeId: suggestion['id'],isMealPlan:isMealPlan,isSearch:false)),
     );
     _searchController.clear();
     setState(() {
@@ -363,8 +363,8 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    // builder: (context) => MealPlannerScreen(userId: userid),
-                    builder: (context) => CommunityChatScreen()
+                    builder: (context) => MealPlannerScreen(userId: userid),
+                    
                   ),
                 );
               }
@@ -576,7 +576,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan),
+                                            builder: (context) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan,isSearch:false),
                                           ),
                                         );
                                       },
@@ -740,7 +740,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => RecipeDetailScreen(recipeId: _randomRecipes[9]['id'],isMealPlan:isMealPlan),
+                                              builder: (context) => RecipeDetailScreen(recipeId: _randomRecipes[9]['id'],isMealPlan:isMealPlan,isSearch:false),
                                             ),
                                           );
                                         },
@@ -933,7 +933,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
             label: 'Saved',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.groups),
+            icon: Icon(Icons.group),
             label: 'Community',
           ),
           BottomNavigationBarItem(

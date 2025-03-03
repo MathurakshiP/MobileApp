@@ -19,7 +19,7 @@ class SearchResultsScreen extends StatefulWidget {
 
 class _SearchResultsScreenState extends State<SearchResultsScreen> {
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
-
+  bool isSearch=false;
   // Function to fetch the readyInMinutes for a recipe using its recipeId
   Future<Map<String, dynamic>> _fetchRecipeDetails(int recipeId) async {
     ApiService apiService = ApiService();
@@ -46,7 +46,7 @@ void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
     final selectedFood = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:widget.isMealPlan),
+        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:widget.isMealPlan,isSearch:isSearch),
       ),
     );
 
