@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RateUsScreen extends StatefulWidget {
   @override
@@ -9,8 +11,21 @@ class _RateUsScreenState extends State<RateUsScreen> {
   double _rating = 0;
   TextEditingController _feedbackController = TextEditingController();
 
-  void _submitFeedback() {
+  // Firebase Firestore instance
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Function to submit feedback and rating
+  void _submitFeedback() async {
     String feedback = _feedbackController.text;
+
+    // Save the rating and feedback to Firebase Firestore
+    await _firestore.collection('ratings').add({
+      'rating': _rating,
+      'feedback': feedback,
+      'userId': FirebaseAuth.instance.currentUser?.uid,  // Store the user's UID
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
     print('Rating: $_rating');
     print('Feedback: $feedback');
 
@@ -70,7 +85,7 @@ class _RateUsScreenState extends State<RateUsScreen> {
           ),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(  // Wrap the body with SingleChildScrollView
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -121,7 +136,7 @@ class _RateUsScreenState extends State<RateUsScreen> {
                 child: Text('Skip/Remind Later'),
               ),
             ),
-            Spacer(),
+            SizedBox(height: 16),  // Replace Spacer with SizedBox
             Text(
               'Your feedback helps us improve. We value your privacy.',
               style: TextStyle(fontSize: 12, color: Colors.grey),

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ReportIssueScreen extends StatefulWidget {
@@ -9,8 +11,9 @@ class ReportIssueScreen extends StatefulWidget {
 
 class _ReportIssueScreenState extends State<ReportIssueScreen> {
   final TextEditingController _issueController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void _submitIssue() {
+  void _submitIssue() async {
     final issueText = _issueController.text;
     if (issueText.isEmpty) {
       // Show a message if the issue text is empty
@@ -20,14 +23,28 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
       return;
     }
 
-    // Logic to submit the issue (e.g., API call or sending to a database)
-    // For now, we'll just print it to the console
-    print('Issue submitted: $issueText');
+    // Save the issue to Firestore
+    try {
+      await _firestore.collection('issues').add({
+        'issue': issueText,
+        'userId': FirebaseAuth.instance.currentUser?.uid,  // Store the user's UID
+        'timestamp': FieldValue.serverTimestamp(),
+      });
 
-    // Clear the text field after submission
-    _issueController.clear();
+      // If the issue is successfully submitted, show a confirmation dialog
+      _showConfirmationDialog();
 
-    // Show confirmation dialog
+      // Clear the text field after submission
+      _issueController.clear();
+    } catch (e) {
+      // Handle errors during Firestore operation
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to submit issue: $e')),
+      );
+    }
+  }
+
+  void _showConfirmationDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {

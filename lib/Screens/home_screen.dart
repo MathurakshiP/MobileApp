@@ -387,6 +387,8 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: _buildAppBar(), 
       body: IndexedStack(
@@ -402,8 +404,8 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                     Tab(text: 'Explore Recipe'),
                     Tab(text: "What's in Your Kitchen"),
                   ],
-                  labelColor: customPurple, 
-                  unselectedLabelColor: Colors.black, 
+                  labelColor: isDarkMode ? Colors.white : customPurple, 
+                  unselectedLabelColor: isDarkMode ? Colors.white : Colors.black, 
                   indicatorColor: customPurple,
                 ),
 
@@ -426,15 +428,15 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                               },
                               decoration: InputDecoration(
                                 labelText: 'Search Recipe...',
-                                labelStyle: TextStyle(color: customPurple),
+                                labelStyle: TextStyle(color: isDarkMode? Colors.white : customPurple),
                                 border: const OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.black),
                                     ),
                                 suffixIcon: IconButton(
                                   icon: Icon(Icons.search,
-                                  color: customPurple,),
+                                  color: isDarkMode? Colors.white : customPurple
+                                  ), 
                                   onPressed: _searchRecipe,
-                                  
                                 ),
                               ),
                             ),
@@ -512,7 +514,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                                     },
                                     child: Text(
                                       'See All',
-                                      style: TextStyle(color: customPurple), // Set the text color to customPurple
+                                      style: TextStyle(color: isDarkMode? Colors.white : customPurple), // Set the text color to customPurple
                                     ),
                                   ),
                                 ],
