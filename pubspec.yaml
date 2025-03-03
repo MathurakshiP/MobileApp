@@ -97,6 +97,12 @@ flutter:
   - images/soup.jpg
   - images/getstartedScreen.png
   - images/GetStarted_Screen.png
+  - images/dairy.webp
+  - images/fruit.jpeg
+  - images/grain.jpg.avif
+  - images/pantry.jpg.webp
+  - images/spices.jpg
+  - images/veg.jpg
 
   - .env
 

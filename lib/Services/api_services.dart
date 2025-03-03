@@ -1,12 +1,12 @@
 import 'dart:convert';
-import 'dart:math';
+import 'dart:math'; 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-class ApiService {
+class ApiService { 
   // Set base URL and API key directly here
   final String _baseUrl = 'https://api.spoonacular.com';
-  final String _apiKey = '9ecee3af427949d4b5e9831e0b458576'; // Replace with your actual API key
+  final String _apiKey = 'a2e8aeca685d4b33975aa0fec27c5fb3'; // Replace with your actual API key
 //         9ecee3af427949d4b5e9831e0b458576
 // a2e8aeca685d4b33975aa0fec27c5fb3
 // 171dca80728e4b5bb342e075d07b22c0
@@ -83,19 +83,7 @@ class ApiService {
     }
   }
 
-  // 2. Ingredient-Based Recipe Search
-  Future<List<dynamic>> fetchRecipesByIngredients(List<String> ingredients) async {
-    final ingredientsStr = ingredients.join(',');
-    final response = await http.get(
-      Uri.parse('$_baseUrl/recipes/findByIngredients?ingredients=$ingredientsStr&apiKey=$_apiKey'),
-    );
 
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to fetch recipes by ingredients');
-    }
-  }
 
   // 3. Fetch Recipe Details
   Future<Map<String, dynamic>> fetchRecipeDetails(int id) async {
@@ -160,44 +148,7 @@ class ApiService {
 
 
 
-Future<Map<String, dynamic>> fetchMealPlan(String timeFrame) async {
-  final response = await http.get(
-    Uri.parse('$_baseUrl/mealplanner/generate?timeFrame=$timeFrame&apiKey=$_apiKey'),
-  );
-  if (response.statusCode == 200) {
-    if (kDebugMode) {
-      print(json.decode(response.body));
-    }
-    return json.decode(response.body);
-  } else {
-    throw Exception('Failed to load meal plan');
-  }
-}
 
-Future<Map<String, dynamic>> fetchDayMealPlan(String username, String hash, String date) async {
-  final response = await http.get(
-    Uri.parse('$_baseUrl/mealplanner/$username/week/$date?hash=$hash&apiKey=$_apiKey'),
-  );
-  if (response.statusCode == 200) {
-    if (kDebugMode) {
-      print(json.decode(response.body));
-    }
-    return json.decode(response.body);
-  } else {
-    throw Exception('Failed to load meal plan');
-  }
-}
-
-Future<Map<String, dynamic>> fetchWeekMealPlan(String username, String hash, String startDate) async {
-  final response = await http.get(
-    Uri.parse('$_baseUrl/mealplanner/$username/week/$startDate?hash=$hash&apiKey=$_apiKey'),
-  );
-  if (response.statusCode == 200) {
-    return json.decode(response.body);
-  } else {
-    throw Exception('Failed to load meal plan');
-  }
-}
   
   Future<Map<String, dynamic>> connectUser(String username, String email) async {
   final response = await http.post(
@@ -238,7 +189,57 @@ Future<Map<String, dynamic>> fetchWeekMealPlan(String username, String hash, Str
   }
 }
 
+Future<List<String>> autocompleteingredients(String query) async {
+  if (query.isEmpty) {
+    return [];
+  }
 
+  final response = await http.get(
+    Uri.parse('$_baseUrl/food/ingredients/autocomplete?query=$query&number=5&apiKey=$_apiKey'),
+  );
+
+  print('Response Status Code: ${response.statusCode}');
+
+  if (response.statusCode == 200) {
+    try {
+      final List<dynamic> data = json.decode(response.body);  // The response is already a list
+
+      print('API Response Data: $data'); // Debug the full response
+
+      // Directly map the list to extract the 'name' field
+      return List<String>.from(data.map((item) => item['name'].toString()));
+    } catch (e) {
+      print('Error while parsing response: $e');
+      rethrow;
+    }
+  } else {
+    print('Request failed with status: ${response.statusCode}');
+    throw Exception('Failed to fetch autocomplete suggestions');
+  }
+}
+
+
+Future<List<Map<String, dynamic>>> fetchRecipesByIngredients(List<String> ingredients) async {
+  if (ingredients.isEmpty) return [];
+
+  String ingredientQuery = ingredients.join(',');
+  final url = '$_baseUrl/recipes/findByIngredients?ingredients=$ingredientQuery&number=10&apiKey=$_apiKey';
+
+  final response = await http.get(Uri.parse(url));
+
+  // Print the status code and response body for better debugging
+  print('Status Code: ${response.statusCode}');
+  print('Response Body: ${response.body}');
+
+  if (response.statusCode == 200) {
+    List<dynamic> data = json.decode(response.body);
+    print('Response: $data');
+    return List<Map<String, dynamic>>.from(data);
+  } else {
+    print('Error: ${response.statusCode} - ${response.body}');
+    throw Exception('Failed to fetch recipes');
+  }
+}
 
 
 // Add this method to fetch analyzed instructions with images

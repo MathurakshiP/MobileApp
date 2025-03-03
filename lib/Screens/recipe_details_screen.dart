@@ -1,7 +1,7 @@
 // lib/screens/recipe_detail_screen.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart'; 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; 
 import 'package:mobile_app/auth.dart';
 import 'package:provider/provider.dart'; // Import Provider package
 import 'package:mobile_app/Services/api_services.dart';

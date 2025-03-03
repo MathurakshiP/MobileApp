@@ -148,8 +148,7 @@ void hashAssign(String apiHash){
             .toList();
       });
 
-      // Print the loaded recently viewed recipes for debugging or displaying in the UI
-      _printRecentlyViewedRecipes();
+     
       
     } catch (e) {
       // Handle any errors that might occur during the Firebase call
@@ -158,19 +157,6 @@ void hashAssign(String apiHash){
   }
 }
 
-void _printRecentlyViewedRecipes() {
-  if (_recentlyViewed.isNotEmpty) {
-    print("Recently Viewed Recipes:");
-    for (var recipe in _recentlyViewed) {
-      print('Recipe ID: ${recipe['recipeId']}');
-      print('Title: ${recipe['title']}');
-      print('Image: ${recipe['image']}');
-      print('-----------------------');
-    }
-  } else {
-    print('No recently viewed recipes available.');
-  }
-}
 
 
 
@@ -455,39 +441,46 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                             ),
                           ),
 
-                          if (_suggestions.isNotEmpty)
-                          Positioned(
-                            top: 72,
-                            left: 16,
-                            right: 16,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: SizedBox(
-                                height: 200,
-                                child: ListView.builder(
-                                  itemCount: _suggestions.length,
-                                  itemBuilder: (context, index) {
-                                    // Access 'title' from the map at index
-                                    var suggestion = _suggestions[index];  // Access the whole suggestion map
+                          Container(
+                            height: _suggestions.isNotEmpty ? 200 : 0,
+                            child: Stack(
+                              children: [
+                                if (_suggestions.isNotEmpty)
+                                Positioned(
+                                  top: 0,
+                                  left: 16,
+                                  right: 16,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: SizedBox(
+                                      height: 200,
+                                      child: ListView.builder(
+                                        itemCount: _suggestions.length,
+                                        itemBuilder: (context, index) {
+                                          // Access 'title' from the map at index
+                                          var suggestion = _suggestions[index];  // Access the whole suggestion map
 
-                                    return ListTile(
-                                      leading: Icon(
-                                          Icons.local_dining, // Use any icon you prefer
-                                          color: customPurple, // Customize the color of the icon
-                                        ),
-                                        title: Text(
-                                          suggestion['title'] ?? 'No Title', // Access the title instead of id
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black87,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      onTap: () => _onSuggestionTap(_suggestions[index]),  // Pass the whole map to _onSuggestionTap
-                                    );
-                                  },
+                                          return ListTile(
+                                            leading: Icon(
+                                                Icons.local_dining, // Use any icon you prefer
+                                                color: customPurple, // Customize the color of the icon
+                                              ),
+                                              title: Text(
+                                                suggestion['title'] ?? 'No Title', // Access the title instead of id
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.black87,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            onTap: () => _onSuggestionTap(_suggestions[index]),  // Pass the whole map to _onSuggestionTap
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
 
