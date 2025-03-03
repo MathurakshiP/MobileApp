@@ -12,12 +12,11 @@ class SavedFoodScreen extends StatefulWidget {
 }
 
 class _SavedFoodScreenState extends State<SavedFoodScreen> {
-<<<<<<< HEAD
+
   bool isMealPlan=false; bool isSearch=false;
-=======
-  bool isMealPlan = false;
+
   
->>>>>>> bacb681154d86f10a5e655bdb2dd4dcfda991b9a
+//  bacb681154d86f10a5e655bdb2dd4dcfda991b9a
   @override
   void initState() {
     super.initState();
@@ -98,11 +97,9 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-<<<<<<< HEAD
+
                         builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan,isSearch:isSearch),
-=======
-                        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'], isMealPlan: isMealPlan),
->>>>>>> bacb681154d86f10a5e655bdb2dd4dcfda991b9a
+
                       ),
                     );
                   },
