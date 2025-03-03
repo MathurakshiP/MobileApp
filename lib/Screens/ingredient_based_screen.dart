@@ -451,7 +451,7 @@ void goToPantryScreen() {
                   buildCollapsibleContainer('Vegetables & Greens', vegetables,'images/veg.jpg'),
                   buildCollapsibleContainer('Fruits', fruits,'images/fruit.jpeg'),
                   buildCollapsibleContainer('Dairy Products', dairyProducts,'images/dairy.webp'),
-                  buildCollapsibleContainer('Grains', grains,'images/grain.jpg.avif'),
+                  buildCollapsibleContainer('Grains', grains,'images/grain.jpg'),
                   buildCollapsibleContainer('Spices & Herbs', spicesHerbs,'images/spices.jpg'),
                 ],
               ),
@@ -467,7 +467,7 @@ void goToPantryScreen() {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: 152, // Adjust width as needed
+                width: 130, // Adjust width as needed
                 child: ElevatedButton(
                   onPressed: () {
                     // Implement logic for My Pantry button
@@ -483,7 +483,7 @@ void goToPantryScreen() {
                         fontWeight: FontWeight.bold, // Make the text bold
                       ),
                       children: <TextSpan>[
-                        TextSpan(text: 'My Pantry ('), // Text before the number
+                        TextSpan(text: 'Pantry ('), // Text before the number
                         TextSpan(
                           text: '${_selectedIngredients.length}', // The number (ingredient count)
                           style: TextStyle(
@@ -498,7 +498,7 @@ void goToPantryScreen() {
                 ),
               ),
               SizedBox(
-                width: 150, // Adjust width as needed
+                width: 130, // Adjust width as needed
                 child: ElevatedButton(
                   onPressed: () {
                       Navigator.push(

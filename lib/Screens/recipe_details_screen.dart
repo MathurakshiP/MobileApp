@@ -14,184 +14,182 @@ class RecipeDetailScreen extends StatelessWidget {
   RecipeDetailScreen({super.key, required this.recipeId,required this.isMealPlan});
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
-Future<String?> _showCategorySelectionDialog(BuildContext context) async {
-  String? selectedCategory;
+  Future<String?> _showCategorySelectionDialog(BuildContext context) async {
+    String? selectedCategory;
 
-  return await showDialog<String>(
-    context: context, 
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: Text('Select a Category'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                // Breakfast Category
-                ListTile(
-                  title: Row(
-                    children: [
-                      Icon(Icons.fastfood, color: Colors.orange), // Icon for Breakfast
-                      SizedBox(width: 10),
-                      Text('Breakfast'),
-                    ],
-                  ),
-                  tileColor: selectedCategory == 'Breakfast' ? Colors.orange.withOpacity(0.1) : null, // Highlight the selected category
-                  trailing: Checkbox(
-                    value: selectedCategory == 'Breakfast',
-                    onChanged: (bool? value) {
+    return await showDialog<String>(
+      context: context, 
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Select a Category'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  // Breakfast Category
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.fastfood, color: Colors.orange), // Icon for Breakfast
+                        SizedBox(width: 10),
+                        Text('Breakfast'),
+                      ],
+                    ),
+                    tileColor: selectedCategory == 'Breakfast' ? Colors.orange.withOpacity(0.1) : null, // Highlight the selected category
+                    trailing: Checkbox(
+                      value: selectedCategory == 'Breakfast',
+                      onChanged: (bool? value) {
+                        setState(() {
+                          selectedCategory = value! ? 'Breakfast' : null; // Toggle selection
+                        });
+                      },
+                    ),
+                    onTap: () {
                       setState(() {
-                        selectedCategory = value! ? 'Breakfast' : null; // Toggle selection
+                        selectedCategory = 'Breakfast'; // Select this category
                       });
                     },
                   ),
-                  onTap: () {
-                    setState(() {
-                      selectedCategory = 'Breakfast'; // Select this category
-                    });
-                  },
-                ),
-                // Lunch Category
-                ListTile(
-                  title: Row(
-                    children: [
-                      Icon(Icons.lunch_dining, color: Colors.green), // Icon for Lunch
-                      SizedBox(width: 10),
-                      Text('Lunch'),
-                    ],
-                  ),
-                  tileColor: selectedCategory == 'Lunch' ? Colors.green.withOpacity(0.1) : null, // Highlight the selected category
-                  trailing: Checkbox(
-                    value: selectedCategory == 'Lunch',
-                    onChanged: (bool? value) {
+                  // Lunch Category
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.lunch_dining, color: Colors.green), // Icon for Lunch
+                        SizedBox(width: 10),
+                        Text('Lunch'),
+                      ],
+                    ),
+                    tileColor: selectedCategory == 'Lunch' ? Colors.green.withOpacity(0.1) : null, // Highlight the selected category
+                    trailing: Checkbox(
+                      value: selectedCategory == 'Lunch',
+                      onChanged: (bool? value) {
+                        setState(() {
+                          selectedCategory = value! ? 'Lunch' : null; // Toggle selection
+                        });
+                      },
+                    ),
+                    onTap: () {
                       setState(() {
-                        selectedCategory = value! ? 'Lunch' : null; // Toggle selection
+                        selectedCategory = 'Lunch'; // Select this category
                       });
                     },
                   ),
-                  onTap: () {
-                    setState(() {
-                      selectedCategory = 'Lunch'; // Select this category
-                    });
-                  },
-                ),
-                // Dinner Category
-                ListTile(
-                  title: Row(
-                    children: [
-                      Icon(Icons.dinner_dining, color: Colors.purple), // Icon for Dinner
-                      SizedBox(width: 10),
-                      Text('Dinner'),
-                    ],
-                  ),
-                  tileColor: selectedCategory == 'Dinner' ? Colors.purple.withOpacity(0.1) : null, // Highlight the selected category
-                  trailing: Checkbox(
-                    value: selectedCategory == 'Dinner',
-                    onChanged: (bool? value) {
+                  // Dinner Category
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.dinner_dining, color: Colors.purple), // Icon for Dinner
+                        SizedBox(width: 10),
+                        Text('Dinner'),
+                      ],
+                    ),
+                    tileColor: selectedCategory == 'Dinner' ? Colors.purple.withOpacity(0.1) : null, // Highlight the selected category
+                    trailing: Checkbox(
+                      value: selectedCategory == 'Dinner',
+                      onChanged: (bool? value) {
+                        setState(() {
+                          selectedCategory = value! ? 'Dinner' : null; // Toggle selection
+                        });
+                      },
+                    ),
+                    onTap: () {
                       setState(() {
-                        selectedCategory = value! ? 'Dinner' : null; // Toggle selection
+                        selectedCategory = 'Dinner'; // Select this category
                       });
                     },
                   ),
-                  onTap: () {
-                    setState(() {
-                      selectedCategory = 'Dinner'; // Select this category
-                    });
-                  },
-                ),
-                // Salad Category
-                ListTile(
-                  title: Row(
-                    children: [
-                      Icon(Icons.restaurant, color: Colors.greenAccent), // Icon for Salad
-                      SizedBox(width: 10),
-                      Text('Salad'),
-                    ],
-                  ),
-                  tileColor: selectedCategory == 'Salad' ? Colors.greenAccent.withOpacity(0.1) : null, // Highlight the selected category
-                  trailing: Checkbox(
-                    value: selectedCategory == 'Salad',
-                    onChanged: (bool? value) {
+                  // Salad Category
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.restaurant, color: Colors.greenAccent), // Icon for Salad
+                        SizedBox(width: 10),
+                        Text('Salad'),
+                      ],
+                    ),
+                    tileColor: selectedCategory == 'Salad' ? Colors.greenAccent.withOpacity(0.1) : null, // Highlight the selected category
+                    trailing: Checkbox(
+                      value: selectedCategory == 'Salad',
+                      onChanged: (bool? value) {
+                        setState(() {
+                          selectedCategory = value! ? 'Salad' : null; // Toggle selection
+                        });
+                      },
+                    ),
+                    onTap: () {
                       setState(() {
-                        selectedCategory = value! ? 'Salad' : null; // Toggle selection
+                        selectedCategory = 'Salad'; // Select this category
                       });
                     },
                   ),
-                  onTap: () {
-                    setState(() {
-                      selectedCategory = 'Salad'; // Select this category
-                    });
-                  },
-                ),
-                // Dessert Category
-                ListTile(
-                  title: Row(
-                    children: [
-                      Icon(Icons.cake, color: Colors.pink), // Icon for Dessert
-                      SizedBox(width: 10),
-                      Text('Dessert'),
-                    ],
-                  ),
-                  tileColor: selectedCategory == 'Dessert' ? Colors.pink.withOpacity(0.1) : null, // Highlight the selected category
-                  trailing: Checkbox(
-                    value: selectedCategory == 'Dessert',
-                    onChanged: (bool? value) {
+                  // Dessert Category
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.cake, color: Colors.pink), // Icon for Dessert
+                        SizedBox(width: 10),
+                        Text('Dessert'),
+                      ],
+                    ),
+                    tileColor: selectedCategory == 'Dessert' ? Colors.pink.withOpacity(0.1) : null, // Highlight the selected category
+                    trailing: Checkbox(
+                      value: selectedCategory == 'Dessert',
+                      onChanged: (bool? value) {
+                        setState(() {
+                          selectedCategory = value! ? 'Dessert' : null; // Toggle selection
+                        });
+                      },
+                    ),
+                    onTap: () {
                       setState(() {
-                        selectedCategory = value! ? 'Dessert' : null; // Toggle selection
+                        selectedCategory = 'Dessert'; // Select this category
                       });
                     },
                   ),
-                  onTap: () {
-                    setState(() {
-                      selectedCategory = 'Dessert'; // Select this category
-                    });
-                  },
-                ),
-                // Soup Category
-                ListTile(
-                  title: Row(
-                    children: [
-                      Icon(Icons.soup_kitchen, color: Colors.red), // Icon for Soup
-                      SizedBox(width: 10),
-                      Text('Soup'),
-                    ],
-                  ),
-                  tileColor: selectedCategory == 'Soup' ? Colors.red.withOpacity(0.1) : null, // Highlight the selected category
-                  trailing: Checkbox(
-                    value: selectedCategory == 'Soup',
-                    onChanged: (bool? value) {
+                  // Soup Category
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.soup_kitchen, color: Colors.red), // Icon for Soup
+                        SizedBox(width: 10),
+                        Text('Soup'),
+                      ],
+                    ),
+                    tileColor: selectedCategory == 'Soup' ? Colors.red.withOpacity(0.1) : null, // Highlight the selected category
+                    trailing: Checkbox(
+                      value: selectedCategory == 'Soup',
+                      onChanged: (bool? value) {
+                        setState(() {
+                          selectedCategory = value! ? 'Soup' : null; // Toggle selection
+                        });
+                      },
+                    ),
+                    onTap: () {
                       setState(() {
-                        selectedCategory = value! ? 'Soup' : null; // Toggle selection
+                        selectedCategory = 'Soup'; // Select this category
                       });
                     },
                   ),
-                  onTap: () {
-                    setState(() {
-                      selectedCategory = 'Soup'; // Select this category
-                    });
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, selectedCategory); // Return the selected category
                   },
+                  child: Text('OK'),
                 ),
               ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context, selectedCategory); // Return the selected category
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
 
 
-
-
-  @override
+  @override 
   
   Widget build(BuildContext context) {
     return Scaffold(

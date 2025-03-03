@@ -415,6 +415,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                       SingleChildScrollView(
                       child:Column(
                         children: [
+                          
                           //search recipe
                           Padding(
                             padding: const EdgeInsets.only(
