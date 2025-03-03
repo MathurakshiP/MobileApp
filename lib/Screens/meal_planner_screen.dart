@@ -183,7 +183,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
           .set(mealPlan);
 
       // Get the current week's start date
-      DateTime startDate = DateTime.now(); // Modify this if you have an actual week's start date
+      DateTime startDate = DateTime.now(); // Modify if you have an actual week's start date
 
       // Save daily meal plans
       for (String day in mealPlan.keys) {
@@ -194,11 +194,9 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
             .doc(currentWeekRange)
             .collection(day);
 
-        // Clear existing meals for the day
-        QuerySnapshot existingMeals = await dailyCollection.get();
-        for (QueryDocumentSnapshot doc in existingMeals.docs) {
-          await doc.reference.delete();
-        }
+        // Fetch existing meals from Firestore
+        QuerySnapshot existingMealsSnapshot = await dailyCollection.get();
+        List<String> existingMealNames = existingMealsSnapshot.docs.map((doc) => doc['name'] as String).toList();
 
         // Get the actual date for the given day name
         DateTime mealDate = _getDateFromWeekday(day, startDate);
@@ -209,23 +207,27 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
         for (String category in ["Breakfast", "Lunch", "Dinner", "Salad", "Soup", "Dessert"]) {
           for (Map<String, dynamic> meal in mealPlan[day]?[category] ?? []) {
             String mealId = "${DateTime.now().millisecondsSinceEpoch}";
+            String mealName = meal['title'];
 
-            await dailyCollection.doc(mealId).set({
-              'mealId': mealId,
-              'category': category,
-              'name': meal['title'],
-            });
+            // Check if the meal is already saved to prevent duplicate notifications
+            if (!existingMealNames.contains(mealName)) {
+              await dailyCollection.doc(mealId).set({
+                'mealId': mealId,
+                'category': category,
+                'name': mealName,
+              });
 
-            // Add a notification for the specific meal
-            await _firestore
-                .collection('users')
-                .doc(widget.userId)
-                .collection('notifications')
-                .add({
-                  'message': 'Your $category meal plan for $formattedDate ($dayOfWeek): ${meal['title']} is saved!',
-                  'timestamp': FieldValue.serverTimestamp(),
-                  'unread': true,
-                });
+              // Add a notification for the newly added meal
+              await _firestore
+                  .collection('users')
+                  .doc(widget.userId)
+                  .collection('notifications')
+                  .add({
+                    'message': 'Your $category meal plan for $formattedDate ($dayOfWeek): $mealName is saved!',
+                    'timestamp': FieldValue.serverTimestamp(),
+                    'unread': true,
+                  });
+            }
           }
         }
       }
@@ -248,6 +250,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
 
     return startDate.add(Duration(days: dayDifference));
   }
+  
   /// Add a meal to the plan and save
   void _addMeal(String day, Map<String, dynamic> food,String category) {
     setState(() {
