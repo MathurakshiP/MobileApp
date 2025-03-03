@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool isLogin = true;
   bool isPasswordVisible = false;
-
+  final Color customPurple = const Color.fromARGB(255, 96, 26, 182);
   @override
   void initState() {
     super.initState();
@@ -179,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
         obscureText: obscureText,
         decoration: InputDecoration(
           labelText: labelText,
-          prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: Colors.purple) : null,
+          prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: customPurple) : null,
           suffixIcon: suffixIcon,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -246,7 +246,7 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: isLogin ? Colors.purple : Colors.grey,
+                                color: isLogin ? customPurple : Colors.grey,
                               ),
                             ),
                           ),
@@ -258,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: isLogin ? Colors.grey : Colors.purple,
+                                color: isLogin ? Colors.grey : customPurple,
                               ),
                             ),
                           ),
@@ -314,10 +314,10 @@ class _LoginPageState extends State<LoginPage> {
                                   );
                                 }
                               },
-                              child: const Text(
+                              child: Text(
                                 'Forgot Password?',
                                 style: TextStyle(
-                                  color: Colors.purple,
+                                  color: customPurple,
                                 ),
                               ),
                             ),
@@ -335,7 +335,7 @@ class _LoginPageState extends State<LoginPage> {
                                   name: nameController.text.trim(),
                                 ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple,
+                          backgroundColor: customPurple,
                           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -364,9 +364,9 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           );
                         },
-                        child: const Text(
+                        child:  Text(
                           'Do it Later',
-                          style: TextStyle(color: Colors.purple),
+                          style: TextStyle(color: customPurple),
                           ),
                       ),
                     ],

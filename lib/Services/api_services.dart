@@ -240,7 +240,7 @@ Future<List<Map<String, dynamic>>> fetchRecipesByIngredients(List<String> ingred
     throw Exception('Failed to fetch recipes');
   }
 }
-
+ 
 
 // Add this method to fetch analyzed instructions with images
 Future<List<Map<String, dynamic>>> fetchRecipeInstructions(int id) async {
