@@ -14,7 +14,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
         title: const Text('Privacy Policy'),
         titleTextStyle: const TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         backgroundColor: customPurple, // Material Design Purple
@@ -145,7 +145,7 @@ class _SectionCard extends StatelessWidget {
     Color themechanger = const Color.fromARGB(255, 182, 148, 224);
 
     return Card(
-      color: isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0),
+      color: isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : Colors.grey,
       margin: const EdgeInsets.only(bottom: 16.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),

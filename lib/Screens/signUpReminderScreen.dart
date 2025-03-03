@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 class SignUpReminderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       body: Container(
         width: double.infinity,

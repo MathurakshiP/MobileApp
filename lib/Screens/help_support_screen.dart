@@ -24,6 +24,8 @@ class HelpSupportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Help & Support'),
@@ -35,14 +37,14 @@ class HelpSupportScreen extends StatelessWidget {
         backgroundColor: Colors.deepPurple,
       ),
       body: Container(
-        height: 700,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.purple.shade100, Colors.blue.shade100],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        height: 1000,
+        // decoration: BoxDecoration(
+        //   gradient: LinearGradient(
+        //     colors: [const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 255, 255, 255)],
+        //     begin: Alignment.topLeft,
+        //     end: Alignment.bottomRight,
+        //   ),
+        // ),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -59,9 +61,17 @@ class HelpSupportScreen extends StatelessWidget {
                   Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
                     elevation: 5,
+                    color: isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0),
                     child: ListTile(
                       leading: Icon(Icons.email, color: Colors.deepPurple),
-                      title: const Text('Email Us', style: TextStyle(fontSize: 18)),
+                      title: Text(
+                        'Email Us', 
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDarkMode ? Colors.black : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )
+                      ),
                       onTap: _launchEmail,
                     ),
                   ),
@@ -73,10 +83,18 @@ class HelpSupportScreen extends StatelessWidget {
                   ),
                   Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    color: isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0),                
                     elevation: 5,
                     child: ListTile(
                       leading: Icon(Icons.bug_report, color: Colors.deepPurple),
-                      title: const Text('Report an Issue', style: TextStyle(fontSize: 18)),
+                      title: Text(
+                        'Report an Issue', 
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDarkMode ? Colors.black : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -96,10 +114,18 @@ class HelpSupportScreen extends StatelessWidget {
                   ),
                   Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    color: isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0),
                     elevation: 5,
                     child: ListTile(
                       leading: Icon(Icons.update, color: Colors.deepPurple),
-                      title: const Text('View Latest Updates', style: TextStyle(fontSize: 18)),
+                      title: Text(
+                        'View Latest Updates', 
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDarkMode ? Colors.black : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )
+                      ),
                       onTap: () {
                         showDialog(
                           context: context,

@@ -25,7 +25,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? userImage;
   bool hasUnseenNotifications = true;
   final ImagePicker _picker = ImagePicker(); // Image Picker instance
+  final FirebaseAuth _auth = FirebaseAuth.instance; // FirebaseAuth instance
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // FirebaseFirestore instance
 
   @override
   void initState() {
@@ -72,13 +74,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushReplacementNamed(context, '/');
   }
 
-  // Function to pick an image
   Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
-        userImage = pickedFile.path; // Update image immediately
+        userImage = pickedFile.path; // Update image path immediately
       });
+
+      // Get the current user's UID
+      User? user = _auth.currentUser;
+
+      if (user != null) {
+        try {
+          // Save the local image path to Firestore under the user's document
+          await _firestore.collection('users').doc(user.uid).update({
+            'image': pickedFile.path, // Save the local file path as the image path
+          });
+
+          // Update the state with the new image path
+          setState(() {
+            userImage = pickedFile.path; // Update the UI with the local image path
+          });
+        } catch (e) {
+          print("Error saving image path: $e");
+        }
+      }
     }
   }
 
