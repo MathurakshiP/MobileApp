@@ -25,6 +25,8 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -49,10 +51,10 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
               ),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 "No recipes found. Please try again later.",
-                style: TextStyle(fontSize: 16, color: Colors.black),
+                style: TextStyle(fontSize: 16, color: isDarkMode? Colors.white : Colors.black),
               ),
             );
           }
@@ -118,10 +120,10 @@ return GestureDetector(
               Expanded(
                 child: Text(
                   recipe['title'] ?? 'Recipe',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: isDarkMode? Colors.white : Colors.black,
                   ),
                   maxLines: 2, // To handle long titles
                   overflow: TextOverflow.ellipsis,
@@ -130,7 +132,7 @@ return GestureDetector(
               IconButton(
                 icon: Icon(
                   Icons.arrow_drop_down,
-                  color: Colors.black,
+                  color: isDarkMode? Colors.white : Colors.black,
                 ),
                 onPressed: () {
                   showModalBottomSheet(

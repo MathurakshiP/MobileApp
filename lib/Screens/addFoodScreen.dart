@@ -134,6 +134,8 @@ void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -168,7 +170,7 @@ void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
                 labelText: 'Search Food...',
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.search, color: customPurple),
+                  icon: Icon(Icons.search, color: isDarkMode? Colors.white : customPurple),
                   onPressed: _searchFood,
                 ),
               ),
@@ -189,9 +191,9 @@ void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
                       ),
                       title: Text(
                         suggestion['title'] ?? 'No Title', // Access the title instead of id
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
-                          color: Colors.black87,
+                          color: isDarkMode? Colors.white : Colors.black87,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

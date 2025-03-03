@@ -234,6 +234,8 @@ void _toggle(String ingredient) {
 
 
   List<Widget> buildIngredientWidgets(List<String> ingredients) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return ingredients.map((ingredient) {
       final isSelected = _selectedIngredients.contains(ingredient);
       return GestureDetector(
@@ -379,6 +381,8 @@ void goToPantryScreen() {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       body: Column(
         children: [
@@ -396,11 +400,11 @@ void goToPantryScreen() {
                       },
                       decoration: InputDecoration(
                         labelText: 'Enter ingredients (comma-separated)',
-                        labelStyle: TextStyle(color: customPurple),
+                        labelStyle: TextStyle(color: isDarkMode? Colors.white : customPurple),
                         border: const OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.black),
                                     ),
-                        prefixIcon: Icon(Icons.search, color: customPurple),
+                        prefixIcon: Icon(Icons.search, color: isDarkMode? Colors.white : customPurple),
                       ),
                     ),
                   ),

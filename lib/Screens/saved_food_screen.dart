@@ -12,12 +12,13 @@ class SavedFoodScreen extends StatefulWidget {
 }
 
 class _SavedFoodScreenState extends State<SavedFoodScreen> {
-  bool isMealPlan=false;
+  bool isMealPlan = false;
+  
   @override
   void initState() {
     super.initState();
 
-    // Fetch the saved recipes when the screen is loaded
+    // Fetch the saved recipes when the screen is loaded if the user is logged in
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final savedFoodProvider = Provider.of<SavedFoodProvider>(context, listen: false);
@@ -31,6 +32,29 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
     final savedRecipes = savedFoodProvider.savedRecipes;
     Color customPurple = const Color.fromARGB(255, 96, 26, 182);
 
+    final user = FirebaseAuth.instance.currentUser;
+    // If user is null (guest), display the message 'No saved foods yet'
+    if (user == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Saved Recipes',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          ),
+          backgroundColor: customPurple,
+          automaticallyImplyLeading: false,
+        ),
+        body: const Center(
+          child: Text('No saved foods yet!'),
+        ),
+      );
+    }
+
+    // If the user is logged in, display saved recipes
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -69,7 +93,7 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan),
+                        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'], isMealPlan: isMealPlan),
                       ),
                     );
                   },

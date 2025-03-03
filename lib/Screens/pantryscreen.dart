@@ -36,6 +36,8 @@ class _PantryScreenState extends State<PantryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -64,6 +66,7 @@ class _PantryScreenState extends State<PantryScreen> {
                       final ingredient = ingredients[index];
                       return Card(
                         elevation: 4, // Adds shadow effect
+                        color: isDarkMode ? Colors.grey[800] : Colors.white,
                         margin: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

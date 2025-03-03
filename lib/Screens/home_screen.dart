@@ -363,8 +363,8 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    // builder: (context) => MealPlannerScreen(userId: userid),
-                    builder: (context) => CommunityChatScreen()
+                    builder: (context) => MealPlannerScreen(userId: userid),
+                    
                   ),
                 );
               }
