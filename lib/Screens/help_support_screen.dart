@@ -1,8 +1,26 @@
 import 'package:flutter/material.dart';
 import 'report_issue_screen.dart'; // Import the new screen
+import 'package:url_launcher/url_launcher.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({Key? key}) : super(key: key);
+
+  void _launchEmail() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'cookifyrecipes1234@gmail.com', // Replace with your support email
+      queryParameters: {
+        'subject': 'Support Request',
+        'body': '...',
+      },
+    );
+
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      throw 'Could not launch email client';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +34,17 @@ class HelpSupportScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Contact Support Section
+              const SizedBox(height: 16),
+              const Text(
+                'Contact Support',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              ListTile(
+                leading: Icon(Icons.email),
+                title: const Text('Email Us'),
+                onTap: _launchEmail,
+              ),
               // Report a Problem Section
               const SizedBox(height: 16),
               const Text(
