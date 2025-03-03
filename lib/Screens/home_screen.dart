@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/allrecipe_screen.dart';
 import 'package:mobile_app/Screens/category_screen.dart';
+import 'package:mobile_app/Screens/chatscreen.dart';
 import 'package:mobile_app/Screens/ingredient_based_screen.dart';
 import 'package:mobile_app/Screens/meal_planner_screen.dart';
 import 'package:mobile_app/Screens/signUpReminderScreen.dart';
@@ -362,7 +363,8 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MealPlannerScreen(userId: userid),
+                    // builder: (context) => MealPlannerScreen(userId: userid),
+                    builder: (context) => CommunityChatScreen()
                   ),
                 );
               }
@@ -906,8 +908,9 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
               ],
             ),
           
-
+           
           const SavedFoodScreen(),
+          CommunityChatScreen(),
           // ShoppingListScreen with passed shoppingList
           const ShoppingListScreen(),
           // ProfileScreen
@@ -924,9 +927,14 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
+          
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
             label: 'Saved',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.groups),
+            label: 'Community',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
@@ -941,8 +949,8 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
         onTap: _onItemTapped,
         selectedItemColor: customPurple, // Color for selected item
         // unselectedItemColor: Colors.black, // Color for unselected items
-        selectedFontSize: 14, // Size of selected item's text
-        unselectedFontSize: 12, // Size of unselected items' text
+        selectedFontSize: 12, // Size of selected item's text
+        unselectedFontSize: 10, // Size of unselected items' text
         iconSize: 28, // Uniform icon size
         showUnselectedLabels: true, // Keeps labels for unselected items
       ),
