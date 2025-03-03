@@ -335,6 +335,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
+
             // Log Out Button with Gradient Styling
             Padding(
               padding: const EdgeInsets.all(16.0),
