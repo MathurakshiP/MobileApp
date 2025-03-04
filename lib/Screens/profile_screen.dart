@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/RateUsScreen.dart';
 import 'package:mobile_app/Screens/change_password_screen.dart';
+import 'package:mobile_app/Screens/signUpReminderScreen.dart';
 import 'package:mobile_app/providers/theme_provider.dart';
-import 'package:mobile_app/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_app/Screens/help_support_screen.dart';
 import 'package:mobile_app/Screens/privacy_policy_screen.dart';
@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class ProfileScreen extends StatefulWidget {
+  
   const ProfileScreen({super.key});
 
   @override
@@ -36,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadUnseenNotifications();
   }
 
+  // Load unread notifications from Firestore
   void _loadUnseenNotifications() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -51,6 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // Load user data from Firestore
   void _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -61,12 +64,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (userDoc.exists) {
         setState(() {
-          userName = userDoc['name'] ?? 'User Name';
+          userName = userDoc['name'] ?? 'User Name'; 
           userEmail = userDoc['email'] ?? 'username@example.com';
           userImage = userDoc['image'] ?? 'https://via.placeholder.com/150';
         });
+      } else {
+        setState(() {
+          userName = 'Guest User'; // For guest login
+          userEmail = 'guest@example.com'; // Guest email
+          userImage = 'https://via.placeholder.com/150'; // Default guest image
+        });
+        _navigateToSignUpReminder();
       }
+    } else {
+      setState(() {
+        userName = 'Guest User'; // Handle null user data here as well
+        userEmail = 'guest@example.com';
+        userImage = 'https://via.placeholder.com/150';
+      });
+      
     }
+  }
+
+  // Add method to handle profile tap and navigate to SignUpReminderScreen
+  void _navigateToSignUpReminder() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SignUpReminderPage()),
+    );
   }
 
   void _logOut() {
@@ -74,6 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushReplacementNamed(context, '/');
   }
 
+  // Pick an image from camera or gallery
   Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
@@ -133,7 +159,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,21 +177,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => EditProfileDialog(
-                  currentName: userName,
-                  currentEmail: userEmail,
-                  currentImage: userImage ?? 'https://via.placeholder.com/150',
-                  onSave: (newName, newEmail, newImage) {
-                    setState(() {
-                      userName = newName;
-                      userEmail = newEmail;
-                      userImage = newImage;
-                    });
-                  },
-                ),
-              );
+              if (_auth.currentUser == null) {
+                _navigateToSignUpReminder(); // If not logged in, navigate to sign-up reminder screen
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (context) => EditProfileDialog(
+                    currentName: userName,
+                    currentEmail: userEmail,
+                    currentImage: userImage ?? 'https://via.placeholder.com/150',
+                    onSave: (newName, newEmail, newImage) {
+                      setState(() {
+                        userName = newName;
+                        userEmail = newEmail;
+                        userImage = newImage;
+                      });
+                    },
+                  ),
+                );
+              }
             },
           ),
         ],
@@ -307,18 +336,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
-             ListTile(
+            ListTile(
               leading: const Icon(Icons.help),
               title: const Text('Help & Support'),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const HelpSupportScreen()),
+                  MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
                 );
               },
             ),
-
             ListTile(
               leading: const Icon(Icons.rate_review),
               title: const Text('Rate Us'),
@@ -329,7 +356,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ); // Logic to redirect user to app rating page
               },
             ),
-
             // Dark Mode Setting with Modern UI
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

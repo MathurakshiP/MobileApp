@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen>
   String userName = 'User Name';
   String hash = 'null';
   String userid ='null';
+  String userEmail = 'email@example.com';
   List<dynamic> _recipes = [];
   List<dynamic> _randomRecipes = [];
   List<dynamic> _recentlyViewed = [];
@@ -909,11 +910,12 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
           
            
           const SavedFoodScreen(),
-          CommunityChatScreen(),
+          userid == 'null' ? SignUpReminderPage() : CommunityChatScreen(),
           // ShoppingListScreen with passed shoppingList
           const ShoppingListScreen(),
           // ProfileScreen
-          ProfileScreen(),
+          userid == 'null' ? SignUpReminderPage() : ProfileScreen()
+          
         ],
       ),
 
