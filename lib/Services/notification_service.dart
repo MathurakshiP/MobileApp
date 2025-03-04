@@ -131,6 +131,16 @@ class NotificationService {
   // Save notification to Firestore and schedule local notification
   Future<void> saveNotification(String userId, String category, String mealName, String Date) async {
     try {
+      // Check if the meal is already scheduled
+      bool isAlreadyScheduled = await checkIfMealAlreadyScheduled(userId, category, mealName);
+
+      if (isAlreadyScheduled) {
+        if (kDebugMode) {
+          print("Meal '$mealName' in category '$category' is already scheduled. Skipping notification.");
+        }
+        return; // Skip scheduling if the meal is already scheduled
+      }
+
       Duration notificationDuration;
 
       switch (category.toLowerCase()) {
@@ -159,6 +169,9 @@ class NotificationService {
 
       DateTime mealTime = DateTime.now().add(notificationDuration);
 
+      // Save the meal to Firestore before scheduling the notification
+      await saveMealToFirestore(userId, category, mealName, Date, mealTime);
+
       scheduleNotification(
         category: category,
         mealName: mealName,
@@ -175,4 +188,48 @@ class NotificationService {
       }
     }
   }
+
+  // Method to check if a meal with the same category and name is already scheduled
+  Future<bool> checkIfMealAlreadyScheduled(String userId, String category, String mealName) async {
+    try {
+      // Query Firestore to check for an existing meal schedule
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('mealScheduled')
+          .where('category', isEqualTo: category)
+          .where('mealName', isEqualTo: mealName)
+          .get();
+
+      // If the snapshot contains documents, that means the meal is already scheduled
+      return snapshot.docs.isNotEmpty;
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error checking if meal is already scheduled: $e");
+      }
+      return false;
+    }
+  }
+
+  // Method to save the meal to Firestore
+  Future<void> saveMealToFirestore(String userId, String category, String mealName, String Date, DateTime mealTime) async {
+    try {
+      // Save the scheduled meal in Firestore under the user's collection
+      await _firestore.collection('users').doc(userId).collection('mealScheduled').add({
+        'category': category,
+        'mealName': mealName,
+        'Date': Date,
+        'mealTime': mealTime.toIso8601String(),
+      });
+
+      if (kDebugMode) {
+        print("Meal '$mealName' saved to Firestore.");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error saving meal to Firestore: $e");
+      }
+    }
+  }
+
 }

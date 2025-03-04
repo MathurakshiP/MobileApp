@@ -64,6 +64,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
   bool isEditing = false;
   late List<String> sortedKeys;
   late String currentWeekRange;
+  List<Map<String, dynamic>> mealsList = [];
 
   DateTime _currentDate = DateTime.now();
   DateTime? _startOfWeek;
@@ -258,6 +259,54 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
     return startDate.add(Duration(days: dayDifference));
   }
 
+  // Call this when a meal is deleted from the meal planner screen
+  void onDeleteMeal(String userId, String category, String mealName) {
+    // Call the method to delete the scheduled meal from Firestore
+    deleteScheduledMeal(userId, category, mealName);
+
+    // Optionally, update the UI to reflect the change (remove the deleted meal from the list)
+    setState(() {
+      // Remove the meal from the list or update the state accordingly
+      mealsList.removeWhere((meal) => meal['title'] == mealName && meal['category'] == category);
+    });
+
+    if (kDebugMode) {
+      print('Deleted meal $mealName from category $category');
+    }
+  }
+
+  // Method to delete the scheduled meal from Firestore
+  Future<void> deleteScheduledMeal(String userId, String category, String mealName) async {
+    try {
+      // Query Firestore to find the scheduled meal
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('mealScheduled')
+          .where('category', isEqualTo: category)
+          .where('mealName', isEqualTo: mealName)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        // Delete the meal schedule if it exists
+        for (var doc in snapshot.docs) {
+          await doc.reference.delete();  // Delete the specific document
+          if (kDebugMode) {
+            print("Meal '$mealName' in category '$category' deleted from Firestore.");
+          }
+        }
+      } else {
+        if (kDebugMode) {
+          print("No matching meal schedule found for '$mealName' in category '$category'.");
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error deleting scheduled meal from Firestore: $e");
+      }
+    }
+  }
+
   /// Add a meal to the plan and save
   void _addMeal(String day, Map<String, dynamic> food,String category) {
     setState(() {
@@ -272,6 +321,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
       mealPlan[day]![category]!.remove(food);
     });
     _saveMealPlan();
+    onDeleteMeal(widget.userId, category, food['title']);
   }
 
   // Function to calculate the start and end of the current week
