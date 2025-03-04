@@ -10,6 +10,8 @@ class NotificationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final notificationsPlugin = FlutterLocalNotificationsPlugin();
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
   NotificationService() {
     initializeNotifications();
@@ -28,6 +30,7 @@ class NotificationService {
     );
 
     InitializationSettings settings = InitializationSettings(android: androidSettings, iOS: darwinSettings);
+    await notificationsPlugin.initialize(settings);
 
     if (kDebugMode) {
       print("🎉 Notifications initialized successfully!");
@@ -50,7 +53,7 @@ class NotificationService {
 
   // Show a simple notification
   Future<void> showNotification({
-    int id = 0,
+    int id = 1,
     String? category,
     String? formattedDate,
     String? mealName,
@@ -80,7 +83,7 @@ class NotificationService {
     showNotification(category: category, mealName: mealName, formattedDate: formattedDate);
 
     await notificationsPlugin.zonedSchedule(
-      id,
+      id = 1,
       category,
       mealName,
       tz.TZDateTime.from(scheduledTime, tz.local),
@@ -116,24 +119,6 @@ class NotificationService {
       Duration notificationDuration;
 
       switch (category.toLowerCase()) {
-        case 'breakfast':
-          notificationDuration = Duration(hours: 6);
-          break;
-        case 'lunch':
-          notificationDuration = Duration(hours: 12);
-          break;
-        case 'dinner':
-          notificationDuration = Duration(hours: 18);
-          break;
-        case 'salad':
-          notificationDuration = Duration(hours: 5);
-          break;
-        case 'soup':
-          notificationDuration = Duration(hours: 7);
-          break;
-        case 'dessert':
-          notificationDuration = Duration(hours: 9);
-          break;
         default:
           notificationDuration = Duration(seconds: 10);
           break;
@@ -150,7 +135,6 @@ class NotificationService {
         scheduledTime: mealTime,
         formattedDate: Date,
       );
-
       if (kDebugMode) {
         print('Saved notification for $mealName at $mealTime');
       }
