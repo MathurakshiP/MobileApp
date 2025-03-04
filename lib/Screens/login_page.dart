@@ -268,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
 
                       // Fields
                       if (!isLogin)
@@ -328,7 +328,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                      const SizedBox(height: 0),
+                      const SizedBox(height: 10),
                       // Login/SignUp Button
                       ElevatedButton(
                         onPressed: isLogin
