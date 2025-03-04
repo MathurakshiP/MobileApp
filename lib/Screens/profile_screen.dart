@@ -431,8 +431,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 /// Edit Profile Dialog
 class EditProfileDialog extends StatefulWidget {
-  final String currentName;
-  final String currentEmail;
+  String currentName;
+  String currentEmail;
   final String currentImage;
   final Function(String, String, String) onSave;
 
@@ -457,6 +457,26 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     super.initState();
     _nameController.text = widget.currentName;
     _emailController.text = widget.currentEmail;
+    _loadUserData();
+  }
+
+  // Load user data from Firestore
+  void _loadUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          widget.currentName = userDoc['name'] ?? 'User Name'; 
+          widget.currentEmail = userDoc['email'] ?? 'username@example.com';
+          _imagePath = userDoc['image'] ?? 'https://via.placeholder.com/150';
+        });
+      }
+    }
   }
 
   /// Pick an image from gallery
