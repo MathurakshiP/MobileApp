@@ -14,7 +14,7 @@ class AllRecipesScreen extends StatefulWidget {
 
 class _AllRecipesScreenState extends State<AllRecipesScreen> {
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
-
+  bool isSearch=false;
   void toggleLike(int index) {
     setState(() {
       widget.isLiked[index] = !widget.isLiked[index];
@@ -32,7 +32,7 @@ class _AllRecipesScreenState extends State<AllRecipesScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RecipeDetailScreen(recipeId: recipeIdStr, isMealPlan: false),
+        builder: (context) => RecipeDetailScreen(recipeId: recipeIdStr, isMealPlan: false,isSearch:isSearch),
       ),
     );
   } catch (e) {

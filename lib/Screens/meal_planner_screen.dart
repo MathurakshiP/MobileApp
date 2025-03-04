@@ -56,10 +56,11 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
   },
   };
 
-  List<String> correctOrder = ["M", "T", "W", "T", "F", "S", "S"];
-  bool isMealPlan = true;
+  List<String> correctOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  bool isMealPlan = true; bool isSearch=false;
   List<String> selectedDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   final Color selectedPurple = const Color.fromARGB(255, 182, 148, 224);
+    Color customPurple = const Color.fromARGB(255, 96, 26, 182);
   bool isEditing = false;
   late List<String> sortedKeys;
   late String currentWeekRange;
@@ -356,7 +357,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
               decoration: BoxDecoration(
                 color: selectedPurple,
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: [BoxShadow(blurRadius: 8, color: Colors.grey.withOpacity(1), spreadRadius: 2)],
+                
               ),
               child: Column(
                 children: [
@@ -394,7 +395,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                       spacing: 7.0,
                       
                       children: sortedKeys.map((day) {
-                        String dayAbbreviation = day.substring(0, 3); // First letter of the day
+                        String dayAbbreviation = day.substring(0, 1); // First letter of the day
                         return GestureDetector(
                           onTap: () {
                             setState(() {
@@ -466,7 +467,8 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      backgroundColor: const Color.fromARGB(255, 239, 231, 241), // Customize button color
+                      foregroundColor: customPurple,
+                      backgroundColor:  Colors.white, // Customize button color
                       textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     child: const Text('Start Your Plan'),
@@ -548,7 +550,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                                     MaterialPageRoute(
                                       builder: (context) => RecipeDetailScreen(
                                         recipeId: food['id'], 
-                                        isMealPlan: isMealPlan,
+                                        isMealPlan: isMealPlan,isSearch:isSearch,
                                       ),
                                     ),
                                   );

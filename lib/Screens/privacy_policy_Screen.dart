@@ -8,7 +8,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Color customPurple = const Color.fromARGB(255, 96, 26, 182);
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+    final isDarkMode = theme.brightness == Brightness.dark; 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Privacy Policy'),

@@ -15,7 +15,7 @@ class RecipeListScreen extends StatefulWidget {
 class _RecipeListScreenState extends State<RecipeListScreen> {
   late Future<List<Map<String, dynamic>>> _recipes;
   bool isMealPlan = false;
-
+  bool isSearch=false;
   @override
   void initState() {
     super.initState();
@@ -76,7 +76,7 @@ return GestureDetector(
         MaterialPageRoute(
           builder: (context) => RecipeDetailScreen(
             recipeId: recipeId,
-            isMealPlan: isMealPlan,
+            isMealPlan: isMealPlan,isSearch:isSearch,
           ),
         ),
       );

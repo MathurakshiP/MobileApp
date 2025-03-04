@@ -12,8 +12,11 @@ class SavedFoodScreen extends StatefulWidget {
 }
 
 class _SavedFoodScreenState extends State<SavedFoodScreen> {
-  bool isMealPlan = false;
+
+  bool isMealPlan=false; bool isSearch=false;
+
   
+//  bacb681154d86f10a5e655bdb2dd4dcfda991b9a
   @override
   void initState() {
     super.initState();
@@ -59,12 +62,13 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
       appBar: AppBar(
         title: const Text(
           'Saved Recipes',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+          
+        ),
+        titleTextStyle: const TextStyle(
             color: Colors.white,
             fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-        ),
         backgroundColor: customPurple,
         automaticallyImplyLeading: false,
       ),
@@ -93,7 +97,9 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'], isMealPlan: isMealPlan),
+
+                        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan,isSearch:isSearch),
+
                       ),
                     );
                   },

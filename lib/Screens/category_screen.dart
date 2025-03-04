@@ -244,7 +244,7 @@ void _navigateToReceipeDetails(Map<String, dynamic> recipe) async {
     final selectedFood = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:widget.isMealPlan),
+        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:widget.isMealPlan,isSearch:false),
       ),
     );
 

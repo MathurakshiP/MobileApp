@@ -5,7 +5,7 @@ class RecentlyViewedWidget extends StatelessWidget {
   final List<dynamic> recentlyViewed;
 
   RecentlyViewedWidget({super.key, required this.recentlyViewed});
-  bool isMealPlan=false;
+  bool isMealPlan=false; bool isSearch=false;
   @override
   Widget build(BuildContext context) { 
     
@@ -33,18 +33,18 @@ class RecentlyViewedWidget extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final recipe = recentlyViewed[index];
                       // Null check for recipe['id']
-                      if (recipe['recipeId'] == null) {
+                      if (recipe['id'] == null && recipe['recipeId'] == null) {
                         return Center(child: Text('No recipe ID available.'));
                       }
                       return GestureDetector(
                         onTap: () {
                           
-
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  RecipeDetailScreen(recipeId: int.parse(recipe['recipeId'].toString()),isMealPlan:isMealPlan),
+                              
+                                  RecipeDetailScreen(recipeId: int.parse(recipe['recipeId'].toString()),isMealPlan:isMealPlan,isSearch:isSearch),
                             ),
                           );
                         },

@@ -98,7 +98,7 @@ Widget build(BuildContext context) {
       
       child: Column(
         children: [
-         Expanded(
+       Expanded(
   child: ListView.builder(
     reverse: false, // Ensures messages appear in the correct order
     itemCount: messages.length,
@@ -111,83 +111,104 @@ Widget build(BuildContext context) {
       final String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
 
       bool isCurrentUser = sender == _userName;
+
+      // Show the date header if this is the first message of the day
       bool showDateHeader = index == 0 ||
         DateFormat('yyyy-MM-dd').format(messages[index - 1]['timestamp'].toDate()) != formattedDate;
 
-      // Determine if this message is the last message from the sender
-      bool isLastMessageFromSender = index == messages.length - 1 ||
-          messages[index + 1]['sender'] != sender;
+      // Show the sender's name only if it's the first message in a sequence
+      bool showSenderName = index == 0 || messages[index - 1]['sender'] != sender;
 
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (showDateHeader)
             Container(
-              padding: EdgeInsets.symmetric(vertical: 6),
-              margin: EdgeInsets.only(top: 10, bottom: 4),
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              margin: const EdgeInsets.only(top: 10, bottom: 4),
+              alignment: Alignment.center,
               child: Text(
                 formattedDate,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ),
-          Align(
-            alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-            child: Container(
-              margin: EdgeInsets.symmetric(vertical: 4, horizontal: 40),
-              decoration: BoxDecoration(
-                color: isCurrentUser ? selectedPurple : const Color.fromARGB(255, 210, 196, 209),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: IntrinsicWidth(
-                child: Container(
-                  constraints: BoxConstraints(
-                    minWidth: 100,
-                    maxWidth: MediaQuery.of(context).size.width * 0.7,
+          
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!isCurrentUser && showSenderName)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0, left: 20.0),
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: customPurple, // Default color if no profile pic
+                    child: Text(
+                      sender[0].toUpperCase(),
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  padding: EdgeInsets.all(2),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Only show the sender's name if it's not the current user
-                      if (!isCurrentUser)
-                        Text(
-                          sender,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
-                        ),
-                      SizedBox(height: 8),
-                      Text(
-                        message,
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                        softWrap: true,
-                      ),
-                      SizedBox(height: 4),
-                      Align(
-                        alignment: Alignment.bottomRight,
+                )
+              else
+                SizedBox(width: 68),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                      isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  children: [
+                    if (!isCurrentUser && showSenderName)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4.0, left: 10.0),
                         child: Text(
-                          DateFormat.jm().format(dateTime),
-                          style: TextStyle(fontSize: 12, color: Colors.black),
+                          sender,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
+                    
+                    Align(
+                      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: isCurrentUser
+                              ? selectedPurple
+                              : const Color.fromARGB(255, 210, 196, 209),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        constraints: BoxConstraints(
+                          
+                          maxWidth: MediaQuery.of(context).size.width * 0.45,
+                          minWidth: 100,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message,
+                              style: const TextStyle(fontSize: 16, color: Colors.black),
+                              softWrap: true,
+                            ),
+                            const SizedBox(height: 4),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Text(
+                                DateFormat.jm().format(dateTime),
+                                style: const TextStyle(fontSize: 12, color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
+            ],
           ),
-          // Show profile picture at the bottom-left of the message container if it's the last message from the sender
-          if (!isCurrentUser && isLastMessageFromSender)
-            Padding(
-              padding: const EdgeInsets.only(right: 370.0, top: 4.0), // Padding for bottom-left positioning
-              child: CircleAvatar(
-                radius: 20,
-                backgroundColor: customPurple, // Default color if no profile pic is available
-                child: Text(
-                  sender[0].toUpperCase(), // First letter of the username
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
         ],
       );
     },

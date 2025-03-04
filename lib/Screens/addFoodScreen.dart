@@ -21,7 +21,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   final ApiService _apiService = ApiService(); // Replace with your actual API service
   List<Map<String, dynamic>> _suggestions = [];
   List<Map<String, dynamic>> _recentlyViewed = [];
-  bool isMealPlan = true;
+  bool isMealPlan = true; bool isSearch =false;
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
   @override
   void dispose() {
@@ -34,7 +34,7 @@ void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan),
+        builder: (_) => RecipeDetailScreen(recipeId: recipe['id'],isMealPlan:isMealPlan,isSearch:true),
       ),
     );
     if (result != null) {
