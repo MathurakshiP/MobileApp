@@ -513,28 +513,31 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text("Edit Profile"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
-            onTap: _pickImage,
-            child: CircleAvatar(
-              radius: 40,
-              backgroundImage: _imagePath != null
-                  ? FileImage(File(_imagePath!)) // Load selected image
-                  : NetworkImage(widget.currentImage) as ImageProvider, // Load existing image
+      content: SingleChildScrollView( 
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: _pickImage,
+              child: CircleAvatar(
+                radius: 40,
+                backgroundImage: _imagePath != null
+                    ? FileImage(File(_imagePath!)) // Load selected image
+                    : NetworkImage(widget.currentImage) as ImageProvider, // Load existing image
+              ),
             ),
-          ),
-          SizedBox(height: 10),
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: "Name"),
-          ),
-          TextField(
-            controller: _emailController,
-            decoration: InputDecoration(labelText: "Email"),
-          ),
-        ],
+            SizedBox(height: 10),
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(labelText: "Name"),
+            ),
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(labelText: "Email"),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(

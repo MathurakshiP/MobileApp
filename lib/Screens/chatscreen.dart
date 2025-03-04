@@ -231,7 +231,7 @@ Widget build(BuildContext context) {
                       fillColor: const Color.fromARGB(255, 210, 196, 209).withOpacity(0.8),
                       hintText: 'Type a message...',
                       hintStyle: TextStyle(
-                        color: isDarkMode? Colors.black : Colors.white,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                       border: OutlineInputBorder(
