@@ -86,7 +86,7 @@ class NotificationService {
     String message = "You plan your $category meal: $mealName, for $formattedDate!"; // Ensure proper formatting
     return notificationsPlugin.show(
       id,
-      category,
+      'Meal Added for $formattedDate',
       message,
       notificationDetails(),
       payload: 'notification_payload',

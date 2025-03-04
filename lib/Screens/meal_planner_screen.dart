@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app/Screens/addFoodScreen.dart';
 import 'package:mobile_app/Screens/premiumPage.dart';
@@ -307,12 +308,56 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
     }
   }
 
-  /// Add a meal to the plan and save
-  void _addMeal(String day, Map<String, dynamic> food,String category) {
-    setState(() {
-      mealPlan[day]![category]!.add(food);
-    });
-    _saveMealPlan();
+  // Define the notificationsPlugin variable
+  final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  // Method to create a new notification when a meal plan is deleted
+  Future<void> _createDeletionNotification(String userId, String mealName, String category) async {
+    try {
+      String message = "Your meal '$mealName' in category '$category' has been deleted from your meal plan.";
+      // Add a new notification document to Firestore
+      await _firestore.collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .add({
+          'message': message,
+          'unread': true,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+      // Show a local notification on the phone as well
+      await notificationsPlugin.show(
+        0, // Unique ID for the notification
+        "Meal Deleted",
+        message,
+        _notificationDetails(),
+        payload: 'notification_payload', // Optional payload
+      );
+
+      if (kDebugMode) {
+        print('Notification added for meal deletion: $message');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error adding notification: $e');
+      }
+    }
+  }
+
+  // Define the notification details
+  NotificationDetails _notificationDetails() {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your channel id',
+      'your channel name',
+      channelDescription: 'your channel description',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    return platformChannelSpecifics;
   }
 
   /// Remove a meal from the plan and save
@@ -322,6 +367,15 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
     });
     _saveMealPlan();
     onDeleteMeal(widget.userId, category, food['title']);
+    _createDeletionNotification(widget.userId, food['title'], category);
+  }
+
+  /// Add a meal to the plan and save
+  void _addMeal(String day, Map<String, dynamic> food,String category) {
+    setState(() {
+      mealPlan[day]![category]!.add(food);
+    });
+    _saveMealPlan();
   }
 
   // Function to calculate the start and end of the current week
