@@ -82,6 +82,8 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
 
  @override
 Widget build(BuildContext context) {
+  final theme = Theme.of(context);
+  final isDarkMode = theme.brightness == Brightness.dark;
   String? lastDate;
 
   return Scaffold(
@@ -129,7 +131,7 @@ Widget build(BuildContext context) {
               alignment: Alignment.center,
               child: Text(
                 formattedDate,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isDarkMode? Colors.white :Colors.black),
               ),
             ),
           
@@ -160,10 +162,10 @@ Widget build(BuildContext context) {
                         padding: const EdgeInsets.only(bottom: 4.0, left: 10.0),
                         child: Text(
                           sender,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color:isDarkMode? Colors.white : Colors.black,
                           ),
                         ),
                       ),
@@ -192,7 +194,7 @@ Widget build(BuildContext context) {
                               style: const TextStyle(fontSize: 16, color: Colors.black),
                               softWrap: true,
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 10),
                             Align(
                               alignment: Alignment.bottomRight,
                               child: Text(
@@ -228,7 +230,10 @@ Widget build(BuildContext context) {
                       filled: true,
                       fillColor: const Color.fromARGB(255, 210, 196, 209).withOpacity(0.8),
                       hintText: 'Type a message...',
-                      hintStyle: TextStyle(color: Colors.white),
+                      hintStyle: TextStyle(
+                        color: isDarkMode? Colors.black : Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
