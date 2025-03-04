@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:mobile_app/Screens/notification_screen.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -15,26 +14,7 @@ class NotificationService {
   NotificationService() {
     initializeNotifications();
   }
-
-  // Handle notification tap
-  Future<void> onNotificationSelected(BuildContext context, String? payload, String userId) async {
-    if (payload != null) {
-      print("Notification tapped! Payload: $payload");
-
-      // Navigate to NotificationScreen when tapped
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => NotificationScreen(userId: userId)),
-      );
-    }
-  }
   
-  // Define the getUserId method
-  Future<String> getUserId(String userId) async {
-    DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
-    return userDoc['userId'];
-  }
-
   Future<void> initializeNotifications() async {
     tz.initializeTimeZones();
     final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
@@ -48,14 +28,6 @@ class NotificationService {
     );
 
     InitializationSettings settings = InitializationSettings(android: androidSettings, iOS: darwinSettings);
-
-    await notificationsPlugin.initialize(
-      settings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) async {
-        String userId = await getUserId(response.payload!);
-        onNotificationSelected(navigatorKey.currentContext!, response.payload, userId);
-      },
-    );
 
     if (kDebugMode) {
       print("🎉 Notifications initialized successfully!");

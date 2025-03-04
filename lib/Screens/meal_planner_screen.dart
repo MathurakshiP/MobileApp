@@ -354,6 +354,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
       importance: Importance.max,
       priority: Priority.high,
       showWhen: false,
+      styleInformation: BigTextStyleInformation(''),
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
