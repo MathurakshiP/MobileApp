@@ -85,7 +85,7 @@ void navigateToReceipeDetails(Map<String, dynamic> recipe) async {
                         trailing: widget.isMealPlan
                             ? IconButton(
                                 icon: const Icon(Icons.add, color: Color.fromARGB(255, 96, 26, 182)),
-                                onPressed: () {
+                                onPressed: () { 
                                   // Add recipe to meal planner
                                   addToMealPlanner(recipe); // Implement this function to handle meal planner logic
                                 },

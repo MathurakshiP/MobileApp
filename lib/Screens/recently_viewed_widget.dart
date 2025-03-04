@@ -3,12 +3,20 @@ import 'package:mobile_app/Screens/recipe_details_screen.dart';
 
 class RecentlyViewedWidget extends StatelessWidget {
   final List<dynamic> recentlyViewed;
+  final bool isMealPlan;
+  final bool isSearch;
 
-  RecentlyViewedWidget({super.key, required this.recentlyViewed});
-  bool isMealPlan=false; bool isSearch=false;
+  RecentlyViewedWidget({
+    super.key,
+    required List<dynamic> recentlyViewed,
+    this.isMealPlan = false,
+    this.isSearch = false,
+  }) : recentlyViewed = recentlyViewed
+            .where((recipe) => recipe['recipeId'] != null)
+            .toList(); // Remove null recipeId at initialization
+
   @override
-  Widget build(BuildContext context) { 
-    
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -21,6 +29,7 @@ class RecentlyViewedWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
+        // If list is empty, show message
         recentlyViewed.isEmpty
             ? const Center(child: Text('No recently viewed recipes'))
             : Padding(
@@ -32,19 +41,17 @@ class RecentlyViewedWidget extends StatelessWidget {
                     itemCount: recentlyViewed.length,
                     itemBuilder: (context, index) {
                       final recipe = recentlyViewed[index];
-                      // Null check for recipe['id']
-                      if (recipe['id'] == null && recipe['recipeId'] == null) {
-                        return Center(child: Text('No recipe ID available.'));
-                      }
+
                       return GestureDetector(
                         onTap: () {
-                          
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                              
-                                  RecipeDetailScreen(recipeId: int.parse(recipe['recipeId'].toString()),isMealPlan:isMealPlan,isSearch:isSearch),
+                              builder: (context) => RecipeDetailScreen(
+                                recipeId: int.parse(recipe['recipeId'].toString()),
+                                isMealPlan: isMealPlan,
+                                isSearch: isSearch,
+                              ),
                             ),
                           );
                         },
@@ -69,8 +76,7 @@ class RecentlyViewedWidget extends StatelessWidget {
                                               height: 200,
                                               width: 300,
                                               fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (context, error, stackTrace) {
+                                              errorBuilder: (context, error, stackTrace) {
                                                 return Container(
                                                   height: 200,
                                                   width: 300,
@@ -96,8 +102,6 @@ class RecentlyViewedWidget extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-
-                                
                                 // Recipe Title
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),

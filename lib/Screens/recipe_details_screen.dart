@@ -190,6 +190,7 @@ class RecipeDetailScreen extends StatelessWidget {
   }
 
 
+
   @override 
   
   Widget build(BuildContext context) {
@@ -263,7 +264,14 @@ class RecipeDetailScreen extends StatelessWidget {
                                   Navigator.pop(context, {'recipe': recipe, 'category': selectedCategory});
                                 }
                               },
-                        ),
+                        )
+                      else if (isMealPlan)
+                        IconButton(
+                          icon: Icon(Icons.add, color: customPurple),
+                          onPressed: ()  {
+                                 Navigator.pop(context, recipe);
+                              },
+                        )
                     ],
                   ),
 

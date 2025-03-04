@@ -51,6 +51,7 @@ class PremiumPage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             Card(
+              color: Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 20),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
@@ -150,8 +151,8 @@ class PremiumPage extends StatelessWidget {
   }
 
   Widget _buildBenefitRow(BuildContext context, IconData icon, String text) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+    // final theme = Theme.of(context);
+    // final isDarkMode = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -162,7 +163,7 @@ class PremiumPage extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: 16,
-              color: isDarkMode? Colors.white : Colors.black87,
+              color: Colors.black87 ,
             ),
           ),
         ],

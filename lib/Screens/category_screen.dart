@@ -71,9 +71,6 @@ void fetchRecentlyViewed() async {
     if (kDebugMode) {
       print('Error fetching recently viewed: $error');
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Failed to load recently viewed recipes.')),
-    );
   }
 }
 
@@ -107,9 +104,6 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
     if (kDebugMode) {
       print('Error updating recently viewed: $error');
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to update recently viewed: $error')),
-    );
   }
 }
 
@@ -141,11 +135,27 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
     });
 
     try {
-      final recipes = await ApiService().allcategory(selectedCategory(widget.category), 20);
-      setState(() {
-        _categoryRecipes = recipes;
-        _isLoading = false;
-      });
+      if(selectedCategory(widget.category)=='breakfast')
+      {
+        final recipes = await ApiService().allcategory(selectedCategory(widget.category), 5);
+        final recipes1 = await ApiService().allcategory('bread', 5);
+        final recipes2 = await ApiService().allcategory('appetizer', 5);
+        List combinedRecipes = [...recipes, ...recipes1, ...recipes2]; // Combine both lists
+        combinedRecipes.shuffle(); // Shuffle the list
+        setState(() {
+          _categoryRecipes = combinedRecipes;
+          _isLoading = false;
+        });
+      }
+      else {
+        final recipes = await ApiService().allcategory(selectedCategory(widget.category), 10);
+        
+        setState(() {
+          _categoryRecipes = recipes;
+          _isLoading = false;
+        });
+      }
+      
     } catch (error) {
       setState(() {
         _isLoading = false;
@@ -153,9 +163,6 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
       if (kDebugMode) {
         print('Error fetching all recipes for category ${widget.category}: $error');
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load recipes. Please try again later.')),
-      );
     }
   }
 
@@ -169,12 +176,48 @@ void fetchFilteredRecipesByCuisine() async {
     final cuisine = _selectedCuisine == 'Any' || _selectedCuisine == null
         ? widget.category
         : _selectedCuisine!;
-
-    final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 20);
-    setState(() {
-      _categoryRecipes = recipes;
-      _isLoading = false;
-    });
+    if(selectedCategory(widget.category)=='breakfast'){
+        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 5);
+        final recipes1 = await ApiService().cuisinecategory(cuisine, 'bread', 5);
+        final recipes2= await ApiService().cuisinecategory(cuisine, 'appetizer', 5);
+        List combinedRecipes = [...recipes, ...recipes1, ...recipes2]; // Combine both lists
+        combinedRecipes.shuffle(); // Shuffle the list
+        setState(() {
+          _categoryRecipes = combinedRecipes;
+          _isLoading = false;
+        });
+    }
+    else if(selectedCategory(widget.category)=='dessert'){
+        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 5);
+        final recipes1 = await ApiService().cuisinecategory(cuisine, 'snack', 5);
+        
+        List combinedRecipes = [...recipes, ...recipes1]; // Combine both lists
+        combinedRecipes.shuffle(); // Shuffle the list
+        setState(() {
+          _categoryRecipes = combinedRecipes;
+          _isLoading = false;
+        });
+    }
+    else if(selectedCategory(widget.category)=='main course'){
+        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 5);
+        final recipes1 = await ApiService().cuisinecategory(cuisine, 'side dish', 5);
+        
+        List combinedRecipes = [...recipes, ...recipes1]; // Combine both lists
+        combinedRecipes.shuffle(); // Shuffle the list
+        setState(() {
+          _categoryRecipes = combinedRecipes;
+          _isLoading = false;
+        });
+    }
+    else {
+        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 5);
+        
+        setState(() {
+          _categoryRecipes = recipes;
+          _isLoading = false;
+        });
+    }
+    
   } catch (error) {
     setState(() {
       _isLoading = false;
@@ -182,16 +225,13 @@ void fetchFilteredRecipesByCuisine() async {
     if (kDebugMode) {
       print('Error fetching cuisine-based recipes for category ${widget.category}: $error');
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Failed to load recipes. Please try again later.')),
-    );
   }
 }
 
 void fetchFilteredRecipesByTime() async {
   setState(() {
     _isLoading = true;
-  });
+  }); 
 
   try {
     // Determine max ready time based on selected time filter
@@ -206,7 +246,7 @@ void fetchFilteredRecipesByTime() async {
       maxReadyTime = 500; // Arbitrary high limit for "More than 60 minutes"
     }
 
-    final recipes = await ApiService().timecategory( selectedCategory(widget.category), maxReadyTime, 20);
+    final recipes = await ApiService().timecategory( selectedCategory(widget.category), maxReadyTime, 5);
     setState(() {
       _categoryRecipes = recipes;
       _isLoading = false;
@@ -218,9 +258,6 @@ void fetchFilteredRecipesByTime() async {
     if (kDebugMode) {
       print('Error fetching time-based recipes for category ${widget.category}: $error');
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Failed to load recipes. Please try again later.')),
-    );
   }
 }
 

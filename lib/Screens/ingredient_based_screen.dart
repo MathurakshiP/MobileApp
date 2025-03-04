@@ -492,7 +492,7 @@ void goToPantryScreen() {
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white12,
+        color: isDarkMode? Colors.black12 : Colors.white12,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
