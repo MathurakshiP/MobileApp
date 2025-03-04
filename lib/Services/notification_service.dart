@@ -80,8 +80,8 @@ class NotificationService {
   Future<void> showNotification({
     int id = 0,
     String? category,
+    String? formattedDate,
     String? mealName,
-    required String formattedDate,
   }) async {
     String message = "You plan your $category meal: $mealName, for $formattedDate!"; // Ensure proper formatting
     return notificationsPlugin.show(
@@ -97,9 +97,9 @@ class NotificationService {
   Future<void> scheduleNotification({
     int id = 1,
     required String category,
-    required String mealName,
-    required DateTime scheduledTime,
     required String formattedDate,
+    required DateTime scheduledTime,
+    required String mealName,
   }) async {
     if (kDebugMode) {
       print('Scheduling notification: $category - $mealName at $scheduledTime');

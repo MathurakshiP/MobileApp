@@ -3,37 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
 import 'package:mobile_app/Screens/login_page.dart';
 
-//import 'package:mobile_app/providers/theme_provider.dart';
-//import 'package:provider/provider.dart';
 
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    //final themeProvider = Provider.of<ThemeProvider>(context);
-    //final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
       body: Stack(
         children: [
-          // Background design
-          // Positioned(
-          //   top: -180,
-          //   left: 230,
-          //   child: Transform(
-          //     transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-          //     child: Container(
-          //       width: 500,
-          //       height: 440,
-          //       decoration: ShapeDecoration(
-          //         color: const Color(0xFFD9D9D9),
-          //         shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(123),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
           Positioned(
             top: 0,
             left: -30,
@@ -54,24 +32,6 @@ class GetStartedScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Positioned(
-          //   left: 108.78,
-          //   top: -230.90,
-          //   child: Transform(
-          //     transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(0.74),
-          //     child: Container(
-          //       width: 596.38,
-          //       height: 398.84,
-          //       decoration: ShapeDecoration(
-          //         color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.20000000298023224),
-          //         shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(110),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
           // Logo and content
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

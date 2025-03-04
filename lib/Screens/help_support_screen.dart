@@ -26,6 +26,7 @@ class HelpSupportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+    Color customPurple = const Color.fromARGB(255, 96, 26, 182);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Help & Support'),
@@ -34,7 +35,7 @@ class HelpSupportScreen extends StatelessWidget {
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor:customPurple,
       ),
       body: Container(
         height: 1000,
@@ -54,21 +55,21 @@ class HelpSupportScreen extends StatelessWidget {
                 children: [
                   // Contact Support Section
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Contact Support',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color:isDarkMode? Colors.white : customPurple),
                   ),
                   Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
                     elevation: 5,
-                    color: isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0),
+                    color: const Color.fromARGB(255, 255, 255, 255),
                     child: ListTile(
-                      leading: Icon(Icons.email, color: Colors.deepPurple),
+                      leading: Icon(Icons.email, color:customPurple),
                       title: Text(
                         'Email Us', 
                         style: TextStyle(
                           fontSize: 18,
-                          color: isDarkMode ? Colors.black : Colors.white,
+                          color: customPurple,
                           fontWeight: FontWeight.bold,
                         )
                       ),
@@ -77,21 +78,21 @@ class HelpSupportScreen extends StatelessWidget {
                   ),
                   // Report a Problem Section
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Report a Problem',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color:isDarkMode ? Colors.white : customPurple),
                   ),
                   Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    color: isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0),                
+                    color: const Color.fromARGB(255, 255, 255, 255),               
                     elevation: 5,
                     child: ListTile(
-                      leading: Icon(Icons.bug_report, color: Colors.deepPurple),
+                      leading: Icon(Icons.bug_report, color:customPurple),
                       title: Text(
                         'Report an Issue', 
                         style: TextStyle(
                           fontSize: 18,
-                          color: isDarkMode ? Colors.black : Colors.white,
+                          color: customPurple,
                           fontWeight: FontWeight.bold,
                         )
                       ),
@@ -108,21 +109,21 @@ class HelpSupportScreen extends StatelessWidget {
 
                   // App Updates and Release Notes Section
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'App Updates',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color:isDarkMode ? Colors.white :customPurple),
                   ),
                   Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    color: isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0),
+                    color: const Color.fromARGB(255, 255, 255, 255),
                     elevation: 5,
                     child: ListTile(
-                      leading: Icon(Icons.update, color: Colors.deepPurple),
+                      leading: Icon(Icons.update, color:customPurple),
                       title: Text(
                         'View Latest Updates', 
                         style: TextStyle(
                           fontSize: 18,
-                          color: isDarkMode ? Colors.black : Colors.white,
+                          color: customPurple,
                           fontWeight: FontWeight.bold,
                         )
                       ),
@@ -143,7 +144,7 @@ class HelpSupportScreen extends StatelessWidget {
                                   },
                                   child: Text(
                                     'Awesome!',
-                                    style: TextStyle(color: Colors.deepPurple),
+                                    style: TextStyle(color:customPurple),
                                   ),
                                 ),
                               ],

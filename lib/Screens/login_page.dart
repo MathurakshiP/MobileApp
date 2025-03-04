@@ -177,8 +177,10 @@ class _LoginPageState extends State<LoginPage> {
       child: TextField(
         controller: controller,
         obscureText: obscureText,
+        style: TextStyle(color: Colors.black), // Set text color to black
         decoration: InputDecoration(
           labelText: labelText,
+          labelStyle: TextStyle(color: Colors.black), // Set label text color to black
           prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: customPurple) : null,
           suffixIcon: suffixIcon,
           border: OutlineInputBorder(
@@ -193,6 +195,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -288,12 +292,13 @@ class _LoginPageState extends State<LoginPage> {
                             isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
+                            color: isDarkMode ? customPurple : customPurple,
                           ),
                           onPressed: () => setState(
                               () => isPasswordVisible = !isPasswordVisible),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 0),
 
                       // Forgot Password Button
                       if (isLogin)
@@ -323,7 +328,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 0),
                       // Login/SignUp Button
                       ElevatedButton(
                         onPressed: isLogin

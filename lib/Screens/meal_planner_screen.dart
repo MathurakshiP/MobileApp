@@ -232,7 +232,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                   });
             }
 
-            await _notificationService.saveNotification(widget.userId, category, formattedDate, mealName);
+            await _notificationService.saveNotification(widget.userId, category, mealName, formattedDate);
 
           }
         }

@@ -142,10 +142,9 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color customPurple = const Color.fromARGB(255, 96, 26, 182);
-    Color themechanger = const Color.fromARGB(255, 182, 148, 224);
 
     return Card(
-      color: isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : Colors.grey,
+      color: const Color.fromARGB(255, 255, 255, 255),
       margin: const EdgeInsets.only(bottom: 16.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -160,7 +159,7 @@ class _SectionCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.shield_outlined,
-                  color: isDarkMode ? customPurple : themechanger,
+                  color: customPurple,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -169,7 +168,7 @@ class _SectionCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
-                      color: isDarkMode ? customPurple : themechanger,
+                      color: customPurple,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
@@ -183,7 +182,7 @@ class _SectionCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 height: 1.5,
-                color: isDarkMode ? const Color.fromARGB(255, 0, 0, 0) : const Color.fromARGB(221, 255, 255, 255),
+                color: const Color.fromARGB(221, 0, 0, 0),
                 fontWeight: isDarkMode ? FontWeight.normal : FontWeight.bold,
               ),
             ),

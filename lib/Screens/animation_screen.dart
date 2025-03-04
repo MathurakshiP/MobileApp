@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/Screens/get_started.dart';
+import 'package:mobile_app/Screens/home_screen.dart';
 
 class AnimationScreen extends StatefulWidget {
   const AnimationScreen({super.key});
@@ -13,7 +15,7 @@ class _AnimationScreenState extends State<AnimationScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeOutAnimation;
-  bool _showGetStartedScreen = false;
+  bool _isUserLoggedIn = false; // Track login status
 
   @override
   void initState() {
@@ -22,9 +24,8 @@ class _AnimationScreenState extends State<AnimationScreen>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 5),
-    ); // Makes the animation loop infinitely
+    );
 
-    // Fade-out animation starts at 80% of the animation timeline
     _fadeOutAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -34,11 +35,32 @@ class _AnimationScreenState extends State<AnimationScreen>
 
     _controller.forward();
 
-    // Navigate to GetStartedScreen after animation and fading
+    // Check if user is logged in
+    checkUserLoginStatus();
+  }
+
+  Future<void> checkUserLoginStatus() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    setState(() {
+      _isUserLoggedIn = user != null;
+    });
+
+    // Navigate after animation ends
     Timer(const Duration(seconds: 4), () {
-      setState(() {
-        _showGetStartedScreen = true;
-      });
+      if (_isUserLoggedIn) {
+        // Navigate to HomeScreen if logged in
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen(userData: {'uid': user!.uid})),
+        );
+      } else {
+        // Navigate to GetStartedScreen if not logged in
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const GetStartedScreen()),
+        );
+      }
     });
   }
 
@@ -57,76 +79,73 @@ class _AnimationScreenState extends State<AnimationScreen>
       body: Stack(
         children: [
           // Food animations and logo animation
-          if (!_showGetStartedScreen)
-            AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return Opacity(
-                  opacity: _fadeOutAnimation.value,
-                  child: Stack(
-                    children: [
-                      _buildFoodItem(
-                        screenSize,
-                        'images/pizza.png',
-                        Offset(0.1, 0.7),
-                        rotate: true,
-                      ),
-                      _buildFoodItem(
-                        screenSize,
-                        'images/burger.png',
-                        Offset(0.4, 0.4),
-                        flowDirection: Axis.horizontal,
-                      ),
-                      _buildFoodItem(
-                        screenSize,
-                        'images/cupcake.png',
-                        Offset(0.7, 0.7),
-                        rotate: true,
-                        flowDirection: Axis.vertical,
-                      ),
-                      _buildFoodItem(
-                        screenSize,
-                        'images/sushi.png',
-                        Offset(0.2, 0.2),
-                        scaleEffect: true,
-                      ),
-                      _buildFoodItem(
-                        screenSize,
-                        'images/fruits.png',
-                        Offset(0, 0.3),
-                        flowDirection: Axis.vertical,
-                        rotate: true,
-                      ),
-                      Center(
-                        child: SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0, 2),
-                            end: Offset.zero,
-                          ).animate(
-                            CurvedAnimation(
-                              parent: _controller,
-                              curve: Curves.easeOut,
-                            ),
-                          ),
-                          child: Image.asset(
-                            'images/cookifylogo.png',
-                            height: 200,
-                            width: 200,
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _fadeOutAnimation.value,
+                child: Stack(
+                  children: [
+                    _buildFoodItem(
+                      screenSize,
+                      'images/pizza.png',
+                      const Offset(0.1, 0.7),
+                      rotate: true,
+                    ),
+                    _buildFoodItem(
+                      screenSize,
+                      'images/burger.png',
+                      const Offset(0.4, 0.4),
+                      flowDirection: Axis.horizontal,
+                    ),
+                    _buildFoodItem(
+                      screenSize,
+                      'images/cupcake.png',
+                      const Offset(0.7, 0.7),
+                      rotate: true,
+                      flowDirection: Axis.vertical,
+                    ),
+                    _buildFoodItem(
+                      screenSize,
+                      'images/sushi.png',
+                      const Offset(0.2, 0.2),
+                      scaleEffect: true,
+                    ),
+                    _buildFoodItem(
+                      screenSize,
+                      'images/fruits.png',
+                      const Offset(0, 0.3),
+                      flowDirection: Axis.vertical,
+                      rotate: true,
+                    ),
+                    Center(
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0, 2),
+                          end: Offset.zero,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: _controller,
+                            curve: Curves.easeOut,
                           ),
                         ),
+                        child: Image.asset(
+                          'images/cookifylogo.png',
+                          height: 200,
+                          width: 200,
+                        ),
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          // Get Started Screen when transition finishes
-          if (_showGetStartedScreen)
-            const GetStartedScreen(), // Your target screen
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
   }
+
   /// Helper method to create animated food items
   Widget _buildFoodItem(
     Size screenSize,
@@ -141,7 +160,6 @@ class _AnimationScreenState extends State<AnimationScreen>
       builder: (context, child) {
         Widget animatedChild = child!;
 
-        // Add rotation effect
         if (rotate) {
           animatedChild = Transform.rotate(
             angle: _controller.value * 2 * 3.14,
@@ -149,7 +167,6 @@ class _AnimationScreenState extends State<AnimationScreen>
           );
         }
 
-        // Add scale effect
         if (scaleEffect) {
           animatedChild = Transform.scale(
             scale: 1 + 0.4 * (1 - _controller.value),
@@ -157,7 +174,6 @@ class _AnimationScreenState extends State<AnimationScreen>
           );
         }
 
-        // Add flow/movement effect
         double offsetValue = (_controller.value * 0.1) * screenSize.height;
         double newTop = position.dy * screenSize.height;
         double newLeft = position.dx * screenSize.width;
