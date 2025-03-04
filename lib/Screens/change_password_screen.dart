@@ -80,8 +80,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
       await user.updatePassword(_newPasswordController.text);
 
       // Notify the user of success
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password changed successfully')),
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Success"),
+            content: const Text("Password changed successfully"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
       );
 
       // Clear the input fields
