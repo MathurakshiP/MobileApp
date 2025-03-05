@@ -106,7 +106,7 @@ class GetStartedScreen extends StatelessWidget {
         MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     }
-  }
+  } 
 }
 class CustomClipperPath extends CustomClipper<Path> {
   @override

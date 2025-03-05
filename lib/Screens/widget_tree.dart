@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/get_started.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
+import 'package:mobile_app/Screens/start.dart';
 import 'package:mobile_app/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -43,12 +44,12 @@ class _WidgetTreeState extends State<WidgetTree> {
               } else if (userSnapshot.hasData) {
                 return HomeScreen(userData: userSnapshot.data!); // Pass user data to HomeScreen
               } else {
-                return const GetStartedScreen(); // Show GetStartedScreen if no user data is found
+                return StartedScreen(); // Show GetStartedScreen if no user data is found
               }
             },
           );
         } else {
-          return const GetStartedScreen(); // Redirect to GetStartedScreen if user is not logged in
+          return StartedScreen(); // Redirect to GetStartedScreen if user is not logged in
         }
       },
     );

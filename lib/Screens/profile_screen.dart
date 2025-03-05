@@ -51,6 +51,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         hasUnseenNotifications = notificationsSnapshot.docs.isNotEmpty;
       });
     }
+    else {
+      print('guest');
+    }
   }
 
   // Load user data from Firestore
@@ -125,6 +128,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           print("Error saving image path: $e");
         }
       }
+      else {
+      print('guest');
+    }
     }
   }
 
@@ -488,7 +494,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       });
     }
   }
-
+ 
   /// Save edited details to Firestore
   void _saveProfile() async {
     final user = FirebaseAuth.instance.currentUser;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/Screens/get_started.dart';
 import 'package:mobile_app/Screens/home_screen.dart';
+import 'package:mobile_app/Screens/start.dart';
 
 class AnimationScreen extends StatefulWidget {
   const AnimationScreen({super.key});
@@ -58,7 +59,7 @@ class _AnimationScreenState extends State<AnimationScreen>
         // Navigate to GetStartedScreen if not logged in
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const GetStartedScreen()),
+          MaterialPageRoute(builder: (context) =>  StartedScreen()),
         );
       }
     });
