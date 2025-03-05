@@ -358,7 +358,8 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SignUpReminderPage(),
+                    builder: (context) => MealPlannerScreen(userId: userid),
+                    //builder: (context) => SignUpReminderPage(),
                   ),
                 );
               } else {
@@ -912,7 +913,9 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
            
           const SavedFoodScreen(),
           userid == 'null' ? SignUpReminderPage1() : CommunityChatScreen(),
-          // ShoppingListScreen with passed shoppingList
+
+          userid == 'null' ? CommunityChatScreen() : CommunityChatScreen(),
+
           const ShoppingListScreen(),
           // ProfileScreen
           userid == 'null' ? SignUpReminderPage1() : ProfileScreen(),
