@@ -912,7 +912,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
           
            
           const SavedFoodScreen(),
-          userid == 'null' ? SignUpReminderPage1() : CommunityChatScreen(),
+          //userid == 'null' ? SignUpReminderPage1() : CommunityChatScreen(),
 
           userid == 'null' ? CommunityChatScreen() : CommunityChatScreen(),
 
