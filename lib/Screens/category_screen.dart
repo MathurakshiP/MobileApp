@@ -137,7 +137,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
     try {
       if(selectedCategory(widget.category)=='breakfast')
       {
-        final recipes = await ApiService().allcategory(selectedCategory(widget.category), 5);
+        final recipes = await ApiService().allcategory(selectedCategory(widget.category), 10);
         final recipes1 = await ApiService().allcategory('bread', 5);
         final recipes2 = await ApiService().allcategory('appetizer', 5);
         List combinedRecipes = [...recipes, ...recipes1, ...recipes2]; // Combine both lists
@@ -148,7 +148,7 @@ void updateRecentlyViewed(Map<String, dynamic> recipe) async {
         });
       }
       else {
-        final recipes = await ApiService().allcategory(selectedCategory(widget.category), 10);
+        final recipes = await ApiService().allcategory(selectedCategory(widget.category), 20);
         
         setState(() {
           _categoryRecipes = recipes;
@@ -177,7 +177,7 @@ void fetchFilteredRecipesByCuisine() async {
         ? widget.category
         : _selectedCuisine!;
     if(selectedCategory(widget.category)=='breakfast'){
-        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 5);
+        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 10);
         final recipes1 = await ApiService().cuisinecategory(cuisine, 'bread', 5);
         final recipes2= await ApiService().cuisinecategory(cuisine, 'appetizer', 5);
         List combinedRecipes = [...recipes, ...recipes1, ...recipes2]; // Combine both lists
@@ -188,8 +188,8 @@ void fetchFilteredRecipesByCuisine() async {
         });
     }
     else if(selectedCategory(widget.category)=='dessert'){
-        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 5);
-        final recipes1 = await ApiService().cuisinecategory(cuisine, 'snack', 5);
+        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 10);
+        final recipes1 = await ApiService().cuisinecategory(cuisine, 'snack', 10);
         
         List combinedRecipes = [...recipes, ...recipes1]; // Combine both lists
         combinedRecipes.shuffle(); // Shuffle the list
@@ -199,8 +199,8 @@ void fetchFilteredRecipesByCuisine() async {
         });
     }
     else if(selectedCategory(widget.category)=='main course'){
-        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 5);
-        final recipes1 = await ApiService().cuisinecategory(cuisine, 'side dish', 5);
+        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 10);
+        final recipes1 = await ApiService().cuisinecategory(cuisine, 'side dish', 10);
         
         List combinedRecipes = [...recipes, ...recipes1]; // Combine both lists
         combinedRecipes.shuffle(); // Shuffle the list
@@ -210,7 +210,7 @@ void fetchFilteredRecipesByCuisine() async {
         });
     }
     else {
-        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 5);
+        final recipes = await ApiService().cuisinecategory(cuisine, selectedCategory(widget.category), 20);
         
         setState(() {
           _categoryRecipes = recipes;

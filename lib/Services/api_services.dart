@@ -7,7 +7,7 @@ class ApiService {
   // Set base URL and API key directly here
   final String _baseUrl = 'https://api.spoonacular.com';
 
-  final String _apiKey = 'a2e8aeca685d4b33975aa0fec27c5fb3'; // Replace with your actual API key
+  final String _apiKey = '171dca80728e4b5bb342e075d07b22c0'; // Replace with your actual API key
 
 //         9ecee3af427949d4b5e9831e0b458576
 // a2e8aeca685d4b33975aa0fec27c5fb3
@@ -101,7 +101,7 @@ class ApiService {
   }
 
   // 4. Fetch Random Recipes
-  Future<List<dynamic>> fetchRandomRecipes({int number = 5}) async {
+  Future<List<dynamic>> fetchRandomRecipes({int number = 20}) async {
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/recipes/random?number=$number&apiKey=$_apiKey'),
