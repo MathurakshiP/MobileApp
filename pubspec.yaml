@@ -114,6 +114,7 @@ flutter:
   - images/email.png
   - images/signup.png
   - images/signup1.webp
+  - images/likefood.png
 
   - .env
 

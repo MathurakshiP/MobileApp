@@ -53,7 +53,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                 children: [
                   // Add your image here
                   Image.asset(
-                    'images/burger.png', // Path to your image
+                    'images/start3.png', // Path to your image
                     height: 150, // Adjust the height of the image
                     width: 150,  // Adjust the width of the image
                   ),

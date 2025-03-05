@@ -58,7 +58,7 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
                 children: [
                   // Add your image here
                   Image.asset(
-                    'images/burger.png', // Path to your image
+                    'images/likefood.png', // Path to your image
                     height: 150, // Adjust the height of the image
                     width: 150,  // Adjust the width of the image
                   ),
