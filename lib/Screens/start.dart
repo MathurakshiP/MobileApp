@@ -87,6 +87,7 @@ void _navigateBasedOnAuthStatus(BuildContext context) async {
               height: 450,
               autoPlay: true,
               enlargeCenterPage: true,
+              autoPlayInterval: Duration(seconds: 2),
               onPageChanged: (index, reason) {
                 setState(() {
                   _currentIndex = index;
