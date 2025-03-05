@@ -186,7 +186,7 @@ Future<List<Map<String, dynamic>>> fetchRecentlyViewedRecipes(String userId) asy
   });
 
   try {
-    final randomRecipes = await ApiService().fetchRandomRecipes(number: 20);
+    final randomRecipes = await ApiService().fetchRandomRecipes(number: 10);
     final recipesWithImages = randomRecipes
         .where((recipe) => recipe['image'] != null && recipe['image'].isNotEmpty)
         .toList();
