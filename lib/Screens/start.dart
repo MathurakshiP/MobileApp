@@ -22,17 +22,17 @@ class _StartedScreenState extends State<StartedScreen> {
     {
       'title': 'Plan Your Meals',
       'description': 'Organize your week with a simple and efficient meal planner.',
-      'image': 'images/fruits.png',
+      'image': 'images/start2.png',
     },
     {
       'title': 'Shopping List',
       'description': 'Add ingredients to your shopping list and never forget anything.',
-      'image': 'images/burger.png',
+      'image': 'images/start3.png',
     },
     {
       'title': 'Community Chat',
       'description': 'Chat with other food lovers and share your favorite recipes.',
-      'image': 'images/burger.png',
+      'image': 'images/start4.png',
     },
   ];
 
