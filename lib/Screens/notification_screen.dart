@@ -85,7 +85,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
+        child: notifications.isEmpty
+          ? Center( // Show this when there are no notifications
+              child: Text(
+                'No notifications available!',
+                
+              ),
+            )
+            :ListView.builder(
           itemCount: notifications.length,
           itemBuilder: (context, index) {
             return Card(

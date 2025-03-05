@@ -94,7 +94,7 @@ class SignUpReminderPage extends StatelessWidget {
                 'Maybe Later',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white70,
+                  color: Colors.white70, 
                   decoration: TextDecoration.underline,
                 ),
               ),
