@@ -110,6 +110,11 @@ flutter:
   - images/spices.jpg
   - images/veg.jpg
   - images/nonveg.jpg
+  - images/google.png
+  - images/fb.png
+  - images/email.png
+  - images/signup.png
+  - images/signup1.webp
 
   - .env
 

@@ -9,6 +9,7 @@ import 'package:mobile_app/Screens/chatscreen.dart';
 import 'package:mobile_app/Screens/ingredient_based_screen.dart';
 import 'package:mobile_app/Screens/meal_planner_screen.dart';
 import 'package:mobile_app/Screens/signUpReminderScreen.dart';
+import 'package:mobile_app/Screens/signupremainderScreen1.dart';
 import 'package:mobile_app/providers/theme_provider.dart';
 import 'package:mobile_app/screens/saved_food_screen.dart';
 import 'package:mobile_app/screens/shopping_list_screen.dart';
@@ -125,7 +126,7 @@ void hashAssign(String apiHash){
     try {
       final recentlyViewedRef = FirebaseFirestore.instance
           .collection('users')
-          .doc(userId)
+          .doc(userId) 
           .collection('recently_viewed')
           .orderBy('viewedAt', descending: true)
           .limit(10);
@@ -910,51 +911,50 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
           
            
           const SavedFoodScreen(),
-          userid == 'null' ? SignUpReminderPage() : CommunityChatScreen(),
+          userid == 'null' ? SignUpReminderPage1() : CommunityChatScreen(),
           // ShoppingListScreen with passed shoppingList
           const ShoppingListScreen(),
           // ProfileScreen
-          userid == 'null' ? SignUpReminderPage() : ProfileScreen()
+          userid == 'null' ? SignUpReminderPage1() : ProfileScreen(),
           
         ],
       ),
 
       // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        type:
-            BottomNavigationBarType.fixed, // Ensures fixed positions for icons
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Saved',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Community',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Shopping List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: customPurple, // Color for selected item
-        // unselectedItemColor: Colors.black, // Color for unselected items
-        selectedFontSize: 12, // Size of selected item's text
-        unselectedFontSize: 10, // Size of unselected items' text
-        iconSize: 28, // Uniform icon size
-        showUnselectedLabels: true, // Keeps labels for unselected items
-      ),
+      bottomNavigationBar: 
+        // Hide bottom navigation bar for Profile or when user is not logged in
+       BottomNavigationBar(
+          type: BottomNavigationBarType.fixed, // Ensures fixed positions for icons
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Saved',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group),
+              label: 'Community',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart),
+              label: 'Shopping List',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: customPurple, // Color for selected item
+          selectedFontSize: 12, // Size of selected item's text
+          unselectedFontSize: 10, // Size of unselected items' text
+          iconSize: 28, // Uniform icon size
+          showUnselectedLabels: true, // Keeps labels for unselected items
+        ),
     );
   }
 
