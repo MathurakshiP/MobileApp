@@ -2,22 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/Screens/login_page.dart';
 import 'package:mobile_app/Screens/privacy_policy_Screen.dart';
 
-class SignUpReminderPage extends StatelessWidget {
+class SignUpReminderPage1 extends StatelessWidget {
   Color customPurple = const Color.fromARGB(255, 96, 26, 182);
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.cancel, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context); // Go back to the previous page
-          },
-        ),
-        backgroundColor: Colors.white12, // No background color for the app bar
-        elevation: 0, // Remove the elevation (shadow)
-      ),
+      
       body: SingleChildScrollView( // Wrap the entire body with SingleChildScrollView
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -72,7 +63,7 @@ class SignUpReminderPage extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 35),
+              const SizedBox(height: 45),
 
               // Privacy Policy Text
               Row(

@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.purple.shade100, const Color.fromARGB(255, 253, 208, 166)],
+            colors: [const Color.fromARGB(255, 231, 207, 236), const Color.fromARGB(255, 237, 215, 195)],
           ),
         ),
         child: Center(

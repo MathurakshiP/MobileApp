@@ -51,9 +51,25 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
           backgroundColor: customPurple,
           automaticallyImplyLeading: false,
         ),
-        body: const Center(
-          child: Text('No saved foods yet!'),
-        ),
+        body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Add your image here
+                  Image.asset(
+                    'images/burger.png', // Path to your image
+                    height: 150, // Adjust the height of the image
+                    width: 150,  // Adjust the width of the image
+                  ),
+                  SizedBox(height: 20), // Space between the image and the text
+                  Text(
+                    'No saved recipes yet!',
+                    style: TextStyle(fontSize: 16, ),
+                  ),
+                ],
+              ),
+            ),
       );
     }
 
@@ -106,9 +122,26 @@ class _SavedFoodScreenState extends State<SavedFoodScreen> {
                 );
               },
             )
-          : const Center(
-              child: Text('No saved recipes yet!'),
+          :  Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Add your image here
+                  Image.asset(
+                    'images/burger.png', // Path to your image
+                    height: 150, // Adjust the height of the image
+                    width: 150,  // Adjust the width of the image
+                  ),
+                  SizedBox(height: 20), // Space between the image and the text
+                  Text(
+                    'No saved recipes yet!',
+                    style: TextStyle(fontSize: 16, ),
+                  ),
+                ],
+              ),
             ),
+
     );
   }
 }

@@ -106,9 +106,17 @@ flutter:
   - images/spices.jpg
   - images/veg.jpg
   - images/nonveg.jpg
+<<<<<<< HEAD
   - images/start2.png
   - images/start3.png
   - images/start4.png
+=======
+  - images/google.png
+  - images/fb.png
+  - images/email.png
+  - images/signup.png
+  - images/signup1.webp
+>>>>>>> 50628900dfeba4f5ddc134eed01c8761513ad953
 
   - .env
 
