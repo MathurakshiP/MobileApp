@@ -943,7 +943,7 @@ Future<void> _addRecipesToFirestore(List<dynamic> recipes) async {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),
-              label: 'Shopping List',
+              label: 'ShoppingList',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
